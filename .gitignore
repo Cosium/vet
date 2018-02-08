@@ -1,2 +1,8 @@
 .idea
+
 target
+
+.gradle
+.gradletasknamecache
+gradle-app.setting
+build
