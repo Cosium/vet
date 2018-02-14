@@ -28,6 +28,9 @@ java {
 dependencies {
     // This dependency is found on compile classpath of this component and consumers.
     compile("com.google.guava:guava:23.0")
+    compile("commons-cli:commons-cli:1.4")
+    compile("org.eclipse.jgit:org.eclipse.jgit:4.10.0.201712302008-r")
+    compile("org.slf4j:slf4j-api:1.7.25")
 
     // Use JUnit test framework
     testCompile("junit:junit:4.12")
