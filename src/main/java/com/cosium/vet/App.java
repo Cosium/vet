@@ -1,7 +1,7 @@
 package com.cosium.vet;
 
 import com.cosium.vet.gerrit.DefaultGerritClientFactory;
-import com.cosium.vet.gerrit.GerritClientProvider;
+import com.cosium.vet.gerrit.GerritClientFactory;
 import com.cosium.vet.git.DefaultGitRepositoryProvider;
 import com.cosium.vet.git.GitRepositoryProvider;
 import com.cosium.vet.push.PushCommandArgParser;
@@ -24,7 +24,7 @@ public class App {
       new DefaultProcessBuilderFactory();
   private static final GitRepositoryProvider GIT_REPOSITORY_PROVIDER =
       new DefaultGitRepositoryProvider(PROCESS_BUILDER_FACTORY);
-  private static final GerritClientProvider GERRIT_CLIENT_FACTORY =
+  private static final GerritClientFactory GERRIT_CLIENT_FACTORY =
       new DefaultGerritClientFactory(GIT_REPOSITORY_PROVIDER);
 
   private static final PushCommandArgParser PUSH_COMMAND_ARG_PARSER =

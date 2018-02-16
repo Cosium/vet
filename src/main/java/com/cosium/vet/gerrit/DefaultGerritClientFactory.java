@@ -2,6 +2,8 @@ package com.cosium.vet.gerrit;
 
 import com.cosium.vet.git.GitRepositoryProvider;
 import com.google.gerrit.extensions.api.GerritApi;
+import com.urswolfer.gerrit.client.rest.GerritAuthData;
+import com.urswolfer.gerrit.client.rest.GerritRestApiFactory;
 
 import static java.util.Objects.requireNonNull;
 
@@ -10,7 +12,7 @@ import static java.util.Objects.requireNonNull;
  *
  * @author Reda.Housni-Alaoui
  */
-public class DefaultGerritClientFactory implements GerritClientProvider {
+public class DefaultGerritClientFactory implements GerritClientFactory {
 
   private final GitRepositoryProvider gitRepositoryProvider;
 
@@ -20,7 +22,11 @@ public class DefaultGerritClientFactory implements GerritClientProvider {
   }
 
   @Override
-  public GerritApi getApi() {
-    return null;
+  public GerritClient buildClient() {
+    GerritRestApiFactory gerritRestApiFactory = new GerritRestApiFactory();
+    GerritAuthData.Basic authData =
+        new GerritAuthData.Basic("http://localhost:8080", "user", "password");
+    GerritApi gerritApi = gerritRestApiFactory.create(authData);
+    return new DefaultGerritClient(gerritApi);
   }
 }

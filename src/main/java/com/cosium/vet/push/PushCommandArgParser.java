@@ -2,7 +2,7 @@ package com.cosium.vet.push;
 
 import com.cosium.vet.VetCommand;
 import com.cosium.vet.VetCommandArgParser;
-import com.cosium.vet.gerrit.GerritClientProvider;
+import com.cosium.vet.gerrit.GerritClientFactory;
 import com.cosium.vet.git.GitRepositoryProvider;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
@@ -23,11 +23,11 @@ public class PushCommandArgParser implements VetCommandArgParser {
   private static final String COMMAND_ARG = "push";
   private static final String BRANCH_OPTION = "b";
 
-  private final GerritClientProvider gerritClientFactory;
+  private final GerritClientFactory gerritClientFactory;
   private final GitRepositoryProvider gitRepositoryProvider;
 
   public PushCommandArgParser(
-          GerritClientProvider gerritClientFactory, GitRepositoryProvider gitRepositoryProvider) {
+          GerritClientFactory gerritClientFactory, GitRepositoryProvider gitRepositoryProvider) {
     requireNonNull(gerritClientFactory);
     requireNonNull(gitRepositoryProvider);
     this.gerritClientFactory = gerritClientFactory;
