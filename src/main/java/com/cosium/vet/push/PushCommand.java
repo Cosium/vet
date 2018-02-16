@@ -1,10 +1,11 @@
 package com.cosium.vet.push;
 
 import com.cosium.vet.VetCommand;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
+import com.cosium.vet.gerrit.GerritClientProvider;
+import com.cosium.vet.git.GitRepository;
+import com.cosium.vet.git.GitRepositoryProvider;
 
-import java.io.IOException;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 14/02/18.
@@ -13,21 +14,24 @@ import java.io.IOException;
  */
 public class PushCommand implements VetCommand {
 
-  private final String branchName;
+  private final GitRepositoryProvider gitRepositoryProvider;
+  private final GerritClientProvider gerritClientFactory;
+  private final String targetBranch;
 
-  PushCommand(String branchName) {
-    this.branchName = branchName;
+  PushCommand(
+      GitRepositoryProvider gitRepositoryProvider,
+      GerritClientProvider gerritClientFactory,
+      String targetBranch) {
+    requireNonNull(gitRepositoryProvider);
+    requireNonNull(gerritClientFactory);
+    this.gitRepositoryProvider = gitRepositoryProvider;
+    this.gerritClientFactory = gerritClientFactory;
+    this.targetBranch = targetBranch;
   }
 
   @Override
   public void execute() {
-    Repository gitRepository;
-    try {
-      gitRepository = new FileRepositoryBuilder().findGitDir().build();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-
+    GitRepository gitRepository = gitRepositoryProvider.getRepository();
 
   }
 }

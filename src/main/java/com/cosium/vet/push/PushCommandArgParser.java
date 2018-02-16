@@ -2,11 +2,15 @@ package com.cosium.vet.push;
 
 import com.cosium.vet.VetCommand;
 import com.cosium.vet.VetCommandArgParser;
+import com.cosium.vet.gerrit.GerritClientProvider;
+import com.cosium.vet.git.GitRepositoryProvider;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 14/02/18.
@@ -18,6 +22,17 @@ public class PushCommandArgParser implements VetCommandArgParser {
   private static final Logger LOG = LoggerFactory.getLogger(PushCommandArgParser.class);
   private static final String COMMAND_ARG = "push";
   private static final String BRANCH_OPTION = "b";
+
+  private final GerritClientProvider gerritClientFactory;
+  private final GitRepositoryProvider gitRepositoryProvider;
+
+  public PushCommandArgParser(
+          GerritClientProvider gerritClientFactory, GitRepositoryProvider gitRepositoryProvider) {
+    requireNonNull(gerritClientFactory);
+    requireNonNull(gitRepositoryProvider);
+    this.gerritClientFactory = gerritClientFactory;
+    this.gitRepositoryProvider = gitRepositoryProvider;
+  }
 
   @Override
   public Optional<VetCommand> parse(String[] args) {
@@ -48,6 +63,10 @@ public class PushCommandArgParser implements VetCommandArgParser {
       throw new RuntimeException(e);
     }
 
-    return Optional.of(new PushCommand(options.getOption(BRANCH_OPTION).getValue()));
+    return Optional.of(
+        new PushCommand(
+            gitRepositoryProvider,
+            gerritClientFactory,
+            options.getOption(BRANCH_OPTION).getValue()));
   }
 }

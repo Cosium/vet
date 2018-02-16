@@ -35,6 +35,7 @@ dependencies {
 
     // Use JUnit test framework
     testCompile("junit:junit:4.12")
+    testCompile("org.eclipse.jgit:org.eclipse.jgit.junit:4.10.0.201712302008-r")
 }
 
 // In this section you declare where to find the dependencies of your project
