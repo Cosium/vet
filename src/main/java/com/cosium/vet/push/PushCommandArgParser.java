@@ -1,7 +1,7 @@
-package com.cosium.gerrit.vet.push;
+package com.cosium.vet.push;
 
-import com.cosium.gerrit.vet.VetCommand;
-import com.cosium.gerrit.vet.VetCommandArgParser;
+import com.cosium.vet.VetCommand;
+import com.cosium.vet.VetCommandArgParser;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

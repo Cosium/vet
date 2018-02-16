@@ -1,6 +1,6 @@
-package com.cosium.gerrit.vet;
+package com.cosium.vet;
 
-import com.cosium.gerrit.vet.push.PushCommandArgParser;
+import com.cosium.vet.push.PushCommandArgParser;
 import com.google.common.collect.Lists;
 
 import java.util.Arrays;

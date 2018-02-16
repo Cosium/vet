@@ -1,4 +1,4 @@
-package com.cosium.gerrit.vet;
+package com.cosium.vet;
 
 /**
  * Created on 14/02/18.

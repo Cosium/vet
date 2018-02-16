@@ -1,4 +1,4 @@
-package com.cosium.gerrit.vet;
+package com.cosium.vet;
 
 import java.util.Optional;
 
