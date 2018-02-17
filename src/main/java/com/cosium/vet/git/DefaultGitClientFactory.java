@@ -1,8 +1,6 @@
 package com.cosium.vet.git;
 
-import com.cosium.vet.App;
 import com.cosium.vet.runtime.CommandRunner;
-import org.apache.commons.lang3.BooleanUtils;
 
 import java.nio.file.Path;
 
@@ -15,16 +13,15 @@ import static java.util.Objects.requireNonNull;
  */
 public class DefaultGitClientFactory implements GitClientFactory {
 
-  public static final String USE_DOCKER_GIT = App.NAME + ".use-docker-git";
-
   private final Path workingDirectory;
   private final GitExecutor gitExecutor;
 
-  public DefaultGitClientFactory(Path workingDirectory, CommandRunner commandRunner) {
+  public DefaultGitClientFactory(
+      Path workingDirectory, CommandRunner commandRunner, boolean useDockerGit) {
     requireNonNull(workingDirectory);
     requireNonNull(commandRunner);
     this.workingDirectory = workingDirectory;
-    if (BooleanUtils.toBoolean(System.getProperty(USE_DOCKER_GIT))) {
+    if (useDockerGit) {
       this.gitExecutor = new DockerGitExecutor(commandRunner);
     } else {
       this.gitExecutor = new BasicGitExecutor(commandRunner);

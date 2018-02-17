@@ -18,13 +18,13 @@ public class PushCommand implements VetCommand {
   private final GerritClientFactory gerritClientFactory;
   private final String targetBranch;
 
-  PushCommand(
-      GitClientFactory gitRepositoryProvider,
+  public PushCommand(
+      GitClientFactory gitClientFactory,
       GerritClientFactory gerritClientFactory,
       String targetBranch) {
-    requireNonNull(gitRepositoryProvider);
+    requireNonNull(gitClientFactory);
     requireNonNull(gerritClientFactory);
-    this.gitRepositoryProvider = gitRepositoryProvider;
+    this.gitRepositoryProvider = gitClientFactory;
     this.gerritClientFactory = gerritClientFactory;
     this.targetBranch = targetBranch;
   }

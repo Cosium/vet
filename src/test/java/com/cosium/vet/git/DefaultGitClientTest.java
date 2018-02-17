@@ -18,8 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class DefaultGitClientTest {
 
-
-
   private CommandRunner commandRunner = new BasicCommandRunner();
   private GitExecutor git = new DockerGitExecutor(commandRunner);
 
