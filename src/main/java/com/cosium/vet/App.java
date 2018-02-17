@@ -9,6 +9,7 @@ import com.cosium.vet.runtime.BasicCommandRunner;
 import com.cosium.vet.runtime.CommandRunner;
 import com.google.common.collect.Lists;
 
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -18,14 +19,15 @@ public class App {
 
   public static void main(String[] args) {
     CommandRunner commandRunner = new BasicCommandRunner();
-    GitClientFactory gitClientFactory = new DefaultGitClientFactory(commandRunner);
+    GitClientFactory gitClientFactory =
+        new DefaultGitClientFactory(Paths.get(System.getProperty("user.dir")), commandRunner);
     GerritClientFactory gerritClientFactory = new DefaultGerritClientFactory(gitClientFactory);
     PushCommandArgParser pushCommandArgParser =
         new PushCommandArgParser(gitClientFactory, gerritClientFactory);
 
     Lists.newArrayList(pushCommandArgParser)
         .stream()
-        .map(parser -> parser.parse(Arrays.copyOf(args, args.length)))
+        .map(commandParser -> commandParser.parse(Arrays.copyOf(args, args.length)))
         .filter(Optional::isPresent)
         .map(Optional::get)
         .findFirst()

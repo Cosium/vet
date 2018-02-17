@@ -2,9 +2,8 @@ package com.cosium.vet.git;
 
 import com.cosium.vet.runtime.CommandRunner;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 
-import java.nio.file.Paths;
+import java.nio.file.Path;
 
 import static java.util.Objects.requireNonNull;
 
@@ -26,21 +25,10 @@ public class DockerGitExecutor implements GitExecutor {
   }
 
   @Override
-  public String execute(String... arguments) {
+  public String execute(Path workingDir, String... arguments) {
     String[] baseCommand = {
-      DOCKER_CMD,
-      "run",
-      "-t",
-      "--rm",
-      "-v",
-      "${HOME}:/root",
-      String.format("%s:/git", getCurrentPath()),
-      DOCKER_GIT_IMAGE
+      DOCKER_CMD, "run", "-t", "--rm", "-v", String.format("%s:/git", workingDir), DOCKER_GIT_IMAGE
     };
-    return commandRunner.run(ArrayUtils.addAll(baseCommand, arguments));
-  }
-
-  private String getCurrentPath() {
-    return Paths.get(StringUtils.EMPTY).toAbsolutePath().toString();
+    return commandRunner.run(workingDir, ArrayUtils.addAll(baseCommand, arguments));
   }
 }

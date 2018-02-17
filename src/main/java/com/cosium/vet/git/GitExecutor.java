@@ -1,5 +1,7 @@
 package com.cosium.vet.git;
 
+import java.nio.file.Path;
+
 /**
  * Created on 17/02/18.
  *
@@ -7,5 +9,5 @@ package com.cosium.vet.git;
  */
 public interface GitExecutor {
 
-  String execute(String... arguments);
+  String execute(Path workingDir, String... arguments);
 }

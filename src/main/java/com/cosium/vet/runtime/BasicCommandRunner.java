@@ -1,9 +1,13 @@
 package com.cosium.vet.runtime;
 
-import java.io.BufferedReader;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Created on 16/02/18.
@@ -11,24 +15,27 @@ import java.util.Arrays;
  * @author Reda.Housni-Alaoui
  */
 public class BasicCommandRunner implements CommandRunner {
+
+  private static final Logger LOG = LoggerFactory.getLogger(BasicCommandRunner.class);
+
   @Override
-  public String run(String... command) {
+  public String run(Path workingDir, String... command) {
     try {
-      ProcessBuilder processBuilder = new ProcessBuilder(command);
-      processBuilder.redirectInput(ProcessBuilder.Redirect.INHERIT);
-      processBuilder.redirectError(ProcessBuilder.Redirect.INHERIT);
+      ProcessBuilder processBuilder =
+          new ProcessBuilder(command)
+              .directory(workingDir.toFile())
+              .redirectInput(ProcessBuilder.Redirect.INHERIT)
+              .redirectError(ProcessBuilder.Redirect.INHERIT);
 
       Process process = processBuilder.start();
       int exitCode = process.waitFor();
       if (exitCode != 0) {
+        LOG.error(IOUtils.toString(process.getInputStream(), "UTF-8"));
         throw new RuntimeException(
-            String.format("'%s' failed with code %s", Arrays.toString(command), exitCode));
+            String.format("'%s' failed with code %s", StringUtils.join(command, " "), exitCode));
       }
 
-      try (BufferedReader reader =
-          new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-        return reader.readLine();
-      }
+      return IOUtils.toString(process.getInputStream(), "UTF-8").trim();
     } catch (IOException | InterruptedException e) {
       throw new RuntimeException(e);
     }

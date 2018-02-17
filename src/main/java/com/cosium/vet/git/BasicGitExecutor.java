@@ -3,6 +3,8 @@ package com.cosium.vet.git;
 import com.cosium.vet.runtime.CommandRunner;
 import org.apache.commons.lang3.ArrayUtils;
 
+import java.nio.file.Path;
+
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -20,7 +22,7 @@ public class BasicGitExecutor implements GitExecutor {
   }
 
   @Override
-  public String execute(String... arguments) {
-    return commandRunner.run(ArrayUtils.addAll(new String[]{"git"}, arguments));
+  public String execute(Path workingDir, String... arguments) {
+    return commandRunner.run(workingDir, ArrayUtils.addAll(new String[]{"git"}, arguments));
   }
 }

@@ -37,10 +37,14 @@ dependencies {
     compile("org.slf4j:slf4j-api:1.7.25")
     compile("com.urswolfer.gerrit.client.rest:gerrit-rest-java-client:0.8.13")
     compile("org.apache.commons:commons-lang3:3.7")
+    compile("commons-io:commons-io:2.6")
+
+    runtime("org.slf4j:slf4j-simple:1.7.25")
 
     // Use JUnit test framework
     testCompile("junit:junit:4.12")
     testCompile("org.eclipse.jgit:org.eclipse.jgit.junit:4.10.0.201712302008-r")
+    testCompile("org.assertj:assertj-core:3.9.0")
 }
 
 // In this section you declare where to find the dependencies of your project
