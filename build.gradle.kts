@@ -54,8 +54,8 @@ repositories {
     jcenter()
 }
 
-dockerCompose.isRequiredBy(tasks["test"])
-
-dockerCompose {
-    useComposeFiles = listOf("$buildDir/resources/test/gerrit/docker-compose.yml")
-}
+//dockerCompose.isRequiredBy(tasks["test"])
+//
+//dockerCompose {
+//    useComposeFiles = listOf("$buildDir/resources/test/gerrit/docker-compose.yml")
+//}

@@ -3,9 +3,9 @@
 # vet
 Gerrit review CLI made with love
 
-### Tests
+## Tests
 
-##### User
+### User
 
 - uid: `fry`
 - password: `fry`
