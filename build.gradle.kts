@@ -36,6 +36,7 @@ dependencies {
     compile("org.eclipse.jgit:org.eclipse.jgit:4.10.0.201712302008-r")
     compile("org.slf4j:slf4j-api:1.7.25")
     compile("com.urswolfer.gerrit.client.rest:gerrit-rest-java-client:0.8.13")
+    compile("org.apache.commons:commons-lang3:3.7")
 
     // Use JUnit test framework
     testCompile("junit:junit:4.12")

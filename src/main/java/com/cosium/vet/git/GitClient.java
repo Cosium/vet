@@ -5,7 +5,7 @@ package com.cosium.vet.git;
  *
  * @author Reda.Housni-Alaoui
  */
-public interface GitRepository {
+public interface GitClient {
 
   /** @return The remote tracked by current branch */
   String getBranchRemote();
@@ -19,9 +19,7 @@ public interface GitRepository {
    */
   String getMostRecentCommonCommit(String otherBranch);
 
-  /**
-   * @return Get current tree
-   */
+  /** @return Get current tree */
   String getTree();
 
   /**

@@ -3,7 +3,7 @@ package com.cosium.vet.push;
 import com.cosium.vet.VetCommand;
 import com.cosium.vet.VetCommandArgParser;
 import com.cosium.vet.gerrit.GerritClientFactory;
-import com.cosium.vet.git.GitRepositoryProvider;
+import com.cosium.vet.git.GitClientFactory;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,14 +20,14 @@ import static java.util.Objects.requireNonNull;
 public class PushCommandArgParser implements VetCommandArgParser {
 
   private static final Logger LOG = LoggerFactory.getLogger(PushCommandArgParser.class);
-  private static final String COMMAND_ARG = "push";
+  private static final String COMMAND_NAME = "push";
   private static final String BRANCH_OPTION = "b";
 
   private final GerritClientFactory gerritClientFactory;
-  private final GitRepositoryProvider gitRepositoryProvider;
+  private final GitClientFactory gitRepositoryProvider;
 
   public PushCommandArgParser(
-          GerritClientFactory gerritClientFactory, GitRepositoryProvider gitRepositoryProvider) {
+          GitClientFactory gitRepositoryProvider, GerritClientFactory gerritClientFactory) {
     requireNonNull(gerritClientFactory);
     requireNonNull(gitRepositoryProvider);
     this.gerritClientFactory = gerritClientFactory;
@@ -40,8 +40,8 @@ public class PushCommandArgParser implements VetCommandArgParser {
       LOG.trace("Argument array is empty. Not a push command.");
       return Optional.empty();
     }
-    if (!COMMAND_ARG.equals(args[0])) {
-      LOG.trace("First argument doesn't match {}. Not a push command.", COMMAND_ARG);
+    if (!COMMAND_NAME.equals(args[0])) {
+      LOG.trace("First argument doesn't match {}. Not a push command.", COMMAND_NAME);
       return Optional.empty();
     }
     LOG.trace("This is a push command");

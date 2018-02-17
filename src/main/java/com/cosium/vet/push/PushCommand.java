@@ -2,8 +2,8 @@ package com.cosium.vet.push;
 
 import com.cosium.vet.VetCommand;
 import com.cosium.vet.gerrit.GerritClientFactory;
-import com.cosium.vet.git.GitRepository;
-import com.cosium.vet.git.GitRepositoryProvider;
+import com.cosium.vet.git.GitClient;
+import com.cosium.vet.git.GitClientFactory;
 
 import static java.util.Objects.requireNonNull;
 
@@ -14,12 +14,12 @@ import static java.util.Objects.requireNonNull;
  */
 public class PushCommand implements VetCommand {
 
-  private final GitRepositoryProvider gitRepositoryProvider;
+  private final GitClientFactory gitRepositoryProvider;
   private final GerritClientFactory gerritClientFactory;
   private final String targetBranch;
 
   PushCommand(
-      GitRepositoryProvider gitRepositoryProvider,
+      GitClientFactory gitRepositoryProvider,
       GerritClientFactory gerritClientFactory,
       String targetBranch) {
     requireNonNull(gitRepositoryProvider);
@@ -31,7 +31,7 @@ public class PushCommand implements VetCommand {
 
   @Override
   public void execute() {
-    GitRepository gitRepository = gitRepositoryProvider.getRepository();
+    GitClient gitRepository = gitRepositoryProvider.buildClient();
 
   }
 }
