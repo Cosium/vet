@@ -1,0 +1,10 @@
+version: '3.4'
+
+services:
+  gerrit:
+    image: gerritcodereview/gerrit:2.15.rc2
+    ports:
+      - "8080"
+    volumes:
+     - ./git:/var/gerrit/git
+     - ./etc:/var/gerrit/etc
