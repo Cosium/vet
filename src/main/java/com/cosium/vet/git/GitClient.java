@@ -29,4 +29,6 @@ public interface GitClient {
    * @return The id of the created commit
    */
   String commitTree(String tree, String parent, String commitMessage);
+
+  String getBranchShortName();
 }

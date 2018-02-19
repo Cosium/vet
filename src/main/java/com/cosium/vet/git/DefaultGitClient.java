@@ -53,7 +53,8 @@ class DefaultGitClient implements GitClient {
         directory, "git", "commit-tree", tree, "-p", parent, "-m", commitMessage);
   }
 
-  private String getBranchShortName() {
+  @Override
+  public String getBranchShortName() {
     return commandRunner.run(directory, "git", "rev-parse", "--abbrev-ref", "HEAD");
   }
 }

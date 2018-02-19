@@ -46,6 +46,7 @@ dependencies {
     testCompile("junit:junit:4.12")
     testCompile("org.eclipse.jgit:org.eclipse.jgit.junit:4.10.0.201712302008-r")
     testCompile("org.assertj:assertj-core:3.9.0")
+    testCompile("org.mockito:mockito-core:2.15.0")
 }
 
 // In this section you declare where to find the dependencies of your project

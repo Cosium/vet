@@ -14,7 +14,7 @@ import static java.util.Objects.requireNonNull;
  */
 public class PushCommand implements VetCommand {
 
-  private final GitClientFactory gitRepositoryProvider;
+  private final GitClientFactory gitClientFactory;
   private final GerritClientFactory gerritClientFactory;
   private final String targetBranch;
 
@@ -24,14 +24,14 @@ public class PushCommand implements VetCommand {
       String targetBranch) {
     requireNonNull(gitClientFactory);
     requireNonNull(gerritClientFactory);
-    this.gitRepositoryProvider = gitClientFactory;
+    this.gitClientFactory = gitClientFactory;
     this.gerritClientFactory = gerritClientFactory;
     this.targetBranch = targetBranch;
   }
 
   @Override
   public void execute() {
-    GitClient gitRepository = gitRepositoryProvider.buildClient();
+    GitClient gitClient = gitClientFactory.buildClient();
 
   }
 }

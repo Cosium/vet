@@ -1,6 +1,6 @@
 package com.cosium.vet.gerrit;
 
-import com.cosium.vet.git.GitClientFactory;
+import com.cosium.vet.git.GitConfigRepositoryProvider;
 import com.google.gerrit.extensions.api.GerritApi;
 import com.urswolfer.gerrit.client.rest.GerritAuthData;
 import com.urswolfer.gerrit.client.rest.GerritRestApiFactory;
@@ -14,11 +14,11 @@ import static java.util.Objects.requireNonNull;
  */
 public class DefaultGerritClientFactory implements GerritClientFactory {
 
-  private final GitClientFactory gitClientFactory;
+  private final GitConfigRepositoryProvider gitConfigRepositoryProvider;
 
-  public DefaultGerritClientFactory(GitClientFactory gitClientFactory) {
-    requireNonNull(gitClientFactory);
-    this.gitClientFactory = gitClientFactory;
+  public DefaultGerritClientFactory(GitConfigRepositoryProvider gitConfigRepositoryProvider) {
+    requireNonNull(gitConfigRepositoryProvider);
+    this.gitConfigRepositoryProvider = gitConfigRepositoryProvider;
   }
 
   @Override
