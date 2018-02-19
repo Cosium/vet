@@ -46,14 +46,14 @@ public class GerritConfigurationRepositoryTest {
     siteConfig.setHttpUrl(URL);
     siteConfig.setHttpLogin(LOGIN);
     siteConfig.setHttpPassword(PASSWORD);
-    config.setSites(Collections.singletonList(siteConfig));
+    config.setSites(Collections.singletonMap(URL, siteConfig));
     tested.write(config);
 
     GerritConfiguration gerritConfiguration = tested.read();
     assertThat(gerritConfiguration).isNotNull();
     assertThat(gerritConfiguration.getSites()).hasSize(1);
 
-    GerritSiteConfiguration readSite = gerritConfiguration.getSites().get(0);
+    GerritSiteConfiguration readSite = gerritConfiguration.getSites().get(URL);
     assertThat(readSite.getHttpUrl()).isEqualTo(URL);
     assertThat(readSite.getHttpLogin()).isEqualTo(LOGIN);
     assertThat(readSite.getHttpPassword()).isEqualTo(PASSWORD);

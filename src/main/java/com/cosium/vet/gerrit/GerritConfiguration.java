@@ -1,7 +1,7 @@
 package com.cosium.vet.gerrit;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Created on 19/02/18.
@@ -10,21 +10,22 @@ import java.util.List;
  */
 class GerritConfiguration {
 
-  private List<GerritSiteConfiguration> sites;
+  /** Site by http url */
+  private Map<String, GerritSiteConfiguration> sites;
 
   GerritConfiguration() {
-    this.sites = Collections.emptyList();
+    this.sites = Collections.emptyMap();
   }
 
-  public List<GerritSiteConfiguration> getSites() {
+  public Map<String, GerritSiteConfiguration> getSites() {
     return sites;
   }
 
-  public void setSites(List<GerritSiteConfiguration> sites) {
+  public void setSites(Map<String, GerritSiteConfiguration> sites) {
     if (sites == null) {
-      this.sites = Collections.emptyList();
+      this.sites = Collections.emptyMap();
     } else {
-      this.sites = Collections.unmodifiableList(sites);
+      this.sites = Collections.unmodifiableMap(sites);
     }
   }
 }
