@@ -11,8 +11,15 @@ import java.nio.file.Path;
  */
 public interface FileSystem {
 
-    InputStream readFile(Path file);
+  /**
+   * @param file The relative path of the file
+   * @return The input stream to use to read the file content
+   */
+  InputStream newAppFileInputStream(Path file);
 
-    void writeFile(Path file, OutputStream outputStream);
-
+  /**
+   * @param file The relative path of the file
+   * @return The output stream to use to write in the file content
+   */
+  OutputStream newAppFileOutputStream(Path file);
 }

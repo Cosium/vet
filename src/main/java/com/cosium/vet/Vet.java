@@ -22,16 +22,16 @@ import java.util.Optional;
  */
 public class Vet {
 
-  private final Path workingDir;
-  private final CommandRunner commandRunner;
   private final GitClientFactory gitClientFactory;
   private final GerritClientFactory gerritClientFactory;
 
   public Vet() {
-    workingDir = Paths.get(System.getProperty("user.dir"));
-    commandRunner = new BasicCommandRunner();
-    gitClientFactory = new DefaultGitClientFactory(workingDir, commandRunner);
-    gerritClientFactory = new DefaultGerritClientFactory(gitClientFactory);
+    this(Paths.get(System.getProperty("user.dir")), new BasicCommandRunner());
+  }
+
+  public Vet(Path workingDir, CommandRunner commandRunner) {
+    this.gitClientFactory = new DefaultGitClientFactory(workingDir, commandRunner);
+    this.gerritClientFactory = new DefaultGerritClientFactory(gitClientFactory);
   }
 
   public void run(String args[]) {
