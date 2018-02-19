@@ -1,5 +1,6 @@
 package com.cosium.vet.git;
 
+import com.cosium.vet.TestCommandRunner;
 import com.cosium.vet.runtime.BasicCommandRunner;
 import com.cosium.vet.runtime.CommandRunner;
 import org.apache.commons.io.FileUtils;
@@ -18,8 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class DefaultGitClientTest {
 
-  private CommandRunner commandRunner = new BasicCommandRunner();
-  private GitExecutor git = new DockerGitExecutor(commandRunner);
+  private CommandRunner runner = new TestCommandRunner(new BasicCommandRunner());
 
   private Path repo;
   private GitClient tested;
@@ -30,20 +30,20 @@ public class DefaultGitClientTest {
 
     Path remoteRepo = workDir.resolve("upstream");
     Files.createDirectories(remoteRepo);
-    git.execute(remoteRepo, "init");
-    git.execute(remoteRepo, "config", "user.email", "\"you@example.com\"");
-    git.execute(remoteRepo, "config", "user.name", "\"Your Name\"");
+    runner.run(remoteRepo, "git", "init");
+    runner.run(remoteRepo, "git", "config", "user.email", "\"you@example.com\"");
+    runner.run(remoteRepo, "git", "config", "user.name", "\"Your Name\"");
     Files.createFile(remoteRepo.resolve("foo.txt"));
-    git.execute(remoteRepo, "add", ".");
-    git.execute(remoteRepo, "commit", "-am", "\"Initial commit\"");
+    runner.run(remoteRepo, "git", "add", ".");
+    runner.run(remoteRepo, "git", "commit", "-am", "\"Initial commit\"");
 
-    git.execute(workDir, "clone", "./upstream", "downstream-tmp");
+    runner.run(workDir, "git", "clone", "./upstream", "downstream-tmp");
     repo = workDir.resolve("downstream");
     FileUtils.copyDirectory(workDir.resolve("downstream-tmp").toFile(), repo.toFile());
-    git.execute(repo, "config", "user.email", "\"you@example.com\"");
-    git.execute(repo, "config", "user.name", "\"Your Name\"");
+    runner.run(repo, "git", "config", "user.email", "\"you@example.com\"");
+    runner.run(repo, "git", "config", "user.name", "\"Your Name\"");
 
-    tested = new DefaultGitClient(repo, git);
+    tested = new DefaultGitClient(repo, runner);
   }
 
   @Test
@@ -63,16 +63,16 @@ public class DefaultGitClientTest {
 
   @Test
   public void getMostRecentCommonCommit() throws Exception {
-    String expectedCommit = git.execute(repo, "rev-parse", "HEAD");
-    git.execute(repo, "checkout", "-b", "getMostRecentCommonCommit");
+    String expectedCommit = runner.run(repo,"git", "rev-parse", "HEAD");
+    runner.run(repo, "git","checkout", "-b", "getMostRecentCommonCommit");
     Path barPath = repo.resolve("bar.txt");
     Files.createFile(barPath);
-    git.execute(repo, "add", ".");
-    git.execute(repo, "commit", "-am", "\"Add bar\"");
+    runner.run(repo,"git", "add", ".");
+    runner.run(repo,"git", "commit", "-am", "\"Add bar\"");
 
     assertThat(tested.getMostRecentCommonCommit("origin/master")).isEqualTo(expectedCommit);
 
-    git.execute(repo, "checkout", expectedCommit);
+    runner.run(repo,"git", "checkout", expectedCommit);
     assertThat(Files.exists(barPath)).isFalse();
   }
 
@@ -80,13 +80,13 @@ public class DefaultGitClientTest {
   public void testCommitTree() throws Exception {
     Path barPath = repo.resolve("bar.txt");
     Files.createFile(barPath);
-    git.execute(repo, "add", ".");
-    git.execute(repo, "commit", "-am", "\"Add bar\"");
+    runner.run(repo,"git", "add", ".");
+    runner.run(repo,"git", "commit", "-am", "\"Add bar\"");
 
     Path bazPath = repo.resolve("baz.txt");
     Files.createFile(bazPath);
-    git.execute(repo, "add", ".");
-    git.execute(repo, "commit", "-am", "\"Add baz\"");
+    runner.run(repo,"git", "add", ".");
+    runner.run(repo,"git", "commit", "-am", "\"Add baz\"");
 
     String commit =
         tested.commitTree(
@@ -96,7 +96,7 @@ public class DefaultGitClientTest {
 
     assertThat(commit).isNotBlank();
 
-    git.execute(repo, "checkout", commit);
+    runner.run(repo,"git", "checkout", commit);
     assertThat(Files.exists(barPath)).isTrue();
     assertThat(Files.exists(bazPath)).isTrue();
   }

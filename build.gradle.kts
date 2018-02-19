@@ -38,6 +38,7 @@ dependencies {
     compile("com.urswolfer.gerrit.client.rest:gerrit-rest-java-client:0.8.13")
     compile("org.apache.commons:commons-lang3:3.7")
     compile("commons-io:commons-io:2.6")
+    compile("com.fasterxml.jackson.jr:jackson-jr-objects:2.9.4")
 
     runtime("org.slf4j:slf4j-simple:1.7.25")
 

@@ -14,22 +14,17 @@ import static java.util.Objects.requireNonNull;
 public class DefaultGitClientFactory implements GitClientFactory {
 
   private final Path workingDirectory;
-  private final GitExecutor gitExecutor;
+  private final CommandRunner commandRunner;
 
-  public DefaultGitClientFactory(
-      Path workingDirectory, CommandRunner commandRunner, boolean useDockerGit) {
+  public DefaultGitClientFactory(Path workingDirectory, CommandRunner commandRunner) {
     requireNonNull(workingDirectory);
     requireNonNull(commandRunner);
     this.workingDirectory = workingDirectory;
-    if (useDockerGit) {
-      this.gitExecutor = new DockerGitExecutor(commandRunner);
-    } else {
-      this.gitExecutor = new BasicGitExecutor(commandRunner);
-    }
+    this.commandRunner = commandRunner;
   }
 
   @Override
   public GitClient buildClient() {
-    return new DefaultGitClient(workingDirectory, gitExecutor);
+    return new DefaultGitClient(workingDirectory, commandRunner);
   }
 }

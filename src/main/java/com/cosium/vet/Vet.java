@@ -28,13 +28,9 @@ public class Vet {
   private final GerritClientFactory gerritClientFactory;
 
   public Vet() {
-    this(false);
-  }
-
-  public Vet(boolean useDockerGit) {
     workingDir = Paths.get(System.getProperty("user.dir"));
     commandRunner = new BasicCommandRunner();
-    gitClientFactory = new DefaultGitClientFactory(workingDir, commandRunner, useDockerGit);
+    gitClientFactory = new DefaultGitClientFactory(workingDir, commandRunner);
     gerritClientFactory = new DefaultGerritClientFactory(gitClientFactory);
   }
 
