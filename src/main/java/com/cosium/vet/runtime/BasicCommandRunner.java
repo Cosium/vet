@@ -1,8 +1,7 @@
 package com.cosium.vet.runtime;
 
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -13,8 +12,6 @@ import java.nio.file.Path;
  * @author Reda.Housni-Alaoui
  */
 public class BasicCommandRunner implements CommandRunner {
-
-  private static final Logger LOG = LoggerFactory.getLogger(BasicCommandRunner.class);
 
   @Override
   public String run(Path workingDir, String... command) {
@@ -32,7 +29,8 @@ public class BasicCommandRunner implements CommandRunner {
             exitCode, IOUtils.toString(process.getInputStream(), "UTF-8"), command);
       }
 
-      return IOUtils.toString(process.getInputStream(), "UTF-8").trim();
+      return StringUtils.defaultIfBlank(
+          IOUtils.toString(process.getInputStream(), "UTF-8").trim(), null);
     } catch (IOException | InterruptedException e) {
       throw new RuntimeException(e);
     }

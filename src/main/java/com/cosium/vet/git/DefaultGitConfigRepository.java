@@ -27,23 +27,26 @@ class DefaultGitConfigRepository implements GitConfigRepository {
 
   @Override
   public String getCurrentBranchValue(String key) {
-    try {
-      return StringUtils.defaultIfBlank(
-          commandRunner.run(repositoryDirectory, "git", "config", computeBranchKey(key)), null);
-    } catch (CommandRunException e) {
-      if (e.getExitCode() != 1) {
-        throw e;
-      }
-      return null;
-    }
+    return runIgnoringExitCode(1, "git", "config", computeBranchKey(key));
   }
 
   @Override
   public void setCurrentBranchValue(String key, String value) {
     if (StringUtils.isBlank(value)) {
-      commandRunner.run(repositoryDirectory, "git", "config", "--unset", computeBranchKey(key));
+      runIgnoringExitCode(5, "git", "config", "--unset", computeBranchKey(key));
     } else {
       commandRunner.run(repositoryDirectory, "git", "config", computeBranchKey(key), value);
+    }
+  }
+
+  private String runIgnoringExitCode(int exitCodeToIgnore, String... command) {
+    try {
+      return commandRunner.run(repositoryDirectory, command);
+    } catch (CommandRunException e) {
+      if (exitCodeToIgnore != e.getExitCode()) {
+        throw e;
+      }
+      return null;
     }
   }
 
