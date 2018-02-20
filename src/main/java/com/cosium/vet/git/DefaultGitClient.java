@@ -13,48 +13,45 @@ import static java.util.Objects.requireNonNull;
  */
 class DefaultGitClient implements GitClient {
 
-  private final Path directory;
+  private final Path repositoryDirectory;
   private final CommandRunner commandRunner;
+  private final GitConfigRepository gitConfigRepository;
 
-  DefaultGitClient(Path directory, CommandRunner commandRunner) {
-    requireNonNull(directory);
+  DefaultGitClient(
+      Path repositoryDirectory,
+      CommandRunner commandRunner,
+      GitConfigRepository gitConfigRepository) {
+    requireNonNull(repositoryDirectory);
     requireNonNull(commandRunner);
-    this.directory = directory;
+    requireNonNull(gitConfigRepository);
+    this.repositoryDirectory = repositoryDirectory;
     this.commandRunner = commandRunner;
+    this.gitConfigRepository = gitConfigRepository;
   }
 
   @Override
   public String getBranchRemote() {
-    String branchShortName = getBranchShortName();
-    return commandRunner.run(
-        directory, "git", "config", String.format("branch.%s.remote", branchShortName));
+    return gitConfigRepository.getCurrentBranchValue("remote");
   }
 
   @Override
   public String getBranchMerge() {
-    String branchShortName = getBranchShortName();
-    return commandRunner.run(
-        directory, "git", "config", String.format("branch.%s.merge", branchShortName));
+    return gitConfigRepository.getCurrentBranchValue("merge");
   }
 
   @Override
   public String getMostRecentCommonCommit(String otherBranch) {
-    return commandRunner.run(directory, "git", "merge-base", "HEAD", otherBranch);
+    return commandRunner.run(repositoryDirectory, "git", "merge-base", "HEAD", otherBranch);
   }
 
   @Override
   public String getTree() {
-    return commandRunner.run(directory, "git", "rev-parse", "HEAD:");
+    return commandRunner.run(repositoryDirectory, "git", "rev-parse", "HEAD:");
   }
 
   @Override
   public String commitTree(String tree, String parent, String commitMessage) {
     return commandRunner.run(
-        directory, "git", "commit-tree", tree, "-p", parent, "-m", commitMessage);
-  }
-
-  @Override
-  public String getBranchShortName() {
-    return commandRunner.run(directory, "git", "rev-parse", "--abbrev-ref", "HEAD");
+        repositoryDirectory, "git", "commit-tree", tree, "-p", parent, "-m", commitMessage);
   }
 }

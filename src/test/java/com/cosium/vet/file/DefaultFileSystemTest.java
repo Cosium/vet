@@ -24,25 +24,25 @@ public class DefaultFileSystemTest {
 
   @Before
   public void before() throws Exception {
-    homePath = Files.createTempDirectory(null);
+    homePath = Files.createTempDirectory("vet");
     tested = new DefaultFileSystem(homePath);
   }
 
   @Test
   public void WHEN_new_inputstream_inexisting_file_THEN_it_should_not_fail() throws Exception {
-    tested.newAppFileInputStream(Files.createTempDirectory(null).resolve("t")).close();
+    tested.newAppFileInputStream(Files.createTempDirectory("vet").resolve("t")).close();
   }
 
   @Test
   public void WHEN_new_outputstream_inexisting_file_THEN_it_should_not_fail() throws Exception {
-    tested.newAppFileOutputStream(Files.createTempDirectory(null).resolve("t")).close();
+    tested.newAppFileOutputStream(Files.createTempDirectory("vet").resolve("t")).close();
   }
 
   @Test
   public void
       GIVEN_written_file_containing_hello_world_WHEN_reading_it_THEN_it_should_read_hello_world()
           throws Exception {
-    Path file = Files.createTempDirectory(null).resolve("t");
+    Path file = Files.createTempDirectory("vet").resolve("t");
     try (OutputStream outputStream = tested.newAppFileOutputStream(file)) {
       IOUtils.write("Hello World", outputStream, "UTF-8");
     }

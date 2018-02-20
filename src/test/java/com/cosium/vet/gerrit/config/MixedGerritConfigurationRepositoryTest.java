@@ -66,8 +66,8 @@ public class MixedGerritConfigurationRepositoryTest {
                         .end()
                         .end()
                         .finish()));
-    when(gitConfigProvider.getValue("vet-current-issue-id")).thenReturn(ISSUE_ID);
-    when(gitConfigProvider.getValue("vet-selected-site-http-url")).thenReturn(URL);
+    when(gitConfigProvider.getCurrentBranchValue("vet-current-issue-id")).thenReturn(ISSUE_ID);
+    when(gitConfigProvider.getCurrentBranchValue("vet-selected-site-http-url")).thenReturn(URL);
 
     GerritConfiguration gerritConfiguration = tested.read();
     assertThat(gerritConfiguration).isNotNull();

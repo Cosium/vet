@@ -1,8 +1,10 @@
 package com.cosium.vet.runtime;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -13,11 +15,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class BasicCommandRunnerTest {
 
-  private final BasicCommandRunner tested = new BasicCommandRunner();
+  private Path directory;
+  private BasicCommandRunner tested;
+
+  @Before
+  public void before() throws Exception {
+    directory = Files.createTempDirectory("vet");
+    tested = new BasicCommandRunner();
+  }
 
   @Test
-  public void testHelloWorld() throws Exception {
-    String output = tested.run(Files.createTempDirectory(null), "docker", "run", "hello-world");
+  public void WHEN_run_docker_hello_world_THEN_it_should_print_at_least_hello() {
+    String output = tested.run(directory, "docker", "run", "hello-world");
     assertThat(output).contains("Hello");
   }
+
 }

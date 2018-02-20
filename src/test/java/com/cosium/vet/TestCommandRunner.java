@@ -1,11 +1,10 @@
 package com.cosium.vet;
 
+import com.cosium.vet.runtime.BasicCommandRunner;
 import com.cosium.vet.runtime.CommandRunner;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.nio.file.Path;
-
-import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 17/02/18.
@@ -19,9 +18,8 @@ public class TestCommandRunner implements CommandRunner {
 
   private final CommandRunner delegate;
 
-  public TestCommandRunner(CommandRunner delegate) {
-    requireNonNull(delegate);
-    this.delegate = delegate;
+  public TestCommandRunner() {
+    this.delegate = new BasicCommandRunner();
   }
 
   @Override

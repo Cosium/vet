@@ -5,8 +5,8 @@ package com.cosium.vet.git;
  *
  * @author Reda.Housni-Alaoui
  */
-public interface GitConfigRepositoryProvider {
+public interface GitConfigRepositoryFactory {
 
   /** @return The current git config repository */
-  GitConfigRepository getRepository();
+  GitConfigRepository buildRepository();
 }

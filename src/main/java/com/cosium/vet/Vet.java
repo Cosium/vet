@@ -3,7 +3,7 @@ package com.cosium.vet;
 import com.cosium.vet.gerrit.DefaultGerritClientFactory;
 import com.cosium.vet.gerrit.GerritClientFactory;
 import com.cosium.vet.git.GitClientFactory;
-import com.cosium.vet.git.GitConfigRepositoryProvider;
+import com.cosium.vet.git.GitConfigRepositoryFactory;
 import com.cosium.vet.git.GitProvider;
 import com.cosium.vet.push.PushCommand;
 import com.cosium.vet.push.PushCommandArgParser;
@@ -24,7 +24,7 @@ import java.util.Optional;
 public class Vet {
 
   private final GitClientFactory gitClientFactory;
-  private final GitConfigRepositoryProvider gitConfigRepositoryProvider;
+  private final GitConfigRepositoryFactory gitConfigRepositoryProvider;
   private final GerritClientFactory gerritClientFactory;
 
   public Vet() {

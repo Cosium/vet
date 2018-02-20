@@ -64,8 +64,8 @@ public class MixedGerritConfigurationRepository implements GerritConfigurationRe
         this,
         fileStoredConf,
         new GitStoredConfig(
-            gitConfigRepository.getValue(VET_CURRENT_ISSUE_ID),
-            gitConfigRepository.getValue(VET_SELECTED_SITE_HTTP_URL)));
+            gitConfigRepository.getCurrentBranchValue(VET_CURRENT_ISSUE_ID),
+            gitConfigRepository.getCurrentBranchValue(VET_SELECTED_SITE_HTTP_URL)));
   }
 
   @Override
@@ -87,8 +87,8 @@ public class MixedGerritConfigurationRepository implements GerritConfigurationRe
       throw new RuntimeException(e);
     }
 
-    gitConfigRepository.setValue(VET_CURRENT_ISSUE_ID, mixedConf.gitStored.currentIssueId);
-    gitConfigRepository.setValue(
+    gitConfigRepository.setCurrentBranchValue(VET_CURRENT_ISSUE_ID, mixedConf.gitStored.currentIssueId);
+    gitConfigRepository.setCurrentBranchValue(
         VET_SELECTED_SITE_HTTP_URL, mixedConf.gitStored.selectedSiteHttpUrl);
   }
 

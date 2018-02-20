@@ -11,25 +11,25 @@ import static java.util.Objects.requireNonNull;
  *
  * @author Reda.Housni-Alaoui
  */
-public class GitProvider implements GitClientFactory, GitConfigRepositoryProvider {
+public class GitProvider implements GitClientFactory, GitConfigRepositoryFactory {
 
-  private final Path workingDirectory;
+  private final Path repositoryDirectory;
   private final CommandRunner commandRunner;
 
-  public GitProvider(Path workingDirectory, CommandRunner commandRunner) {
-    requireNonNull(workingDirectory);
+  public GitProvider(Path repositoryDirectory, CommandRunner commandRunner) {
+    requireNonNull(repositoryDirectory);
     requireNonNull(commandRunner);
-    this.workingDirectory = workingDirectory;
+    this.repositoryDirectory = repositoryDirectory;
     this.commandRunner = commandRunner;
   }
 
   @Override
   public GitClient buildClient() {
-    return new DefaultGitClient(workingDirectory, commandRunner);
+    return new DefaultGitClient(repositoryDirectory, commandRunner, buildRepository());
   }
 
   @Override
-  public GitConfigRepository getRepository() {
-    return new DefaultGitConfigRepository(workingDirectory, commandRunner, buildClient());
+  public GitConfigRepository buildRepository() {
+    return new DefaultGitConfigRepository(repositoryDirectory, commandRunner);
   }
 }

@@ -1,5 +1,6 @@
 package com.cosium.vet.git;
 
+import com.cosium.vet.runtime.CommandRunException;
 import com.cosium.vet.runtime.CommandRunner;
 import org.apache.commons.lang3.StringUtils;
 
@@ -14,37 +15,44 @@ import static java.util.Objects.requireNonNull;
  */
 class DefaultGitConfigRepository implements GitConfigRepository {
 
-  private final Path workingDirectory;
+  private final Path repositoryDirectory;
   private final CommandRunner commandRunner;
-  private final GitClient gitClient;
 
-  DefaultGitConfigRepository(
-      Path workingDirectory, CommandRunner commandRunner, GitClient gitClient) {
-    requireNonNull(workingDirectory);
+  DefaultGitConfigRepository(Path repositoryDirectory, CommandRunner commandRunner) {
+    requireNonNull(repositoryDirectory);
     requireNonNull(commandRunner);
-    requireNonNull(gitClient);
-    this.workingDirectory = workingDirectory;
+    this.repositoryDirectory = repositoryDirectory;
     this.commandRunner = commandRunner;
-    this.gitClient = gitClient;
   }
 
   @Override
-  public String getValue(String key) {
-    return StringUtils.defaultIfBlank(
-        commandRunner.run(workingDirectory, "git", "config", computeBranchKey(key)), null);
+  public String getCurrentBranchValue(String key) {
+    try {
+      return StringUtils.defaultIfBlank(
+          commandRunner.run(repositoryDirectory, "git", "config", computeBranchKey(key)), null);
+    } catch (CommandRunException e) {
+      if (e.getExitCode() != 1) {
+        throw e;
+      }
+      return null;
+    }
   }
 
   @Override
-  public void setValue(String key, String value) {
+  public void setCurrentBranchValue(String key, String value) {
     if (StringUtils.isBlank(value)) {
-      commandRunner.run(workingDirectory, "git", "config", "--unset", computeBranchKey(key));
+      commandRunner.run(repositoryDirectory, "git", "config", "--unset", computeBranchKey(key));
     } else {
-      commandRunner.run(workingDirectory, "git", "config", computeBranchKey(key), value);
+      commandRunner.run(repositoryDirectory, "git", "config", computeBranchKey(key), value);
     }
   }
 
   private String computeBranchKey(String key) {
-    String branch = gitClient.getBranchShortName();
+    String branch = getBranchShortName();
     return String.format("branch.%s.%s", branch, key);
+  }
+
+  private String getBranchShortName() {
+    return commandRunner.run(repositoryDirectory, "git", "rev-parse", "--abbrev-ref", "HEAD");
   }
 }

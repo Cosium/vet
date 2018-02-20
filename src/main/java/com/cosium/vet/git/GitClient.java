@@ -30,5 +30,4 @@ public interface GitClient {
    */
   String commitTree(String tree, String parent, String commitMessage);
 
-  String getBranchShortName();
 }

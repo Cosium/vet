@@ -1,7 +1,6 @@
 package com.cosium.vet.runtime;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,9 +28,8 @@ public class BasicCommandRunner implements CommandRunner {
       Process process = processBuilder.start();
       int exitCode = process.waitFor();
       if (exitCode != 0) {
-        LOG.error(IOUtils.toString(process.getInputStream(), "UTF-8"));
-        throw new RuntimeException(
-            String.format("'%s' failed with code %s", StringUtils.join(command, " "), exitCode));
+        throw new CommandRunException(
+            exitCode, IOUtils.toString(process.getInputStream(), "UTF-8"), command);
       }
 
       return IOUtils.toString(process.getInputStream(), "UTF-8").trim();
