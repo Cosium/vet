@@ -30,4 +30,15 @@ public interface GitClient {
    */
   String commitTree(String tree, String parent, String commitMessage);
 
+  String writeTree();
+
+  String revParse(String revision);
+
+  String var(String varName);
+
+  String hashObject(String type, String content);
+
+  String getLastCommitMessage();
+
+  void push(String remote, String refspec);
 }

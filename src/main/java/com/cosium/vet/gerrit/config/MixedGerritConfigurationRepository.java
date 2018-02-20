@@ -25,12 +25,12 @@ import static java.util.Objects.requireNonNull;
  *
  * @author Reda.Housni-Alaoui
  */
-public class MixedGerritConfigurationRepository implements GerritConfigurationRepository {
+class MixedGerritConfigurationRepository implements GerritConfigurationRepository {
 
   private static final Logger LOG =
       LoggerFactory.getLogger(MixedGerritConfigurationRepository.class);
 
-  private static final String VET_CURRENT_ISSUE_ID = "vet-current-issue-id";
+  private static final String VET_CURRENT_CHANGE_NUMBER = "vet-current-change-number";
   private static final String VET_SELECTED_SITE_HTTP_URL = "vet-selected-site-http-url";
 
   private final FileSystem fileSystem;
@@ -64,7 +64,7 @@ public class MixedGerritConfigurationRepository implements GerritConfigurationRe
         this,
         fileStoredConf,
         new GitStoredConfig(
-            gitConfigRepository.getCurrentBranchValue(VET_CURRENT_ISSUE_ID),
+            gitConfigRepository.getCurrentBranchValue(VET_CURRENT_CHANGE_NUMBER),
             gitConfigRepository.getCurrentBranchValue(VET_SELECTED_SITE_HTTP_URL)));
   }
 
@@ -87,7 +87,7 @@ public class MixedGerritConfigurationRepository implements GerritConfigurationRe
       throw new RuntimeException(e);
     }
 
-    gitConfigRepository.setCurrentBranchValue(VET_CURRENT_ISSUE_ID, mixedConf.gitStored.currentIssueId);
+    gitConfigRepository.setCurrentBranchValue(VET_CURRENT_CHANGE_NUMBER, mixedConf.gitStored.currentChangeNumber);
     gitConfigRepository.setCurrentBranchValue(
         VET_SELECTED_SITE_HTTP_URL, mixedConf.gitStored.selectedSiteHttpUrl);
   }
@@ -168,11 +168,11 @@ public class MixedGerritConfigurationRepository implements GerritConfigurationRe
    */
   private class GitStoredConfig {
 
-    private String currentIssueId;
+    private String currentChangeNumber;
     private String selectedSiteHttpUrl;
 
-    private GitStoredConfig(String currentIssueId, String selectedSiteHttpUrl) {
-      this.currentIssueId = currentIssueId;
+    private GitStoredConfig(String currentChangeNumber, String selectedSiteHttpUrl) {
+      this.currentChangeNumber = currentChangeNumber;
       this.selectedSiteHttpUrl = selectedSiteHttpUrl;
     }
   }
@@ -202,13 +202,13 @@ public class MixedGerritConfigurationRepository implements GerritConfigurationRe
     }
 
     @Override
-    public Optional<String> getCurrentIssueId() {
-      return Optional.ofNullable(gitStored.currentIssueId);
+    public Optional<String> getCurrentChangeId() {
+      return Optional.ofNullable(gitStored.currentChangeNumber);
     }
 
     @Override
-    public void setCurrentIssueId(String issueId) {
-      gitStored.currentIssueId = StringUtils.defaultIfBlank(issueId, null);
+    public void setCurrentChangeId(String changeId) {
+      gitStored.currentChangeNumber = StringUtils.defaultIfBlank(changeId, null);
     }
 
     @Override

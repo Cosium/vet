@@ -9,11 +9,11 @@ import java.util.Optional;
  */
 public interface GerritConfiguration {
 
-  /** @return The Gerrit issue id */
-  Optional<String> getCurrentIssueId();
+  /** @return The Gerrit change number */
+  Optional<String> getCurrentChangeId();
 
-  /** Sets the Gerrit issue id */
-  void setCurrentIssueId(String issueId);
+  /** Sets the Gerrit change number */
+  void setCurrentChangeId(String changeId);
 
   /** @return The selected site configuration if any selected */
   Optional<GerritSiteConfiguration> getSelectedSite();

@@ -13,6 +13,7 @@ import static java.util.Objects.requireNonNull;
  */
 class DefaultGitClient implements GitClient {
 
+  private static final String GIT = "git";
   private final Path repositoryDirectory;
   private final CommandRunner commandRunner;
   private final GitConfigRepository gitConfigRepository;
@@ -41,17 +42,48 @@ class DefaultGitClient implements GitClient {
 
   @Override
   public String getMostRecentCommonCommit(String otherBranch) {
-    return commandRunner.run(repositoryDirectory, "git", "merge-base", "HEAD", otherBranch);
+    return commandRunner.run(repositoryDirectory, GIT, "merge-base", "HEAD", otherBranch);
   }
 
   @Override
   public String getTree() {
-    return commandRunner.run(repositoryDirectory, "git", "rev-parse", "HEAD:");
+    return commandRunner.run(repositoryDirectory, GIT, "rev-parse", "HEAD:");
   }
 
   @Override
   public String commitTree(String tree, String parent, String commitMessage) {
     return commandRunner.run(
-        repositoryDirectory, "git", "commit-tree", tree, "-p", parent, "-m", commitMessage);
+        repositoryDirectory, GIT, "commit-tree", tree, "-p", parent, "-m", commitMessage);
+  }
+
+  @Override
+  public String writeTree() {
+    return commandRunner.run(repositoryDirectory, GIT, "write-tree");
+  }
+
+  @Override
+  public String revParse(String revision) {
+    return commandRunner.run(repositoryDirectory, GIT, "rev-parse", revision);
+  }
+
+  @Override
+  public String var(String varName) {
+    return commandRunner.run(repositoryDirectory, GIT, "var", varName);
+  }
+
+  @Override
+  public String hashObject(String type, String object) {
+    return commandRunner.runWithStdIn(
+        repositoryDirectory, object, GIT, "hash-object", "-t", type, "--stdin");
+  }
+
+  @Override
+  public String getLastCommitMessage() {
+    return commandRunner.run(repositoryDirectory, GIT, "log", "-1", "--pretty=%B");
+  }
+
+  @Override
+  public void push(String remote, String refspec) {
+    commandRunner.run(repositoryDirectory, GIT, "push", remote, refspec);
   }
 }

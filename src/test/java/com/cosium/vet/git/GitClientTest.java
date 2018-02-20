@@ -28,7 +28,7 @@ public class GitClientTest {
     repo = testRepository.repo;
 
     GitProvider gitProvider = new GitProvider(repo, runner);
-    tested = gitProvider.buildClient();
+    tested = gitProvider.build();
   }
 
   @Test
@@ -53,7 +53,7 @@ public class GitClientTest {
     Path barPath = repo.resolve("bar.txt");
     Files.createFile(barPath);
     runner.run(repo, "git", "add", ".");
-    runner.run(repo, "git", "commit", "-am", "\"Add bar\"");
+    runner.run(repo, "git", "commit", "-am", "Add bar");
 
     assertThat(tested.getMostRecentCommonCommit("origin/master")).isEqualTo(expectedCommit);
 
@@ -66,12 +66,12 @@ public class GitClientTest {
     Path barPath = repo.resolve("bar.txt");
     Files.createFile(barPath);
     runner.run(repo, "git", "add", ".");
-    runner.run(repo, "git", "commit", "-am", "\"Add bar\"");
+    runner.run(repo, "git", "commit", "-am", "Add bar");
 
     Path bazPath = repo.resolve("baz.txt");
     Files.createFile(bazPath);
     runner.run(repo, "git", "add", ".");
-    runner.run(repo, "git", "commit", "-am", "\"Add baz\"");
+    runner.run(repo, "git", "commit", "-am", "Add baz");
 
     String commit =
         tested.commitTree(
@@ -84,5 +84,36 @@ public class GitClientTest {
     runner.run(repo, "git", "checkout", commit);
     assertThat(Files.exists(barPath)).isTrue();
     assertThat(Files.exists(bazPath)).isTrue();
+  }
+
+  @Test
+  public void testWriteTree() {
+    assertThat(tested.writeTree()).isNotBlank();
+  }
+
+  @Test
+  public void testRevParse() {
+    assertThat(tested.revParse("HEAD")).isNotBlank();
+  }
+
+  @Test
+  public void testVar() {
+    assertThat(tested.var("GIT_AUTHOR_IDENT")).isNotBlank();
+  }
+
+  @Test
+  public void testHashObject() {
+//    System.out.println(tested.hashObject("commit", "foo"));
+    assertThat(tested.hashObject("commit", "foo")).isNotBlank();
+  }
+
+  @Test
+  public void testGetLastCommitMessage() throws Exception {
+    Path barPath = repo.resolve("bar.txt");
+    Files.createFile(barPath);
+    runner.run(repo, "git", "add", ".");
+    runner.run(repo, "git", "commit", "-am", "Add bar");
+
+    assertThat(tested.getLastCommitMessage()).isEqualTo("Add bar");
   }
 }

@@ -1,20 +1,25 @@
 package com.cosium.vet;
 
+import com.cosium.vet.file.DefaultFileSystem;
+import com.cosium.vet.file.FileSystem;
 import com.cosium.vet.gerrit.DefaultGerritClientFactory;
 import com.cosium.vet.gerrit.GerritClientFactory;
 import com.cosium.vet.git.GitClientFactory;
 import com.cosium.vet.git.GitConfigRepositoryFactory;
 import com.cosium.vet.git.GitProvider;
-import com.cosium.vet.push.PushCommand;
-import com.cosium.vet.push.PushCommandArgParser;
+import com.cosium.vet.push.*;
 import com.cosium.vet.runtime.BasicCommandRunner;
 import com.cosium.vet.runtime.CommandRunner;
+import com.cosium.vet.runtime.InteractiveUserInput;
+import com.cosium.vet.runtime.UserInput;
 import com.google.common.collect.Lists;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Optional;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 17/02/18.
@@ -24,23 +29,36 @@ import java.util.Optional;
 public class Vet {
 
   private final GitClientFactory gitClientFactory;
-  private final GitConfigRepositoryFactory gitConfigRepositoryProvider;
+  private final GitConfigRepositoryFactory gitConfigRepositoryFactory;
   private final GerritClientFactory gerritClientFactory;
+  private final UserInput userInput;
 
   public Vet() {
-    this(Paths.get(System.getProperty("user.dir")), new BasicCommandRunner());
+    this(
+        Paths.get(System.getProperty("user.dir")),
+        new DefaultFileSystem(),
+        new BasicCommandRunner(),
+        new InteractiveUserInput());
   }
 
-  public Vet(Path workingDir, CommandRunner commandRunner) {
+  public Vet(
+      Path workingDir, FileSystem fileSystem, CommandRunner commandRunner, UserInput userInput) {
+    requireNonNull(workingDir);
+    requireNonNull(fileSystem);
+    requireNonNull(commandRunner);
+    requireNonNull(userInput);
+
     GitProvider gitProvider = new GitProvider(workingDir, commandRunner);
     this.gitClientFactory = gitProvider;
-    this.gitConfigRepositoryProvider = gitProvider;
-    this.gerritClientFactory = new DefaultGerritClientFactory(gitProvider);
+    this.gitConfigRepositoryFactory = gitProvider;
+    this.gerritClientFactory =
+        new DefaultGerritClientFactory(fileSystem, gitConfigRepositoryFactory, gitClientFactory);
+    this.userInput = userInput;
   }
 
   public void run(String args[]) {
     PushCommandArgParser pushCommandArgParser =
-        new PushCommandArgParser(gitClientFactory, gerritClientFactory);
+        new PushCommandArgParser(gitClientFactory, gerritClientFactory, userInput);
     Lists.newArrayList(pushCommandArgParser)
         .stream()
         .map(commandParser -> commandParser.parse(Arrays.copyOf(args, args.length)))
@@ -51,8 +69,15 @@ public class Vet {
         .execute();
   }
 
-  public void push(String targetBranch) {
-    new PushCommand(gitClientFactory, gerritClientFactory, targetBranch).execute();
+  public void push(RemoteName targetRemote, BranchShortName targetBranch, ChangeDescription changeDescription) {
+    new PushCommand(
+            gitClientFactory.build(),
+            gerritClientFactory.build(),
+            userInput,
+            targetRemote,
+            targetBranch,
+            changeDescription)
+        .execute();
   }
 
   public void help() {

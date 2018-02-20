@@ -7,5 +7,5 @@ package com.cosium.vet.git;
  */
 public interface GitClientFactory {
   /** @return A new Git client */
-  GitClient buildClient();
+  GitClient build();
 }

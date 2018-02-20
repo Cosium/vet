@@ -9,5 +9,5 @@ package com.cosium.vet.gerrit;
 public interface GerritClientFactory {
 
   /** @return A new ready to use gerrit client */
-  GerritClient buildClient();
+  GerritClient build();
 }

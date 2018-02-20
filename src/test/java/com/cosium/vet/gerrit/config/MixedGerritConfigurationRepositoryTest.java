@@ -25,7 +25,7 @@ public class MixedGerritConfigurationRepositoryTest {
   private static final String URL = "https://foo.com";
   private static final String LOGIN = "foo";
   private static final String PASSWORD = "bar";
-  private static final String ISSUE_ID = "1234";
+  private static final String CHANGE_NUMBER = "1234";
 
   private FileSystem fileSystem;
   private GitConfigRepository gitConfigProvider;
@@ -48,7 +48,7 @@ public class MixedGerritConfigurationRepositoryTest {
   }
 
   @Test
-  public void GIVEN_conf_containing_one_site_and_issue_conf_WHEN_read_THEN_it_should_match() {
+  public void GIVEN_conf_containing_one_site_and_change_conf_WHEN_read_THEN_it_should_match() {
     when(fileSystem.newAppFileInputStream(any()))
         .then(
             invocation ->
@@ -66,12 +66,12 @@ public class MixedGerritConfigurationRepositoryTest {
                         .end()
                         .end()
                         .finish()));
-    when(gitConfigProvider.getCurrentBranchValue("vet-current-issue-id")).thenReturn(ISSUE_ID);
+    when(gitConfigProvider.getCurrentBranchValue("vet-current-change-number")).thenReturn(CHANGE_NUMBER);
     when(gitConfigProvider.getCurrentBranchValue("vet-selected-site-http-url")).thenReturn(URL);
 
     GerritConfiguration gerritConfiguration = tested.read();
     assertThat(gerritConfiguration).isNotNull();
-    assertThat(gerritConfiguration.getCurrentIssueId()).contains(ISSUE_ID);
+    assertThat(gerritConfiguration.getCurrentChangeId()).contains(CHANGE_NUMBER);
 
     Optional<GerritSiteConfiguration> siteConf = gerritConfiguration.getSelectedSite();
     if (!siteConf.isPresent()) {

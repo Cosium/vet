@@ -28,7 +28,6 @@ public class TestCommandRunner implements CommandRunner {
       String[] gitBaseCommand = {
         DOCKER_CMD,
         "run",
-        "-t",
         "--rm",
         "-v",
         String.format("%s:/git", workingDir),
@@ -37,5 +36,10 @@ public class TestCommandRunner implements CommandRunner {
       command = ArrayUtils.addAll(gitBaseCommand, ArrayUtils.remove(command, 0));
     }
     return delegate.run(workingDir, command);
+  }
+
+  @Override
+  public String runWithStdIn(Path workingDir, String stdin, String... command) {
+    return delegate.runWithStdIn(workingDir, stdin, command);
   }
 }

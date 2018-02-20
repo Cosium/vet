@@ -2,6 +2,8 @@ package com.cosium.vet.runtime;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -13,6 +15,8 @@ import java.nio.file.Path;
  */
 public class BasicCommandRunner implements CommandRunner {
 
+  private static final Logger LOG = LoggerFactory.getLogger(BasicCommandRunner.class);
+
   @Override
   public String run(Path workingDir, String... command) {
     try {
@@ -22,7 +26,9 @@ public class BasicCommandRunner implements CommandRunner {
               .redirectInput(ProcessBuilder.Redirect.INHERIT)
               .redirectError(ProcessBuilder.Redirect.INHERIT);
 
+      LOG.debug("Executing '{}'", StringUtils.join(command, StringUtils.SPACE));
       Process process = processBuilder.start();
+
       int exitCode = process.waitFor();
       if (exitCode != 0) {
         throw new CommandRunException(
@@ -34,5 +40,11 @@ public class BasicCommandRunner implements CommandRunner {
     } catch (IOException | InterruptedException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  @Override
+  public String runWithStdIn(Path workingDir, String stdin, String... command) {
+    // TODO
+    return null;
   }
 }

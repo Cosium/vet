@@ -24,7 +24,7 @@ public class GitProvider implements GitClientFactory, GitConfigRepositoryFactory
   }
 
   @Override
-  public GitClient buildClient() {
+  public GitClient build() {
     return new DefaultGitClient(repositoryDirectory, commandRunner, buildRepository());
   }
 
