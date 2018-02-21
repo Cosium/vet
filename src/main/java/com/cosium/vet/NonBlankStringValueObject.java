@@ -1,32 +1,27 @@
-package com.cosium.vet.push;
+package com.cosium.vet;
 
+import com.cosium.vet.git.RemoteName;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
 
 /**
- * Created on 20/02/18.
+ * Created on 21/02/18.
  *
  * @author Reda.Housni-Alaoui
  */
-public class BranchShortName {
+public abstract class NonBlankStringValueObject {
 
   private final String value;
 
-  static final BranchShortName MASTER = BranchShortName.of("master");
-
-  private BranchShortName(String value) {
+  protected NonBlankStringValueObject(String value) {
     if (StringUtils.isBlank(value)) {
-      throw new IllegalArgumentException("Branch name can't be null");
+      throw new IllegalArgumentException(getClass().getSimpleName() + " can't be blank");
     }
     this.value = value;
   }
 
-  public static BranchShortName of(String value) {
-    return new BranchShortName(value);
-  }
-
-  String value() {
+  public String value() {
     return value;
   }
 
@@ -34,8 +29,8 @@ public class BranchShortName {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    BranchShortName that = (BranchShortName) o;
-    return Objects.equals(value, that.value);
+    RemoteName that = (RemoteName) o;
+    return Objects.equals(value, that.value());
   }
 
   @Override
