@@ -31,15 +31,6 @@ public class GitClientTest {
     tested = gitProvider.build();
   }
 
-  @Test
-  public void testGetBranchRemote() {
-    assertThat(tested.getBranchRemote()).isEqualTo("origin");
-  }
-
-  @Test
-  public void testGetBranchMerge() {
-    assertThat(tested.getBranchMerge()).isEqualTo("refs/heads/master");
-  }
 
   @Test
   public void testGetTree() {
@@ -84,27 +75,6 @@ public class GitClientTest {
     runner.run(repo, "git", "checkout", commit);
     assertThat(Files.exists(barPath)).isTrue();
     assertThat(Files.exists(bazPath)).isTrue();
-  }
-
-  @Test
-  public void testWriteTree() {
-    assertThat(tested.writeTree()).isNotBlank();
-  }
-
-  @Test
-  public void testRevParse() {
-    assertThat(tested.revParse("HEAD")).isNotBlank();
-  }
-
-  @Test
-  public void testVar() {
-    assertThat(tested.var("GIT_AUTHOR_IDENT")).isNotBlank();
-  }
-
-  @Test
-  public void testHashObject() {
-//    System.out.println(tested.hashObject("commit", "foo"));
-    assertThat(tested.hashObject("commit", "foo")).isNotBlank();
   }
 
   @Test

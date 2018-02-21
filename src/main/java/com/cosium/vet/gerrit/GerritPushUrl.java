@@ -21,8 +21,12 @@ public class GerritPushUrl extends Url {
   }
 
   public GerritHttpRootUrl parseHttpRootUrl() {
-    // TODO
-    return null;
+    Pattern pattern = Pattern.compile("(.*)/.+/?$");
+    Matcher matcher = pattern.matcher(toString());
+    if (!matcher.find()) {
+      throw new RuntimeException("WTF?");
+    }
+    return GerritHttpRootUrl.of(matcher.group(1));
   }
 
   public GerritProjectName parseProjectName() {

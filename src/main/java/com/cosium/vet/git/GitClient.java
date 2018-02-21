@@ -15,17 +15,11 @@ public interface GitClient {
    */
   Optional<RemoteName> getRemote(BranchShortName branch);
 
-  /** @return The remote tracked by current branch */
-  Optional<RemoteName> getBranchRemote();
-
   /**
    * @param remoteName The remote name
    * @return The url of the remote
    */
   Optional<RemoteUrl> getRemoteUrl(RemoteName remoteName);
-
-  /** @return The remote ref tracked by the current branch */
-  String getBranchMerge();
 
   /**
    * @param otherBranch The other branch
@@ -43,14 +37,6 @@ public interface GitClient {
    * @return The id of the created commit
    */
   String commitTree(String tree, String parent, String commitMessage);
-
-  String writeTree();
-
-  String revParse(String revision);
-
-  String var(String varName);
-
-  String hashObject(String type, String content);
 
   String getLastCommitMessage();
 

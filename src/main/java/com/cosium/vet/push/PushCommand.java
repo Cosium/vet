@@ -10,6 +10,8 @@ import com.cosium.vet.git.GitUtils;
 import com.cosium.vet.git.RemoteName;
 import com.cosium.vet.runtime.UserInput;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;

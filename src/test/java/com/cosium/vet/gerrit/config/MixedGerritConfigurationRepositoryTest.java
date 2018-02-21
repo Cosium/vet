@@ -68,21 +68,20 @@ public class MixedGerritConfigurationRepositoryTest {
                         .end()
                         .end()
                         .finish()));
-    when(gitConfigProvider.getCurrentBranchValue("vet-current-change-number"))
+    when(gitConfigProvider.getCurrentBranchValue("vet-change-id"))
         .thenReturn(CHANGE_ID.value());
-    when(gitConfigProvider.getCurrentBranchValue("vet-selected-site-http-url")).thenReturn(URL);
 
     GerritConfiguration gerritConfiguration = tested.read();
     assertThat(gerritConfiguration).isNotNull();
     assertThat(gerritConfiguration.getChangeId()).contains(CHANGE_ID);
 
-    Optional<GerritSiteConfiguration> siteConf =
-        gerritConfiguration.getSite(GerritHttpRootUrl.of(URL));
+    Optional<GerritSiteAuthConfiguration> siteConf =
+        gerritConfiguration.getSiteAuth(GerritHttpRootUrl.of(URL));
     if (!siteConf.isPresent()) {
       fail("Expected non null site conf");
     }
 
-    GerritSiteConfiguration finalSiteConf = siteConf.get();
+    GerritSiteAuthConfiguration finalSiteConf = siteConf.get();
     assertThat(finalSiteConf.getHttpUrl()).isEqualTo(URL);
     assertThat(finalSiteConf.getHttpLogin()).isEqualTo(LOGIN);
     assertThat(finalSiteConf.getHttpPassword()).isEqualTo(PASSWORD);

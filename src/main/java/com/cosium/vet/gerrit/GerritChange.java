@@ -27,7 +27,10 @@ public class GerritChange {
   }
 
   private GerritChange(
-          GerritPushUrl pushUrl, ChangeChangeId changeId, BranchShortName branch, ChangeSubject subject) {
+      GerritPushUrl pushUrl,
+      ChangeChangeId changeId,
+      BranchShortName branch,
+      ChangeSubject subject) {
     requireNonNull(pushUrl);
     requireNonNull(changeId);
     requireNonNull(branch);
@@ -53,5 +56,16 @@ public class GerritChange {
 
   public GerritPushUrl getPushUrl() {
     return pushUrl;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("GerritChange{");
+    sb.append("pushUrl=").append(pushUrl);
+    sb.append(", changeId=").append(changeId);
+    sb.append(", branch=").append(branch);
+    sb.append(", subject=").append(subject);
+    sb.append('}');
+    return sb.toString();
   }
 }

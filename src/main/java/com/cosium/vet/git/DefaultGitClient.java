@@ -41,23 +41,11 @@ class DefaultGitClient implements GitClient {
         .map(RemoteName::of);
   }
 
-  @Override
-  public Optional<RemoteName> getBranchRemote() {
-    return ofNullable(gitConfigRepository.getCurrentBranchValue("remote"))
-        .filter(StringUtils::isNotBlank)
-        .map(RemoteName::of);
-  }
-
   public Optional<RemoteUrl> getRemoteUrl(RemoteName remoteName) {
     return Optional.ofNullable(
             gitConfigRepository.getValue(String.format("remote.%s.url", remoteName)))
         .filter(StringUtils::isNotBlank)
         .map(RemoteUrl::of);
-  }
-
-  @Override
-  public String getBranchMerge() {
-    return gitConfigRepository.getCurrentBranchValue("merge");
   }
 
   @Override
@@ -74,27 +62,6 @@ class DefaultGitClient implements GitClient {
   public String commitTree(String tree, String parent, String commitMessage) {
     return commandRunner.run(
         repositoryDirectory, GIT, "commit-tree", tree, "-p", parent, "-m", commitMessage);
-  }
-
-  @Override
-  public String writeTree() {
-    return commandRunner.run(repositoryDirectory, GIT, "write-tree");
-  }
-
-  @Override
-  public String revParse(String revision) {
-    return commandRunner.run(repositoryDirectory, GIT, "rev-parse", revision);
-  }
-
-  @Override
-  public String var(String varName) {
-    return commandRunner.run(repositoryDirectory, GIT, "var", varName);
-  }
-
-  @Override
-  public String hashObject(String type, String object) {
-    return commandRunner.runWithStdIn(
-        repositoryDirectory, object, GIT, "hash-object", "-t", type, "--stdin");
   }
 
   @Override

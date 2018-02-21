@@ -36,7 +36,7 @@ class MixedGerritConfigurationRepository implements GerritConfigurationRepositor
 
   private final FileSystem fileSystem;
   private final GitConfigRepository gitConfigRepository;
-  private final Path authConfigFile;
+  private final Path configFile;
 
   MixedGerritConfigurationRepository(
       FileSystem fileSystem, GitConfigRepository gitConfigRepository) {
@@ -44,25 +44,24 @@ class MixedGerritConfigurationRepository implements GerritConfigurationRepositor
     requireNonNull(gitConfigRepository);
     this.fileSystem = fileSystem;
     this.gitConfigRepository = gitConfigRepository;
-    this.authConfigFile = Paths.get("gerrit-config.json");
+    this.configFile = Paths.get("gerrit-config.json");
   }
 
   @Override
   public GerritConfiguration read() {
     FileStoredConfig fileStoredConf;
-    try (InputStream inputStream = fileSystem.newAppFileInputStream(authConfigFile)) {
+    try (InputStream inputStream = fileSystem.newAppFileInputStream(configFile)) {
       fileStoredConf = JSON.std.beanFrom(FileStoredConfig.class, inputStream);
     } catch (JSONObjectException e) {
       LOG.debug(
           "{} does not exist or has a wrongly formatted content. Returning empty configuration.",
-          authConfigFile);
+          configFile);
       fileStoredConf = new FileStoredConfig();
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
 
     return new MixedConfig(
-        this,
         fileStoredConf,
         new GitStoredConfig(gitConfigRepository.getCurrentBranchValue(VET_CHANGE_ID)));
   }
@@ -82,12 +81,7 @@ class MixedGerritConfigurationRepository implements GerritConfigurationRepositor
     }
 
     MixedConfig mixedConf = (MixedConfig) config;
-    if (!mixedConf.isOwner(this)) {
-      throw new RuntimeException(
-          String.format("Configuration %s was not built by repository %s", config, this));
-    }
-
-    try (OutputStream outputStream = fileSystem.newAppFileOutputStream(authConfigFile)) {
+    try (OutputStream outputStream = fileSystem.newAppFileOutputStream(configFile)) {
       JSON.std.with(JSON.Feature.PRETTY_PRINT_OUTPUT).write(mixedConf.fileStored, outputStream);
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -101,7 +95,7 @@ class MixedGerritConfigurationRepository implements GerritConfigurationRepositor
    *
    * @author Reda.Housni-Alaoui
    */
-  private static class SiteConfig implements GerritSiteConfiguration {
+  private static class SiteAuthConfig implements GerritSiteAuthConfiguration {
 
     private String httpUrl;
     private String httpLogin;
@@ -146,17 +140,17 @@ class MixedGerritConfigurationRepository implements GerritConfigurationRepositor
   private static class FileStoredConfig {
 
     /** Site by http url */
-    private Map<String, SiteConfig> sites;
+    private Map<String, SiteAuthConfig> sites;
 
     FileStoredConfig() {
       this.sites = Collections.emptyMap();
     }
 
-    public Map<String, SiteConfig> getSites() {
+    Map<String, SiteAuthConfig> getSites() {
       return sites;
     }
 
-    public void setSites(Map<String, SiteConfig> sites) {
+    void setSites(Map<String, SiteAuthConfig> sites) {
       if (sites == null) {
         this.sites = Collections.emptyMap();
       } else {
@@ -186,21 +180,14 @@ class MixedGerritConfigurationRepository implements GerritConfigurationRepositor
    */
   private class MixedConfig implements GerritConfiguration {
 
-    private final Object owner;
     private final FileStoredConfig fileStored;
     private final GitStoredConfig gitStored;
 
-    MixedConfig(Object owner, FileStoredConfig fileStored, GitStoredConfig gitStored) {
-      requireNonNull(owner);
+    MixedConfig(FileStoredConfig fileStored, GitStoredConfig gitStored) {
       requireNonNull(fileStored);
       requireNonNull(gitStored);
-      this.owner = owner;
       this.fileStored = fileStored;
       this.gitStored = gitStored;
-    }
-
-    boolean isOwner(Object potentialOwner) {
-      return owner == potentialOwner;
     }
 
     @Override
@@ -218,10 +205,10 @@ class MixedGerritConfigurationRepository implements GerritConfigurationRepositor
     }
 
     @Override
-    public GerritSiteConfiguration setAndGetSite(
+    public GerritSiteAuthConfiguration setAndGetSiteAuth(
         GerritHttpRootUrl httpUrl, String httpLogin, String httpPassword) {
-      Map<String, SiteConfig> modifiableMap = new HashMap<>(fileStored.getSites());
-      SiteConfig newConf = new SiteConfig();
+      Map<String, SiteAuthConfig> modifiableMap = new HashMap<>(fileStored.getSites());
+      SiteAuthConfig newConf = new SiteAuthConfig();
       newConf.setHttpUrl(httpUrl.toString());
       newConf.setHttpLogin(httpLogin);
       newConf.setHttpPassword(httpPassword);
@@ -231,8 +218,15 @@ class MixedGerritConfigurationRepository implements GerritConfigurationRepositor
     }
 
     @Override
-    public Optional<GerritSiteConfiguration> getSite(GerritHttpRootUrl httpUrl) {
+    public Optional<GerritSiteAuthConfiguration> getSiteAuth(GerritHttpRootUrl httpUrl) {
       return Optional.ofNullable(fileStored.getSites().get(httpUrl.toString()));
+    }
+
+    @Override
+    public void dropSiteAuth(GerritHttpRootUrl httpUrl) {
+      Map<String, SiteAuthConfig> modifiableMap = new HashMap<>(fileStored.getSites());
+      modifiableMap.remove(httpUrl.toString());
+      fileStored.setSites(modifiableMap);
     }
   }
 }

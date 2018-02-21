@@ -6,6 +6,8 @@ import com.google.gerrit.extensions.api.GerritApi;
 import com.google.gerrit.extensions.common.ChangeInfo;
 import com.google.gerrit.extensions.common.ChangeInput;
 import com.google.gerrit.extensions.restapi.RestApiException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
@@ -17,6 +19,8 @@ import static java.util.Objects.requireNonNull;
  * @author Reda.Housni-Alaoui
  */
 class DefaultGerritClient implements GerritClient {
+
+  private static final Logger LOG = LoggerFactory.getLogger(DefaultGerritClient.class);
 
   private final GerritConfigurationRepository configurationRepository;
   private final GerritApi gerritApi;
@@ -46,7 +50,9 @@ class DefaultGerritClient implements GerritClient {
   private GerritChange fetchChange(ChangeId changeId) {
     try {
       ChangeInfo change = gerritApi.changes().id(changeId.value()).get();
-      return new GerritChange(pushUrl, change);
+      GerritChange gerritChange = new GerritChange(pushUrl, change);
+      LOG.debug("Fetched change {}", gerritChange);
+      return gerritChange;
     } catch (RestApiException e) {
       throw new RuntimeException(e);
     }
@@ -58,7 +64,14 @@ class DefaultGerritClient implements GerritClient {
         new ChangeInput(project.value(), targetBranch.value(), subject.value());
     try {
       ChangeInfo change = gerritApi.changes().create(changeInput).get();
-      return new GerritChange(pushUrl, change);
+      configurationRepository.readAndWrite(
+          conf -> {
+            conf.setChangeId(ChangeId.of(change.changeId));
+            return null;
+          });
+      GerritChange gerritChange = new GerritChange(pushUrl, change);
+      LOG.debug("Created change {}", gerritChange);
+      return gerritChange;
     } catch (RestApiException e) {
       throw new RuntimeException(e);
     }

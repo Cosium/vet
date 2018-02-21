@@ -4,12 +4,12 @@ import com.cosium.vet.file.FileSystem;
 import com.cosium.vet.gerrit.config.DefaultGerritConfigurationRepositoryFactory;
 import com.cosium.vet.gerrit.config.GerritConfigurationRepository;
 import com.cosium.vet.gerrit.config.GerritConfigurationRepositoryFactory;
-import com.cosium.vet.gerrit.config.GerritSiteConfiguration;
 import com.cosium.vet.git.*;
 import com.cosium.vet.runtime.UserInput;
 import com.google.gerrit.extensions.api.GerritApi;
-import com.urswolfer.gerrit.client.rest.GerritAuthData;
 import com.urswolfer.gerrit.client.rest.GerritRestApiFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 
@@ -21,6 +21,8 @@ import static java.util.Objects.requireNonNull;
  * @author Reda.Housni-Alaoui
  */
 public class DefaultGerritClientFactory implements GerritClientFactory {
+
+  private static final Logger LOG = LoggerFactory.getLogger(DefaultGerritClientFactory.class);
 
   private final GerritConfigurationRepositoryFactory configurationRepositoryFactory;
   private final GitClientFactory gitClientFactory;
@@ -56,10 +58,13 @@ public class DefaultGerritClientFactory implements GerritClientFactory {
 
   @Override
   public GerritClient build() {
-    GitClient git = gitClientFactory.build();
+    GitClient gitClient = gitClientFactory.build();
+    GerritConfigurationRepository configurationRepository = configurationRepositoryFactory.build();
+
     RemoteName remote = RemoteName.ORIGIN;
     URL remoteUrl =
-        git.getRemoteUrl(remote)
+        gitClient
+            .getRemoteUrl(remote)
             .map(RemoteUrl::toURL)
             .orElseThrow(
                 () ->
@@ -67,36 +72,15 @@ public class DefaultGerritClientFactory implements GerritClientFactory {
                         String.format("Could not find url of remote '%s'", remote)));
 
     GerritPushUrl pushUrl = GerritPushUrl.of(remoteUrl.toString());
+    LOG.debug("Gerrit push url is {}", pushUrl);
     GerritHttpRootUrl rootUrl = pushUrl.parseHttpRootUrl();
+    LOG.debug("Gerrit root url is {}", rootUrl);
     GerritProjectName project = pushUrl.parseProjectName();
+    LOG.debug("Gerrit project is '{}'", project);
 
-    GerritSiteConfiguration siteConf = getOrCreateSiteConfiguration(rootUrl);
-
-    GerritAuthData.Basic authData =
-        new GerritAuthData.Basic(
-            siteConf.getHttpUrl(), siteConf.getHttpLogin(), siteConf.getHttpPassword());
-    GerritApi gerritApi = gerritRestApiFactory.create(authData);
-
-    GerritConfigurationRepository gerritConfigurationRepository =
-        configurationRepositoryFactory.build();
-    return new DefaultGerritClient(gerritConfigurationRepository, gerritApi, pushUrl, project);
-  }
-
-  /**
-   * @param rootUrl The site root url
-   * @return The created or found site configuration
-   */
-  private GerritSiteConfiguration getOrCreateSiteConfiguration(GerritHttpRootUrl rootUrl) {
-    return configurationRepositoryFactory
-        .build()
-        .readAndWrite(
-            conf ->
-                conf.getSite(rootUrl)
-                    .orElseGet(
-                        () -> {
-                          String user = userInput.askNonBlank("Gerrit http login");
-                          String password = userInput.askNonBlank("Gerrit http password");
-                          return conf.setAndGetSite(rootUrl, user, password);
-                        }));
+    GerritApiBuilder gerritApiBuilder =
+        new GerritApiBuilder(configurationRepository, gerritRestApiFactory, userInput, rootUrl);
+    GerritApi gerritApi = gerritApiBuilder.build();
+    return new DefaultGerritClient(configurationRepository, gerritApi, pushUrl, project);
   }
 }

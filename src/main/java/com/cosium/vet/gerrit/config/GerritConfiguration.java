@@ -19,17 +19,21 @@ public interface GerritConfiguration {
   void setChangeId(ChangeId changeId);
 
   /**
-   * Create or update a site configuration
+   * Create or update a site auth configuration
    *
    * @param httpUrl The site url
    * @param httpLogin The site login
    * @param httpPassword The site password
    */
-  GerritSiteConfiguration setAndGetSite(GerritHttpRootUrl httpUrl, String httpLogin, String httpPassword);
+  GerritSiteAuthConfiguration setAndGetSiteAuth(
+      GerritHttpRootUrl httpUrl, String httpLogin, String httpPassword);
 
   /**
    * @param httpUrl The http url of the site
-   * @return The site configuration if it exists
+   * @return The site auth configuration if it exists
    */
-  Optional<GerritSiteConfiguration> getSite(GerritHttpRootUrl httpUrl);
+  Optional<GerritSiteAuthConfiguration> getSiteAuth(GerritHttpRootUrl httpUrl);
+
+  /** @param httpUrl The http url of the site auth to drop */
+  void dropSiteAuth(GerritHttpRootUrl httpUrl);
 }

@@ -5,7 +5,7 @@ package com.cosium.vet.gerrit.config;
  *
  * @author Reda.Housni-Alaoui
  */
-public interface GerritSiteConfiguration {
+public interface GerritSiteAuthConfiguration {
   String getHttpUrl();
 
   void setHttpUrl(String httpUrl);

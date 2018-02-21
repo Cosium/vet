@@ -3,6 +3,8 @@ package com.cosium.vet.git;
 import com.cosium.vet.TestCommandRunner;
 import com.cosium.vet.runtime.CommandRunner;
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,6 +17,8 @@ import static java.util.Objects.requireNonNull;
  * @author Reda.Housni-Alaoui
  */
 class GitTestRepository {
+
+  private static final Logger LOG = LoggerFactory.getLogger(GitTestRepository.class);
 
   final Path repo;
   final CommandRunner runner;
@@ -41,6 +45,7 @@ class GitTestRepository {
       Files.createDirectories(remoteRepo);
 
       CommandRunner runner = new TestCommandRunner();
+
       runner.run(remoteRepo, "git", "init");
       runner.run(remoteRepo, "git", "config", "user.email", "\"you@example.com\"");
       runner.run(remoteRepo, "git", "config", "user.name", "\"Your Name\"");
@@ -53,6 +58,8 @@ class GitTestRepository {
       FileUtils.copyDirectory(workDir.resolve("downstream-tmp").toFile(), repo.toFile());
       runner.run(repo, "git", "config", "user.email", "\"you@example.com\"");
       runner.run(repo, "git", "config", "user.name", "\"Your Name\"");
+
+
 
       return new GitTestRepository(repo, runner);
     }

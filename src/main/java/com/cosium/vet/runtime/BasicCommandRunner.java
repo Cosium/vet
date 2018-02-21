@@ -41,10 +41,4 @@ public class BasicCommandRunner implements CommandRunner {
       throw new RuntimeException(e);
     }
   }
-
-  @Override
-  public String runWithStdIn(Path workingDir, String stdin, String... command) {
-    // TODO
-    return null;
-  }
 }

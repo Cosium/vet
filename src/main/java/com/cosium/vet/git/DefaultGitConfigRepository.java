@@ -15,6 +15,8 @@ import static java.util.Objects.requireNonNull;
  */
 class DefaultGitConfigRepository implements GitConfigRepository {
 
+  private static final String GIT = "git";
+
   private final Path repositoryDirectory;
   private final CommandRunner commandRunner;
 
@@ -33,15 +35,15 @@ class DefaultGitConfigRepository implements GitConfigRepository {
   @Override
   public void setCurrentBranchValue(String key, String value) {
     if (StringUtils.isBlank(value)) {
-      runIgnoringExitCode(5, "git", "config", "--unset", computeBranchKey(key));
+      runIgnoringExitCode(5, GIT, "config", "--unset", computeBranchKey(key));
     } else {
-      commandRunner.run(repositoryDirectory, "git", "config", computeBranchKey(key), value);
+      commandRunner.run(repositoryDirectory, GIT, "config", computeBranchKey(key), value);
     }
   }
 
   @Override
   public String getValue(String key) {
-    return runIgnoringExitCode(1, "git", "config", key);
+    return runIgnoringExitCode(1, GIT, "config", key);
   }
 
   private String runIgnoringExitCode(int exitCodeToIgnore, String... command) {
@@ -61,6 +63,6 @@ class DefaultGitConfigRepository implements GitConfigRepository {
   }
 
   private String getBranchShortName() {
-    return commandRunner.run(repositoryDirectory, "git", "rev-parse", "--abbrev-ref", "HEAD");
+    return commandRunner.run(repositoryDirectory, GIT, "rev-parse", "--abbrev-ref", "HEAD");
   }
 }

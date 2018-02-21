@@ -25,7 +25,7 @@ public class GerritPushUrlTest {
 
   @Test
   public void testParseRootUrl() {
-    assertThat(GerritPushUrl.of(PUSH_URL).parseHttpRootUrl()).isEqualTo(ROOT_URL);
-    assertThat(GerritPushUrl.of(PUSH_URL_WITH_SLASH).parseHttpRootUrl()).isEqualTo(ROOT_URL);
+    assertThat(GerritPushUrl.of(PUSH_URL).parseHttpRootUrl().toString()).isEqualTo(ROOT_URL);
+    assertThat(GerritPushUrl.of(PUSH_URL_WITH_SLASH).parseHttpRootUrl().toString()).isEqualTo(ROOT_URL);
   }
 }

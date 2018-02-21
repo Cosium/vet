@@ -16,6 +16,4 @@ public interface CommandRunner {
    */
   String run(Path workingDir, String... command);
 
-  String runWithStdIn(Path workingDir, String stdin, String... command);
-
 }

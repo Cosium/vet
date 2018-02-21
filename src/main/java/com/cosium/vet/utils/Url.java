@@ -13,10 +13,6 @@ public abstract class Url {
 
   private final URL url;
 
-  protected Url(String value) {
-    this(value, false);
-  }
-
   protected Url(String value, boolean enforceHttp) {
     try {
       this.url = new URL(value);
@@ -41,6 +37,7 @@ public abstract class Url {
 
   @Override
   public int hashCode() {
+
     return Objects.hash(url);
   }
 
@@ -48,5 +45,4 @@ public abstract class Url {
   public String toString() {
     return url.toString();
   }
-
 }

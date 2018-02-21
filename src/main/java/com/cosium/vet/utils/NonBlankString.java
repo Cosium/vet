@@ -1,6 +1,5 @@
 package com.cosium.vet.utils;
 
-import com.cosium.vet.git.RemoteName;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
@@ -29,8 +28,8 @@ public abstract class NonBlankString {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    RemoteName that = (RemoteName) o;
-    return Objects.equals(value, that.value());
+    NonBlankString that = (NonBlankString) o;
+    return Objects.equals(value, that.value);
   }
 
   @Override
