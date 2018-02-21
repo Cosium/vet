@@ -1,10 +1,13 @@
 package com.cosium.vet.git;
 
 import com.cosium.vet.runtime.CommandRunner;
+import org.apache.commons.lang3.StringUtils;
 
 import java.nio.file.Path;
+import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
 
 /**
  * Created on 16/02/18.
@@ -14,6 +17,7 @@ import static java.util.Objects.requireNonNull;
 class DefaultGitClient implements GitClient {
 
   private static final String GIT = "git";
+
   private final Path repositoryDirectory;
   private final CommandRunner commandRunner;
   private final GitConfigRepository gitConfigRepository;
@@ -31,8 +35,24 @@ class DefaultGitClient implements GitClient {
   }
 
   @Override
-  public String getBranchRemote() {
-    return gitConfigRepository.getCurrentBranchValue("remote");
+  public Optional<RemoteName> getRemote(BranchShortName branch) {
+    return ofNullable(gitConfigRepository.getValue(String.format("branch.%s.remote", branch)))
+        .filter(StringUtils::isNotBlank)
+        .map(RemoteName::of);
+  }
+
+  @Override
+  public Optional<RemoteName> getBranchRemote() {
+    return ofNullable(gitConfigRepository.getCurrentBranchValue("remote"))
+        .filter(StringUtils::isNotBlank)
+        .map(RemoteName::of);
+  }
+
+  public Optional<RemoteUrl> getRemoteUrl(RemoteName remoteName) {
+    return Optional.ofNullable(
+            gitConfigRepository.getValue(String.format("remote.%s.url", remoteName)))
+        .filter(StringUtils::isNotBlank)
+        .map(RemoteUrl::of);
   }
 
   @Override

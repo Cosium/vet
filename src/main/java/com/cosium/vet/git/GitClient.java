@@ -1,5 +1,7 @@
 package com.cosium.vet.git;
 
+import java.util.Optional;
+
 /**
  * Created on 16/02/18.
  *
@@ -7,8 +9,20 @@ package com.cosium.vet.git;
  */
 public interface GitClient {
 
+  /**
+   * @param branch The branch to look for
+   * @return The remote tracked by the branch
+   */
+  Optional<RemoteName> getRemote(BranchShortName branch);
+
   /** @return The remote tracked by current branch */
-  String getBranchRemote();
+  Optional<RemoteName> getBranchRemote();
+
+  /**
+   * @param remoteName The remote name
+   * @return The url of the remote
+   */
+  Optional<RemoteUrl> getRemoteUrl(RemoteName remoteName);
 
   /** @return The remote ref tracked by the current branch */
   String getBranchMerge();

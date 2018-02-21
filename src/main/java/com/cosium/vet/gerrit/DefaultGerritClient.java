@@ -1,13 +1,15 @@
 package com.cosium.vet.gerrit;
 
-import com.cosium.vet.gerrit.config.GerritConfiguration;
 import com.cosium.vet.gerrit.config.GerritConfigurationRepository;
+import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitClient;
+import com.cosium.vet.git.RemoteName;
+import com.cosium.vet.git.RemoteUrl;
 import com.google.gerrit.extensions.api.GerritApi;
-import org.apache.commons.lang3.StringUtils;
+import com.google.gerrit.extensions.common.ChangeInfo;
+import com.google.gerrit.extensions.common.ChangeInput;
+import com.google.gerrit.extensions.restapi.RestApiException;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
@@ -36,23 +38,31 @@ class DefaultGerritClient implements GerritClient {
   }
 
   @Override
-  public Optional<ChangeId> getChangeId() {
-    return configurationRepository.read().getCurrentChangeId().map(ChangeId::of);
+  public Optional<GerritChange> getChange() {
+    return configurationRepository
+        .read()
+        .getCurrentChangeId()
+        .map(ChangeId::of)
+        .map(this::fetchChange);
   }
 
-  /** Works the same way as Gerrit msg commit hook but can be called on demand on all platforms. */
+  private GerritChange fetchChange(ChangeId changeId) {
+    try {
+      ChangeInfo change = gerritApi.changes().id(changeId.value()).get();
+      return new GerritChange(change, changeId, branch);
+    } catch (RestApiException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   @Override
-  public ChangeId createAndSetChangeId(String changeDescription) {
-    List<String> lines = new ArrayList<>();
-    lines.add("tree " + gitClient.writeTree());
-    lines.add("parent " + gitClient.revParse("HEAD~ 0"));
-    lines.add("author " + gitClient.var("GIT_AUTHOR_IDENT"));
-    lines.add("committer " + gitClient.var("GIT_COMMITTER_IDENT"));
-    lines.add(StringUtils.EMPTY);
-    lines.add(changeDescription);
-    String changeId = "I" + gitClient.hashObject("commit", StringUtils.join(lines, "\n"));
-    GerritConfiguration gerritConfiguration = configurationRepository.read();
-    gerritConfiguration.setCurrentChangeId(changeId);
-    return ChangeId.of(changeId);
+  public GerritChange createAndSetChange(BranchShortName targetBranch, ChangeSubject subject) {
+    ChangeInput changeInput = new ChangeInput("TODO", targetBranch.value(), subject.value());
+    try {
+      ChangeInfo change = gerritApi.changes().create(changeInput).get();
+      return new GerritChange(remote, change);
+    } catch (RestApiException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

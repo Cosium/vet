@@ -1,5 +1,7 @@
 package com.cosium.vet.gerrit;
 
+import com.cosium.vet.git.BranchShortName;
+
 import java.util.Optional;
 
 /**
@@ -9,12 +11,13 @@ import java.util.Optional;
  */
 public interface GerritClient {
 
-  /** @return The current change id */
-  Optional<ChangeId> getChangeId();
+  /** @return The current change */
+  Optional<GerritChange> getChange();
 
   /**
-   * @param changeDescription The change description
-   * @return The created and set change id
+   * @param targetBranch The target branch
+   * @param subject The change subject
+   * @return The created change
    */
-  ChangeId createAndSetChangeId(String changeDescription);
+  GerritChange createAndSetChange(BranchShortName targetBranch, ChangeSubject subject);
 }

@@ -2,12 +2,15 @@ package com.cosium.vet;
 
 import com.cosium.vet.file.DefaultFileSystem;
 import com.cosium.vet.file.FileSystem;
+import com.cosium.vet.gerrit.ChangeSubject;
 import com.cosium.vet.gerrit.DefaultGerritClientFactory;
 import com.cosium.vet.gerrit.GerritClientFactory;
+import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitClientFactory;
 import com.cosium.vet.git.GitConfigRepositoryFactory;
 import com.cosium.vet.git.GitProvider;
-import com.cosium.vet.push.*;
+import com.cosium.vet.push.PushCommand;
+import com.cosium.vet.push.PushCommandArgParser;
 import com.cosium.vet.runtime.BasicCommandRunner;
 import com.cosium.vet.runtime.CommandRunner;
 import com.cosium.vet.runtime.InteractiveUserInput;
@@ -69,14 +72,13 @@ public class Vet {
         .execute();
   }
 
-  public void push(RemoteName targetRemote, BranchShortName targetBranch, ChangeDescription changeDescription) {
+  public void push(BranchShortName targetBranch, ChangeSubject changeSubject) {
     new PushCommand(
             gitClientFactory.build(),
             gerritClientFactory.build(),
             userInput,
-            targetRemote,
             targetBranch,
-            changeDescription)
+            changeSubject)
         .execute();
   }
 

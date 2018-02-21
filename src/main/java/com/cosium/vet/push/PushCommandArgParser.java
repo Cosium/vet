@@ -2,7 +2,9 @@ package com.cosium.vet.push;
 
 import com.cosium.vet.VetCommand;
 import com.cosium.vet.VetCommandArgParser;
+import com.cosium.vet.gerrit.ChangeSubject;
 import com.cosium.vet.gerrit.GerritClientFactory;
+import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitClientFactory;
 import com.cosium.vet.runtime.UserInput;
 import org.apache.commons.cli.*;
@@ -24,9 +26,8 @@ public class PushCommandArgParser implements VetCommandArgParser {
 
   private static final Logger LOG = LoggerFactory.getLogger(PushCommandArgParser.class);
   private static final String COMMAND_NAME = "push";
-  private static final String REMOTE_OPTION = "r";
   private static final String BRANCH_OPTION = "b";
-  private static final String CHANGE_DESCRIPTION = "d";
+  private static final String CHANGE_SUBJECT = "s";
 
   private final GerritClientFactory gerritClientFactory;
   private final GitClientFactory gitRepositoryFactory;
@@ -59,24 +60,17 @@ public class PushCommandArgParser implements VetCommandArgParser {
     Options options = new Options();
     options.addOption(
         Option.builder(BRANCH_OPTION)
-            .argName("remote-name")
-            .longOpt("remote")
-            .hasArg()
-            .desc("The remote macthing the targeted Gerrit site. Default value is 'origin'.")
-            .build());
-    options.addOption(
-        Option.builder(BRANCH_OPTION)
             .argName("branch-name")
             .longOpt("branch")
             .hasArg()
             .desc("The branch targeted by the changes. Default value is 'master'.")
             .build());
     options.addOption(
-        Option.builder(CHANGE_DESCRIPTION)
-            .argName("change-description")
-            .longOpt("change-description")
+        Option.builder(CHANGE_SUBJECT)
+            .argName("change-subject")
+            .longOpt("change-subject")
             .hasArg()
-            .desc("The description of the change")
+            .desc("The subject of the change")
             .build());
 
     CommandLineParser parser = new DefaultParser();
@@ -86,20 +80,15 @@ public class PushCommandArgParser implements VetCommandArgParser {
       throw new RuntimeException(e);
     }
 
-    RemoteName remote =
-        ofNullable(options.getOption(REMOTE_OPTION).getValue())
-            .filter(StringUtils::isNotBlank)
-            .map(RemoteName::of)
-            .orElse(null);
     BranchShortName targetBranch =
         ofNullable(options.getOption(BRANCH_OPTION).getValue())
             .filter(StringUtils::isNotBlank)
             .map(BranchShortName::of)
             .orElse(null);
-    ChangeDescription changeDescription =
-        ofNullable(options.getOption(CHANGE_DESCRIPTION).getValue())
+    ChangeSubject changeSubject =
+        ofNullable(options.getOption(CHANGE_SUBJECT).getValue())
             .filter(StringUtils::isNotBlank)
-            .map(ChangeDescription::of)
+            .map(ChangeSubject::of)
             .orElse(null);
 
     return Optional.of(
@@ -107,8 +96,7 @@ public class PushCommandArgParser implements VetCommandArgParser {
             gitRepositoryFactory.build(),
             gerritClientFactory.build(),
             userInput,
-            remote,
             targetBranch,
-            changeDescription));
+            changeSubject));
   }
 }

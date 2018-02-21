@@ -27,7 +27,7 @@ class DefaultGitConfigRepository implements GitConfigRepository {
 
   @Override
   public String getCurrentBranchValue(String key) {
-    return runIgnoringExitCode(1, "git", "config", computeBranchKey(key));
+    return getValue(computeBranchKey(key));
   }
 
   @Override
@@ -37,6 +37,11 @@ class DefaultGitConfigRepository implements GitConfigRepository {
     } else {
       commandRunner.run(repositoryDirectory, "git", "config", computeBranchKey(key), value);
     }
+  }
+
+  @Override
+  public String getValue(String key) {
+    return runIgnoringExitCode(1, "git", "config", key);
   }
 
   private String runIgnoringExitCode(int exitCodeToIgnore, String... command) {
