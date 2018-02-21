@@ -12,13 +12,13 @@ import static java.util.Objects.requireNonNull;
  */
 public class GerritChange {
 
-  private final PushUrl pushUrl;
+  private final GerritPushUrl pushUrl;
 
   private final ChangeChangeId changeId;
   private final BranchShortName branch;
   private final ChangeSubject subject;
 
-  GerritChange(PushUrl pushUrl, ChangeInfo changeInfo) {
+  GerritChange(GerritPushUrl pushUrl, ChangeInfo changeInfo) {
     this(
         pushUrl,
         ChangeChangeId.of(changeInfo.changeId),
@@ -27,7 +27,7 @@ public class GerritChange {
   }
 
   private GerritChange(
-      PushUrl pushUrl, ChangeChangeId changeId, BranchShortName branch, ChangeSubject subject) {
+          GerritPushUrl pushUrl, ChangeChangeId changeId, BranchShortName branch, ChangeSubject subject) {
     requireNonNull(pushUrl);
     requireNonNull(changeId);
     requireNonNull(branch);
@@ -51,7 +51,7 @@ public class GerritChange {
     return branch;
   }
 
-  public PushUrl getPushUrl() {
+  public GerritPushUrl getPushUrl() {
     return pushUrl;
   }
 }

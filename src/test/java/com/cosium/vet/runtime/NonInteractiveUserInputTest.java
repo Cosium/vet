@@ -15,6 +15,6 @@ public class NonInteractiveUserInputTest {
 
   @Test
   public void testAsk() {
-    assertThat(nonInteractiveUserInput.ask("Who are you", "foo")).isEqualTo("foo");
+    assertThat(nonInteractiveUserInput.askNonBlank("Who are you", "foo")).isEqualTo("foo");
   }
 }

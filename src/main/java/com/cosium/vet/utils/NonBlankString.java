@@ -1,4 +1,4 @@
-package com.cosium.vet;
+package com.cosium.vet.utils;
 
 import com.cosium.vet.git.RemoteName;
 import org.apache.commons.lang3.StringUtils;
@@ -10,11 +10,11 @@ import java.util.Objects;
  *
  * @author Reda.Housni-Alaoui
  */
-public abstract class NonBlankStringValueObject {
+public abstract class NonBlankString {
 
   private final String value;
 
-  protected NonBlankStringValueObject(String value) {
+  protected NonBlankString(String value) {
     if (StringUtils.isBlank(value)) {
       throw new IllegalArgumentException(getClass().getSimpleName() + " can't be blank");
     }

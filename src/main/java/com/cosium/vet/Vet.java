@@ -54,9 +54,10 @@ public class Vet {
     GitProvider gitProvider = new GitProvider(workingDir, commandRunner);
     this.gitClientFactory = gitProvider;
     this.gitConfigRepositoryFactory = gitProvider;
-    this.gerritClientFactory =
-        new DefaultGerritClientFactory(fileSystem, gitConfigRepositoryFactory, gitClientFactory);
     this.userInput = userInput;
+    this.gerritClientFactory =
+        new DefaultGerritClientFactory(
+            fileSystem, gitConfigRepositoryFactory, gitClientFactory, userInput);
   }
 
   public void run(String args[]) {

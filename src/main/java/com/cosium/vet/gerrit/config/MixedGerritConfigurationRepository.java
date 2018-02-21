@@ -1,10 +1,11 @@
 package com.cosium.vet.gerrit.config;
 
 import com.cosium.vet.file.FileSystem;
+import com.cosium.vet.gerrit.ChangeId;
+import com.cosium.vet.gerrit.GerritHttpRootUrl;
 import com.cosium.vet.git.GitConfigRepository;
 import com.fasterxml.jackson.jr.ob.JSON;
 import com.fasterxml.jackson.jr.ob.JSONObjectException;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +18,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 import static java.util.Objects.requireNonNull;
 
@@ -30,8 +32,7 @@ class MixedGerritConfigurationRepository implements GerritConfigurationRepositor
   private static final Logger LOG =
       LoggerFactory.getLogger(MixedGerritConfigurationRepository.class);
 
-  private static final String VET_CURRENT_CHANGE_NUMBER = "vet-current-change-number";
-  private static final String VET_SELECTED_SITE_HTTP_URL = "vet-selected-site-http-url";
+  private static final String VET_CHANGE_ID = "vet-change-id";
 
   private final FileSystem fileSystem;
   private final GitConfigRepository gitConfigRepository;
@@ -63,13 +64,18 @@ class MixedGerritConfigurationRepository implements GerritConfigurationRepositor
     return new MixedConfig(
         this,
         fileStoredConf,
-        new GitStoredConfig(
-            gitConfigRepository.getCurrentBranchValue(VET_CURRENT_CHANGE_NUMBER),
-            gitConfigRepository.getCurrentBranchValue(VET_SELECTED_SITE_HTTP_URL)));
+        new GitStoredConfig(gitConfigRepository.getCurrentBranchValue(VET_CHANGE_ID)));
   }
 
   @Override
-  public void write(GerritConfiguration config) {
+  public <T> T readAndWrite(Function<GerritConfiguration, T> functor) {
+    GerritConfiguration gerritConfiguration = read();
+    T result = functor.apply(gerritConfiguration);
+    write(gerritConfiguration);
+    return result;
+  }
+
+  private void write(GerritConfiguration config) {
     if (!(config instanceof MixedConfig)) {
       throw new RuntimeException(
           String.format("Configuration %s was not built by repository %s", config, this));
@@ -87,9 +93,7 @@ class MixedGerritConfigurationRepository implements GerritConfigurationRepositor
       throw new RuntimeException(e);
     }
 
-    gitConfigRepository.setCurrentBranchValue(VET_CURRENT_CHANGE_NUMBER, mixedConf.gitStored.currentChangeNumber);
-    gitConfigRepository.setCurrentBranchValue(
-        VET_SELECTED_SITE_HTTP_URL, mixedConf.gitStored.selectedSiteHttpUrl);
+    gitConfigRepository.setCurrentBranchValue(VET_CHANGE_ID, mixedConf.gitStored.changeId);
   }
 
   /**
@@ -168,12 +172,10 @@ class MixedGerritConfigurationRepository implements GerritConfigurationRepositor
    */
   private class GitStoredConfig {
 
-    private String currentChangeNumber;
-    private String selectedSiteHttpUrl;
+    private String changeId;
 
-    private GitStoredConfig(String currentChangeNumber, String selectedSiteHttpUrl) {
-      this.currentChangeNumber = currentChangeNumber;
-      this.selectedSiteHttpUrl = selectedSiteHttpUrl;
+    private GitStoredConfig(String changeId) {
+      this.changeId = changeId;
     }
   }
 
@@ -202,35 +204,35 @@ class MixedGerritConfigurationRepository implements GerritConfigurationRepositor
     }
 
     @Override
-    public Optional<String> getCurrentChangeId() {
-      return Optional.ofNullable(gitStored.currentChangeNumber);
+    public Optional<ChangeId> getChangeId() {
+      return Optional.ofNullable(gitStored.changeId).map(ChangeId::of);
     }
 
     @Override
-    public void setCurrentChangeId(String changeId) {
-      gitStored.currentChangeNumber = StringUtils.defaultIfBlank(changeId, null);
+    public void setChangeId(ChangeId changeId) {
+      if (changeId == null) {
+        gitStored.changeId = null;
+      } else {
+        gitStored.changeId = changeId.toString();
+      }
     }
 
     @Override
-    public Optional<GerritSiteConfiguration> getSelectedSite() {
-      return Optional.ofNullable(gitStored.selectedSiteHttpUrl)
-          .map(id -> fileStored.getSites().get(id));
-    }
-
-    @Override
-    public void selectSite(String siteHttpUrl) {
-      this.gitStored.selectedSiteHttpUrl = StringUtils.defaultIfBlank(siteHttpUrl, null);
-    }
-
-    @Override
-    public void addSite(String httpUrl, String httpLogin, String httpPassword) {
+    public GerritSiteConfiguration setAndGetSite(
+        GerritHttpRootUrl httpUrl, String httpLogin, String httpPassword) {
       Map<String, SiteConfig> modifiableMap = new HashMap<>(fileStored.getSites());
       SiteConfig newConf = new SiteConfig();
-      newConf.setHttpUrl(httpUrl);
+      newConf.setHttpUrl(httpUrl.toString());
       newConf.setHttpLogin(httpLogin);
       newConf.setHttpPassword(httpPassword);
-      modifiableMap.put(httpUrl, newConf);
+      modifiableMap.put(httpUrl.toString(), newConf);
       fileStored.setSites(modifiableMap);
+      return newConf;
+    }
+
+    @Override
+    public Optional<GerritSiteConfiguration> getSite(GerritHttpRootUrl httpUrl) {
+      return Optional.ofNullable(fileStored.getSites().get(httpUrl.toString()));
     }
   }
 }

@@ -1,6 +1,8 @@
 package com.cosium.vet.gerrit.config;
 
 import com.cosium.vet.file.FileSystem;
+import com.cosium.vet.gerrit.ChangeId;
+import com.cosium.vet.gerrit.GerritHttpRootUrl;
 import com.cosium.vet.git.GitConfigRepository;
 import com.fasterxml.jackson.jr.ob.JSON;
 import org.junit.Before;
@@ -25,7 +27,7 @@ public class MixedGerritConfigurationRepositoryTest {
   private static final String URL = "https://foo.com";
   private static final String LOGIN = "foo";
   private static final String PASSWORD = "bar";
-  private static final String CHANGE_NUMBER = "1234";
+  private static final ChangeId CHANGE_ID = ChangeId.of("baz~1234");
 
   private FileSystem fileSystem;
   private GitConfigRepository gitConfigProvider;
@@ -66,14 +68,16 @@ public class MixedGerritConfigurationRepositoryTest {
                         .end()
                         .end()
                         .finish()));
-    when(gitConfigProvider.getCurrentBranchValue("vet-current-change-number")).thenReturn(CHANGE_NUMBER);
+    when(gitConfigProvider.getCurrentBranchValue("vet-current-change-number"))
+        .thenReturn(CHANGE_ID.value());
     when(gitConfigProvider.getCurrentBranchValue("vet-selected-site-http-url")).thenReturn(URL);
 
     GerritConfiguration gerritConfiguration = tested.read();
     assertThat(gerritConfiguration).isNotNull();
-    assertThat(gerritConfiguration.getCurrentChangeId()).contains(CHANGE_NUMBER);
+    assertThat(gerritConfiguration.getChangeId()).contains(CHANGE_ID);
 
-    Optional<GerritSiteConfiguration> siteConf = gerritConfiguration.getSelectedSite();
+    Optional<GerritSiteConfiguration> siteConf =
+        gerritConfiguration.getSite(GerritHttpRootUrl.of(URL));
     if (!siteConf.isPresent()) {
       fail("Expected non null site conf");
     }
@@ -83,5 +87,4 @@ public class MixedGerritConfigurationRepositoryTest {
     assertThat(finalSiteConf.getHttpLogin()).isEqualTo(LOGIN);
     assertThat(finalSiteConf.getHttpPassword()).isEqualTo(PASSWORD);
   }
-
 }

@@ -1,6 +1,5 @@
 package com.cosium.vet.gerrit;
 
-
 /**
  * Created on 16/02/18.
  *
@@ -8,6 +7,8 @@ package com.cosium.vet.gerrit;
  */
 public interface GerritClientFactory {
 
-  /** @return A new ready to use gerrit client */
+  /**
+   * @return A new ready to use gerrit client
+   */
   GerritClient build();
 }

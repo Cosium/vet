@@ -1,13 +1,13 @@
 package com.cosium.vet.git;
 
-import com.cosium.vet.NonBlankStringValueObject;
+import com.cosium.vet.utils.NonBlankString;
 
 /**
  * Created on 20/02/18.
  *
  * @author Reda.Housni-Alaoui
  */
-public class RemoteName extends NonBlankStringValueObject {
+public class RemoteName extends NonBlankString {
 
   public static final RemoteName ORIGIN = RemoteName.of("origin");
 

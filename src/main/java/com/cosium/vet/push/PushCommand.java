@@ -64,9 +64,10 @@ public class PushCommand implements VetCommand {
         String.format("%s\n\nChange-Id: %s", change.getSubject(), change.getChangeId());
     String commitId = git.commitTree(git.getTree(), parent, commitMessage);
 
-    String patchSetTitle = userInput.ask("Title for patch set", firstLineOfLastCommitMessage);
+    String patchSetTitle =
+        userInput.askNonBlank("Title for patch set", firstLineOfLastCommitMessage);
     git.push(
-        change.getPushUrl().value(),
+        change.getPushUrl().toString(),
         String.format(
             "%s:refs/for/%s%%m=%s",
             commitId, change.getBranch(), GitUtils.encodeForGitRef(patchSetTitle)));
@@ -76,7 +77,9 @@ public class PushCommand implements VetCommand {
     ChangeSubject subject =
         ofNullable(changeSubject)
             .orElseGet(
-                () -> ChangeSubject.of(userInput.ask("Title for change set", defaultSubject)));
+                () ->
+                    ChangeSubject.of(
+                        userInput.askNonBlank("Title for change set", defaultSubject)));
     return gerrit.createAndSetChange(targetBranch, subject);
   }
 }

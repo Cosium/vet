@@ -13,8 +13,14 @@ public class NonInteractiveUserInput implements UserInput {
   private static final Logger LOG = LoggerFactory.getLogger(NonInteractiveUserInput.class);
 
   @Override
-  public String ask(String question, String defaultValue) {
-    LOG.debug("Non interactive mode. Returning default value.");
+  public String askNonBlank(String question, String defaultValue) {
+    LOG.debug("Non interactive mode. Returning '{}'.", defaultValue);
     return defaultValue;
+  }
+
+  @Override
+  public String askNonBlank(String question) {
+    throw new RuntimeException(
+        String.format("Non interactive mode. Unable to answer to '%s'", question));
   }
 }

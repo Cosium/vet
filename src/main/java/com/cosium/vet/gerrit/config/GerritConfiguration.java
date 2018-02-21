@@ -1,5 +1,8 @@
 package com.cosium.vet.gerrit.config;
 
+import com.cosium.vet.gerrit.ChangeId;
+import com.cosium.vet.gerrit.GerritHttpRootUrl;
+
 import java.util.Optional;
 
 /**
@@ -9,16 +12,24 @@ import java.util.Optional;
  */
 public interface GerritConfiguration {
 
-  /** @return The Gerrit change number */
-  Optional<String> getCurrentChangeId();
+  /** @return The Gerrit change id */
+  Optional<ChangeId> getChangeId();
 
-  /** Sets the Gerrit change number */
-  void setCurrentChangeId(String changeId);
+  /** Sets the Gerrit change id */
+  void setChangeId(ChangeId changeId);
 
-  /** @return The selected site configuration if any selected */
-  Optional<GerritSiteConfiguration> getSelectedSite();
+  /**
+   * Create or update a site configuration
+   *
+   * @param httpUrl The site url
+   * @param httpLogin The site login
+   * @param httpPassword The site password
+   */
+  GerritSiteConfiguration setAndGetSite(GerritHttpRootUrl httpUrl, String httpLogin, String httpPassword);
 
-  void selectSite(String httpUrl);
-
-  void addSite(String httpUrl, String httpLogin, String httpPassword);
+  /**
+   * @param httpUrl The http url of the site
+   * @return The site configuration if it exists
+   */
+  Optional<GerritSiteConfiguration> getSite(GerritHttpRootUrl httpUrl);
 }

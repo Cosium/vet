@@ -2,9 +2,6 @@ package com.cosium.vet.gerrit;
 
 import com.cosium.vet.gerrit.config.GerritConfigurationRepository;
 import com.cosium.vet.git.BranchShortName;
-import com.cosium.vet.git.GitClient;
-import com.cosium.vet.git.RemoteName;
-import com.cosium.vet.git.RemoteUrl;
 import com.google.gerrit.extensions.api.GerritApi;
 import com.google.gerrit.extensions.common.ChangeInfo;
 import com.google.gerrit.extensions.common.ChangeInput;
@@ -23,33 +20,33 @@ class DefaultGerritClient implements GerritClient {
 
   private final GerritConfigurationRepository configurationRepository;
   private final GerritApi gerritApi;
-  private final GitClient gitClient;
+  private final GerritPushUrl pushUrl;
+  private final GerritProjectName project;
 
   DefaultGerritClient(
       GerritConfigurationRepository configurationRepository,
       GerritApi gerritApi,
-      GitClient gitClient) {
+      GerritPushUrl pushUrl,
+      GerritProjectName project) {
     requireNonNull(configurationRepository);
     requireNonNull(gerritApi);
-    requireNonNull(gitClient);
+    requireNonNull(pushUrl);
+    requireNonNull(project);
     this.configurationRepository = configurationRepository;
     this.gerritApi = gerritApi;
-    this.gitClient = gitClient;
+    this.pushUrl = pushUrl;
+    this.project = project;
   }
 
   @Override
   public Optional<GerritChange> getChange() {
-    return configurationRepository
-        .read()
-        .getCurrentChangeId()
-        .map(ChangeId::of)
-        .map(this::fetchChange);
+    return configurationRepository.read().getChangeId().map(this::fetchChange);
   }
 
   private GerritChange fetchChange(ChangeId changeId) {
     try {
       ChangeInfo change = gerritApi.changes().id(changeId.value()).get();
-      return new GerritChange(change, changeId, branch);
+      return new GerritChange(pushUrl, change);
     } catch (RestApiException e) {
       throw new RuntimeException(e);
     }
@@ -57,10 +54,11 @@ class DefaultGerritClient implements GerritClient {
 
   @Override
   public GerritChange createAndSetChange(BranchShortName targetBranch, ChangeSubject subject) {
-    ChangeInput changeInput = new ChangeInput("TODO", targetBranch.value(), subject.value());
+    ChangeInput changeInput =
+        new ChangeInput(project.value(), targetBranch.value(), subject.value());
     try {
       ChangeInfo change = gerritApi.changes().create(changeInput).get();
-      return new GerritChange(remote, change);
+      return new GerritChange(pushUrl, change);
     } catch (RestApiException e) {
       throw new RuntimeException(e);
     }

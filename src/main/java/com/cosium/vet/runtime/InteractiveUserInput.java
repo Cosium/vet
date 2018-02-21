@@ -11,12 +11,23 @@ import java.util.Scanner;
  */
 public class InteractiveUserInput implements UserInput {
   @Override
-  public String ask(String question, String defaultValue) {
+  public String askNonBlank(String question, String defaultValue) {
     Scanner scanner = new Scanner(System.in);
-    System.out.println(String.format("%s [%s]:", question, defaultValue));
     String value = null;
     while (StringUtils.isBlank(value)) {
+      System.out.println(String.format("%s [%s]:", question, defaultValue));
       value = StringUtils.defaultIfBlank(scanner.nextLine(), defaultValue);
+    }
+    return value;
+  }
+
+  @Override
+  public String askNonBlank(String question) {
+    Scanner scanner = new Scanner(System.in);
+    String value = null;
+    while (StringUtils.isBlank(value)) {
+      System.out.println(String.format("%s:", question));
+      value = scanner.nextLine();
     }
     return value;
   }
