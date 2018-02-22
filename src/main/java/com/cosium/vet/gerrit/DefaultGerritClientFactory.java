@@ -78,10 +78,12 @@ public class DefaultGerritClientFactory implements GerritClientFactory {
     GerritProjectName project = pushUrl.parseProjectName();
     LOG.debug("Gerrit project is '{}'", project);
 
-    GerritApiBuilder gerritApiBuilder =
-        new GerritApiBuilder(
-            configurationRepository, gerritRestApiFactory, userInput, rootUrl, user, password);
+    GerritCredentials credentials =
+        new DefaultGerritCredentials(configurationRepository, userInput, rootUrl, user, password);
+
+    GerritApiBuilder gerritApiBuilder = new GerritApiBuilder(gerritRestApiFactory, credentials);
     GerritApi gerritApi = gerritApiBuilder.build();
-    return new DefaultGerritClient(gitClient, configurationRepository, gerritApi, pushUrl, project);
+    return new DefaultGerritClient(
+        configurationRepository, credentials, gitClient, gerritApi, pushUrl, project);
   }
 }

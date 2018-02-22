@@ -1,8 +1,5 @@
 package com.cosium.vet.gerrit;
 
-import com.cosium.vet.gerrit.config.GerritConfigurationRepository;
-import com.cosium.vet.gerrit.config.GerritSiteAuthConfiguration;
-import com.cosium.vet.runtime.UserInput;
 import com.google.gerrit.extensions.api.GerritApi;
 import com.urswolfer.gerrit.client.rest.GerritAuthData;
 import com.urswolfer.gerrit.client.rest.GerritRestApiFactory;
@@ -25,33 +22,14 @@ import static java.util.Objects.requireNonNull;
  */
 class GerritApiBuilder {
 
-  private final GerritConfigurationRepository configurationRepository;
   private final GerritRestApiFactory gerritRestApiFactory;
-  private final UserInput userInput;
-  private final GerritHttpRootUrl rootUrl;
+  private final GerritCredentials gerritCredentials;
 
-  private final AtomicReference<GerritUser> user;
-  private final AtomicReference<GerritPassword> password;
-
-  GerritApiBuilder(
-      GerritConfigurationRepository configurationRepository,
-      GerritRestApiFactory gerritRestApiFactory,
-      UserInput userInput,
-      GerritHttpRootUrl rootUrl,
-      // Optional
-      GerritUser user,
-      GerritPassword password) {
-    requireNonNull(configurationRepository);
+  GerritApiBuilder(GerritRestApiFactory gerritRestApiFactory, GerritCredentials gerritCredentials) {
     requireNonNull(gerritRestApiFactory);
-    requireNonNull(userInput);
-    requireNonNull(rootUrl);
-    this.configurationRepository = configurationRepository;
+    requireNonNull(gerritCredentials);
     this.gerritRestApiFactory = gerritRestApiFactory;
-    this.userInput = userInput;
-    this.rootUrl = rootUrl;
-
-    this.user = new AtomicReference<>(user);
-    this.password = new AtomicReference<>(password);
+    this.gerritCredentials = gerritCredentials;
   }
 
   GerritApi build() {
@@ -80,8 +58,9 @@ class GerritApiBuilder {
           throw cause;
         }
         log.debug(
-            "Gerrit authentication failed. Dropping '{}' authentication configuration.", rootUrl);
-        dropSiteAuthConfiguration();
+            "Gerrit authentication failed. Invalidating '{}' authentication configuration.",
+            gerritCredentials.getHttpRootUrl());
+        gerritCredentials.invalidate();
         delegate.set(null);
         return invoke(proxy, method, args);
       }
@@ -96,46 +75,12 @@ class GerritApiBuilder {
         return gerritApi;
       }
 
-      GerritSiteAuthConfiguration authConf = getOrCreateSiteAuthConfiguration();
       GerritAuthData.Basic authData =
           new GerritAuthData.Basic(
-              authConf.getHttpUrl(), authConf.getHttpLogin(), authConf.getHttpPassword());
+              gerritCredentials.getHttpRootUrl().toString(),
+              gerritCredentials.getUser().toString(),
+              gerritCredentials.getPassword().toString());
       return gerritRestApiFactory.create(authData);
-    }
-
-    /** Drop the site auth configuration */
-    private void dropSiteAuthConfiguration() {
-      configurationRepository.readAndWrite(
-          conf -> {
-            conf.dropSiteAuth(rootUrl);
-            return null;
-          });
-    }
-
-    /** @return The created or found site configuration */
-    private GerritSiteAuthConfiguration getOrCreateSiteAuthConfiguration() {
-      return configurationRepository.readAndWrite(
-          conf ->
-              conf.getSiteAuth(rootUrl)
-                  .orElseGet(() -> conf.setAndGetSiteAuth(rootUrl, fetchUser(), fetchPassword())));
-    }
-
-    /** @return The user passed as parameter or the user provided via user input */
-    private GerritUser fetchUser() {
-      GerritUser u = user.getAndSet(null);
-      if (u != null) {
-        return u;
-      }
-      return GerritUser.of(userInput.askNonBlank("Gerrit http login"));
-    }
-
-    /** @return The password passed as parameter or the user provided via user input */
-    private GerritPassword fetchPassword() {
-      GerritPassword p = password.getAndSet(null);
-      if (p != null) {
-        return p;
-      }
-      return GerritPassword.of(userInput.askNonBlank("Gerrit http password"));
     }
   }
 }

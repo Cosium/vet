@@ -40,5 +40,6 @@ public class VetTest extends GerritEnvironmentTest {
   public void testFirstPush() {
     vet.push(
         GerritUser.of(USER), GerritPassword.of(PASSWORD), null, ChangeSubject.of("Hello world"));
+    System.out.println("");
   }
 }

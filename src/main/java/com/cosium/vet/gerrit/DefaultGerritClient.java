@@ -24,25 +24,30 @@ class DefaultGerritClient implements GerritClient {
 
   private static final Logger LOG = LoggerFactory.getLogger(DefaultGerritClient.class);
 
-  private final GitClient git;
   private final GerritConfigurationRepository configurationRepository;
+  private final GerritCredentials credentials;
+  private final GitClient git;
   private final GerritApi gerritApi;
   private final GerritPushUrl pushUrl;
   private final GerritProjectName project;
 
   DefaultGerritClient(
-      GitClient gitClient,
       GerritConfigurationRepository configurationRepository,
+      GerritCredentials credentials,
+      GitClient gitClient,
       GerritApi gerritApi,
       GerritPushUrl pushUrl,
       GerritProjectName project) {
-    requireNonNull(gitClient);
     requireNonNull(configurationRepository);
+    requireNonNull(credentials);
+    requireNonNull(gitClient);
     requireNonNull(gerritApi);
     requireNonNull(pushUrl);
     requireNonNull(project);
-    this.git = gitClient;
+
     this.configurationRepository = configurationRepository;
+    this.credentials = credentials;
+    this.git = gitClient;
     this.gerritApi = gerritApi;
     this.pushUrl = pushUrl;
     this.project = project;
@@ -86,13 +91,13 @@ class DefaultGerritClient implements GerritClient {
 
   @Override
   public void createPatchSet(
-          GerritChange change, String startRevision, String endRevision, String patchSetTitle) {
+      GerritChange change, String startRevision, String endRevision, String patchSetTitle) {
     String commitMessage =
         String.format("%s\n\nChange-Id: %s", change.getSubject(), change.getChangeId());
     String commitId = git.commitTree(git.getTree(), startRevision, commitMessage);
 
     git.push(
-        change.getPushUrl().toString(),
+        change.getPushUrl().withCredentials(credentials).toString(),
         String.format(
             "%s:refs/for/%s%%m=%s",
             commitId, change.getBranch(), GitUtils.encodeForGitRef(patchSetTitle)));

@@ -1,6 +1,7 @@
 package com.cosium.vet.gerrit;
 
 import com.cosium.vet.utils.Url;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,5 +37,19 @@ public class GerritPushUrl extends Url {
       throw new RuntimeException("WTF?");
     }
     return GerritProjectName.of(matcher.group(0));
+  }
+
+  public GerritPushUrl withCredentials(GerritCredentials credentials) {
+    String protocol = protocol();
+    String currentUrl = toString();
+
+    return GerritPushUrl.of(
+        String.format(
+            "%s://%s:%s@%s",
+            protocol,
+            credentials.getUser(),
+            credentials.getPassword(),
+            StringUtils.substring(
+                currentUrl, protocol.length() + "://".length(), currentUrl.length())));
   }
 }

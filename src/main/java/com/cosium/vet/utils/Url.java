@@ -27,6 +27,10 @@ public abstract class Url {
     }
   }
 
+  protected String protocol() {
+    return url.getProtocol();
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -37,7 +41,6 @@ public abstract class Url {
 
   @Override
   public int hashCode() {
-
     return Objects.hash(url);
   }
 
