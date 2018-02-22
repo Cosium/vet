@@ -73,14 +73,14 @@ public class Vet {
   public void push(
       GerritUser user,
       GerritPassword password,
-      ChangeSubject changeSubject,
-      BranchShortName targetBranch) {
+      BranchShortName targetBranch,
+      ChangeSubject changeSubject) {
     new PushCommand(
             gitClientFactory.build(),
             gerritClientFactory.build(user, password),
             userInput,
-            changeSubject,
-            targetBranch)
+            targetBranch,
+            changeSubject)
         .execute();
   }
 

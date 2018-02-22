@@ -34,6 +34,6 @@ public class VetTest extends TestWithGerrit {
   @Test
   public void testFirstPush() {
     vet.push(
-        GerritUser.of(USER), GerritPassword.of(PASSWORD), ChangeSubject.of("Hello world"), null);
+        GerritUser.of(USER), GerritPassword.of(PASSWORD), null, ChangeSubject.of("Hello world"));
   }
 }

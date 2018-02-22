@@ -24,24 +24,24 @@ public class PushCommand implements VetCommand {
   private final GitClient git;
   private final GerritClient gerrit;
   private final UserInput userInput;
-  private final ChangeSubject changeSubject;
   private final BranchShortName targetBranch;
+  private final ChangeSubject changeSubject;
 
   public PushCommand(
       GitClient gitClient,
       GerritClient gerritClient,
       UserInput userInput,
       // Optionals
-      ChangeSubject changeSubject,
-      BranchShortName targetBranch) {
+      BranchShortName targetBranch,
+      ChangeSubject changeSubject) {
     requireNonNull(gitClient);
     requireNonNull(gerritClient);
     requireNonNull(userInput);
     this.git = gitClient;
     this.gerrit = gerritClient;
     this.userInput = userInput;
-    this.changeSubject = changeSubject;
     this.targetBranch = ofNullable(targetBranch).orElse(BranchShortName.MASTER);
+    this.changeSubject = changeSubject;
   }
 
   @Override
