@@ -26,7 +26,7 @@ public class PushCommandArgParser implements VetCommandArgParser {
 
   private static final Logger LOG = LoggerFactory.getLogger(PushCommandArgParser.class);
   private static final String COMMAND_NAME = "push";
-  private static final String BRANCH_OPTION = "b";
+  private static final String TARGET_BRANCH = "b";
   private static final String CHANGE_SUBJECT = "s";
 
   private final GerritClientFactory gerritClientFactory;
@@ -59,15 +59,15 @@ public class PushCommandArgParser implements VetCommandArgParser {
 
     Options options = new Options();
     options.addOption(
-        Option.builder(BRANCH_OPTION)
+        Option.builder(TARGET_BRANCH)
             .argName("branch-name")
-            .longOpt("branch")
+            .longOpt("target-branch")
             .hasArg()
             .desc("The branch targeted by the changes. Default value is 'master'.")
             .build());
     options.addOption(
         Option.builder(CHANGE_SUBJECT)
-            .argName("change-subject")
+            .argName("subject")
             .longOpt("change-subject")
             .hasArg()
             .desc("The subject of the change")
@@ -81,7 +81,7 @@ public class PushCommandArgParser implements VetCommandArgParser {
     }
 
     BranchShortName targetBranch =
-        ofNullable(options.getOption(BRANCH_OPTION).getValue())
+        ofNullable(options.getOption(TARGET_BRANCH).getValue())
             .filter(StringUtils::isNotBlank)
             .map(BranchShortName::of)
             .orElse(null);
