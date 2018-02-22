@@ -45,7 +45,6 @@ public class VetTest extends GerritEnvironmentTest {
     addAndCommitFile("baz");
     tested.push(
         GerritUser.of(USER), GerritPassword.of(PASSWORD), null, ChangeSubject.of("Hello world"));
-    System.out.println("");
   }
 
   private void addAndCommitFile(String name) throws Exception {
