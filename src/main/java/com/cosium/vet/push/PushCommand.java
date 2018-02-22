@@ -6,7 +6,6 @@ import com.cosium.vet.gerrit.GerritChange;
 import com.cosium.vet.gerrit.GerritClient;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitClient;
-import com.cosium.vet.git.GitUtils;
 import com.cosium.vet.git.RemoteName;
 import com.cosium.vet.runtime.UserInput;
 import org.apache.commons.lang3.StringUtils;
@@ -60,17 +59,9 @@ public class PushCommand implements VetCommand {
 
     String parent = git.getMostRecentCommonCommit(String.format("%s/%s", remote, branch));
 
-    String commitMessage =
-        String.format("%s\n\nChange-Id: %s", change.getSubject(), change.getChangeId());
-    String commitId = git.commitTree(git.getTree(), parent, commitMessage);
-
     String patchSetTitle =
         userInput.askNonBlank("Title for patch set", firstLineOfLastCommitMessage);
-    git.push(
-        change.getPushUrl().toString(),
-        String.format(
-            "%s:refs/for/%s%%m=%s",
-            commitId, change.getBranch(), GitUtils.encodeForGitRef(patchSetTitle)));
+    gerrit.createPatchSet(change, parent, git.getTree(), patchSetTitle);
   }
 
   private GerritChange createChange(String defaultSubject) {

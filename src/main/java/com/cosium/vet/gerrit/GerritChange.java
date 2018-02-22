@@ -42,11 +42,11 @@ public class GerritChange {
     this.subject = subject;
   }
 
-  public ChangeChangeId getChangeId() {
+  ChangeChangeId getChangeId() {
     return changeId;
   }
 
-  public ChangeSubject getSubject() {
+  ChangeSubject getSubject() {
     return subject;
   }
 
@@ -54,7 +54,7 @@ public class GerritChange {
     return branch;
   }
 
-  public GerritPushUrl getPushUrl() {
+  GerritPushUrl getPushUrl() {
     return pushUrl;
   }
 

@@ -82,6 +82,6 @@ public class DefaultGerritClientFactory implements GerritClientFactory {
         new GerritApiBuilder(
             configurationRepository, gerritRestApiFactory, userInput, rootUrl, user, password);
     GerritApi gerritApi = gerritApiBuilder.build();
-    return new DefaultGerritClient(configurationRepository, gerritApi, pushUrl, project);
+    return new DefaultGerritClient(gitClient, configurationRepository, gerritApi, pushUrl, project);
   }
 }

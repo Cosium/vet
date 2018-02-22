@@ -20,4 +20,15 @@ public interface GerritClient {
    * @return The created change
    */
   GerritChange createAndSetChange(BranchShortName targetBranch, ChangeSubject subject);
+
+  /**
+   * Creates a patch set for the provided change between start revision and end revision
+   *
+   * @param change The change for which the patch set must be created
+   * @param startRevision The start revision
+   * @param endRevision The end revision
+   * @param patchSetTitle The patch set title
+   */
+  void createPatchSet(
+      GerritChange change, String startRevision, String endRevision, String patchSetTitle);
 }
