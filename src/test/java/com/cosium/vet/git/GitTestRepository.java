@@ -43,17 +43,17 @@ public class GitTestRepository {
       CommandRunner runner = new TestCommandRunner();
 
       runner.run(remoteRepo, "git", "init");
-      runner.run(remoteRepo, "git", "config", "user.email", "\"you@example.com\"");
-      runner.run(remoteRepo, "git", "config", "user.name", "\"Your Name\"");
+      runner.run(remoteRepo, "git", "config", "user.email", "you@example.com");
+      runner.run(remoteRepo, "git", "config", "user.name", "Your Name");
       Files.createFile(remoteRepo.resolve("foo.txt"));
       runner.run(remoteRepo, "git", "add", ".");
-      runner.run(remoteRepo, "git", "commit", "-am", "\"Initial commit\"");
+      runner.run(remoteRepo, "git", "commit", "-am", "Initial commit");
 
       runner.run(workDir, "git", "clone", "./upstream", "downstream-tmp");
       Path repo = workDir.resolve("downstream");
       FileUtils.copyDirectory(workDir.resolve("downstream-tmp").toFile(), repo.toFile());
-      runner.run(repo, "git", "config", "user.email", "\"you@example.com\"");
-      runner.run(repo, "git", "config", "user.name", "\"Your Name\"");
+      runner.run(repo, "git", "config", "user.email", "you@example.com");
+      runner.run(repo, "git", "config", "user.name", "Your Name");
 
       return new GitTestRepository(repo, runner);
     }

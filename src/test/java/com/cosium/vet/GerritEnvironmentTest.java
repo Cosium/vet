@@ -96,12 +96,11 @@ public abstract class GerritEnvironmentTest {
     Files.createDirectories(gerritProjectGitDir);
 
     runner.run(gerritProjectGitDir, "git", "init");
-    runner.run(gerritProjectGitDir, "git", "init");
-    runner.run(gerritProjectGitDir, "git", "config", "user.email", "\"you@example.com\"");
-    runner.run(gerritProjectGitDir, "git", "config", "user.name", "\"Your Name\"");
+    runner.run(gerritProjectGitDir, "git", "config", "user.email", "you@example.com");
+    runner.run(gerritProjectGitDir, "git", "config", "user.name", "Your Name");
     Files.createFile(gerritProjectGitDir.resolve("foo.txt"));
     runner.run(gerritProjectGitDir, "git", "add", ".");
-    runner.run(gerritProjectGitDir, "git", "commit", "-am", "\"Initial commit\"");
+    runner.run(gerritProjectGitDir, "git", "commit", "-am", "Initial commit");
 
     LOG.info("Starting Gerrit");
     gerritRunner = new DockerComposeContainer(gerritDir.resolve(RUN_YML).toFile());
