@@ -20,7 +20,7 @@ public class BasicCommandRunnerTest {
 
   @Before
   public void before() throws Exception {
-    directory = Files.createTempDirectory("vet");
+    directory = Files.createTempDirectory("vet_");
     tested = new BasicCommandRunner();
   }
 

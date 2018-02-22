@@ -3,6 +3,7 @@ package com.cosium.vet;
 import com.cosium.vet.gerrit.ChangeSubject;
 import com.cosium.vet.gerrit.GerritPassword;
 import com.cosium.vet.gerrit.GerritUser;
+import com.cosium.vet.runtime.CommandRunner;
 import com.cosium.vet.runtime.NonInteractiveUserInput;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,20 +16,22 @@ import java.nio.file.Path;
  *
  * @author Reda.Housni-Alaoui
  */
-public class VetTest extends TestWithGerrit {
+public class VetTest extends GerritEnvironmentTest {
 
+  private CommandRunner runner;
   private Vet vet;
 
   @Before
   public void before() throws Exception {
-    Path workDir = Files.createTempDirectory("vet");
+    Path workDir = Files.createTempDirectory("vet_");
     Path downstreamGitDir = workDir.resolve(PROJECT);
-    RUNNER.run(
+    runner = new TestCommandRunner();
+    runner.run(
         workDir,
         "git",
         "clone",
         "http://" + USER + ":" + PASSWORD + "@" + host + ":" + port + "/" + PROJECT);
-    vet = new Vet(downstreamGitDir, new NonInteractiveUserInput(), RUNNER);
+    vet = new Vet(downstreamGitDir, new NonInteractiveUserInput(), runner);
   }
 
   @Test

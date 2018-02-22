@@ -1,5 +1,6 @@
-package com.cosium.vet;
+package com.cosium.vet.git;
 
+import com.cosium.vet.TestCommandRunner;
 import com.cosium.vet.runtime.CommandRunner;
 import org.apache.commons.io.FileUtils;
 
@@ -34,7 +35,7 @@ public class GitTestRepository {
     private Builder() {}
 
     public GitTestRepository build() throws Exception {
-      Path workDir = Files.createTempDirectory("vet");
+      Path workDir = Files.createTempDirectory("vet_");
 
       Path remoteRepo = workDir.resolve("upstream");
       Files.createDirectories(remoteRepo);

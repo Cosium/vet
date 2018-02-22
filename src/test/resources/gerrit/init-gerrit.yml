@@ -1,0 +1,5 @@
+version: '2'
+
+services:
+  gerrit:
+    entrypoint: java -jar /var/gerrit/bin/gerrit.war init -d /var/gerrit

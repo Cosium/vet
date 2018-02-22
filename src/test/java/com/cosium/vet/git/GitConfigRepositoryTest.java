@@ -1,6 +1,5 @@
 package com.cosium.vet.git;
 
-import com.cosium.vet.GitTestRepository;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package com.cosium.vet;
+package com.cosium.vet.utils;
 
 import com.cosium.vet.utils.NonBlankString;
 import org.junit.Test;

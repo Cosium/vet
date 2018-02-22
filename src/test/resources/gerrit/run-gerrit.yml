@@ -1,0 +1,19 @@
+version: '2'
+
+services:
+  gerrit:
+    image: cosiumoss/gerrit:2.15.rc2-centos7-cosfork4
+    ports:
+      - "8080"
+    depends_on:
+      - gerrit-ldap
+    volumes:
+      - ./git:/var/gerrit/git
+      - ./cache:/var/gerrit/cache
+      - ./index:/var/gerrit/index
+      - ./plugins:/var/gerrit/plugins
+      - ./etc:/var/gerrit/etc
+      - ./logs:/var/gerrit/logs
+      - ./db:/var/gerrit/db
+  gerrit-ldap:
+    image: rroemhild/test-openldap
