@@ -2,6 +2,8 @@ package com.cosium.vet.gerrit.config;
 
 import com.cosium.vet.gerrit.ChangeId;
 import com.cosium.vet.gerrit.GerritHttpRootUrl;
+import com.cosium.vet.gerrit.GerritPassword;
+import com.cosium.vet.gerrit.GerritUser;
 
 import java.util.Optional;
 
@@ -26,7 +28,7 @@ public interface GerritConfiguration {
    * @param httpPassword The site password
    */
   GerritSiteAuthConfiguration setAndGetSiteAuth(
-      GerritHttpRootUrl httpUrl, String httpLogin, String httpPassword);
+      GerritHttpRootUrl httpUrl, GerritUser httpLogin, GerritPassword httpPassword);
 
   /**
    * @param httpUrl The http url of the site

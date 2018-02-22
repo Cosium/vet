@@ -94,7 +94,7 @@ public class PushCommandArgParser implements VetCommandArgParser {
     return Optional.of(
         new PushCommand(
             gitRepositoryFactory.build(),
-            gerritClientFactory.build(),
+            gerritClientFactory.build(null, null),
             userInput,
             targetBranch,
             changeSubject));

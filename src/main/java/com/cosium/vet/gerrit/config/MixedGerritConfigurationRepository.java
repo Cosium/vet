@@ -3,6 +3,8 @@ package com.cosium.vet.gerrit.config;
 import com.cosium.vet.file.FileSystem;
 import com.cosium.vet.gerrit.ChangeId;
 import com.cosium.vet.gerrit.GerritHttpRootUrl;
+import com.cosium.vet.gerrit.GerritPassword;
+import com.cosium.vet.gerrit.GerritUser;
 import com.cosium.vet.git.GitConfigRepository;
 import com.fasterxml.jackson.jr.ob.JSON;
 import com.fasterxml.jackson.jr.ob.JSONObjectException;
@@ -206,12 +208,12 @@ class MixedGerritConfigurationRepository implements GerritConfigurationRepositor
 
     @Override
     public GerritSiteAuthConfiguration setAndGetSiteAuth(
-        GerritHttpRootUrl httpUrl, String httpLogin, String httpPassword) {
+        GerritHttpRootUrl httpUrl, GerritUser httpLogin, GerritPassword httpPassword) {
       Map<String, SiteAuthConfig> modifiableMap = new HashMap<>(fileStored.getSites());
       SiteAuthConfig newConf = new SiteAuthConfig();
       newConf.setHttpUrl(httpUrl.toString());
-      newConf.setHttpLogin(httpLogin);
-      newConf.setHttpPassword(httpPassword);
+      newConf.setHttpLogin(httpLogin.toString());
+      newConf.setHttpPassword(httpPassword.toString());
       modifiableMap.put(httpUrl.toString(), newConf);
       fileStored.setSites(modifiableMap);
       return newConf;

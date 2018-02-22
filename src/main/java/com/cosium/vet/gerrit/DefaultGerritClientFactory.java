@@ -57,7 +57,7 @@ public class DefaultGerritClientFactory implements GerritClientFactory {
   }
 
   @Override
-  public GerritClient build() {
+  public GerritClient build(GerritUser user, GerritPassword password) {
     GitClient gitClient = gitClientFactory.build();
     GerritConfigurationRepository configurationRepository = configurationRepositoryFactory.build();
 
@@ -79,7 +79,8 @@ public class DefaultGerritClientFactory implements GerritClientFactory {
     LOG.debug("Gerrit project is '{}'", project);
 
     GerritApiBuilder gerritApiBuilder =
-        new GerritApiBuilder(configurationRepository, gerritRestApiFactory, userInput, rootUrl);
+        new GerritApiBuilder(
+            configurationRepository, gerritRestApiFactory, userInput, rootUrl, user, password);
     GerritApi gerritApi = gerritApiBuilder.build();
     return new DefaultGerritClient(configurationRepository, gerritApi, pushUrl, project);
   }

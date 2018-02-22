@@ -30,11 +30,17 @@ class GerritApiBuilder {
   private final UserInput userInput;
   private final GerritHttpRootUrl rootUrl;
 
+  private final AtomicReference<GerritUser> user;
+  private final AtomicReference<GerritPassword> password;
+
   GerritApiBuilder(
       GerritConfigurationRepository configurationRepository,
       GerritRestApiFactory gerritRestApiFactory,
       UserInput userInput,
-      GerritHttpRootUrl rootUrl) {
+      GerritHttpRootUrl rootUrl,
+      // Optional
+      GerritUser user,
+      GerritPassword password) {
     requireNonNull(configurationRepository);
     requireNonNull(gerritRestApiFactory);
     requireNonNull(userInput);
@@ -43,6 +49,9 @@ class GerritApiBuilder {
     this.gerritRestApiFactory = gerritRestApiFactory;
     this.userInput = userInput;
     this.rootUrl = rootUrl;
+
+    this.user = new AtomicReference<>(user);
+    this.password = new AtomicReference<>(password);
   }
 
   GerritApi build() {
@@ -87,12 +96,10 @@ class GerritApiBuilder {
         return gerritApi;
       }
 
-      GerritSiteAuthConfiguration siteAuthConf = getOrCreateSiteAuthConfiguration();
+      GerritSiteAuthConfiguration authConf = getOrCreateSiteAuthConfiguration();
       GerritAuthData.Basic authData =
           new GerritAuthData.Basic(
-              siteAuthConf.getHttpUrl(),
-              siteAuthConf.getHttpLogin(),
-              siteAuthConf.getHttpPassword());
+              authConf.getHttpUrl(), authConf.getHttpLogin(), authConf.getHttpPassword());
       return gerritRestApiFactory.create(authData);
     }
 
@@ -110,12 +117,25 @@ class GerritApiBuilder {
       return configurationRepository.readAndWrite(
           conf ->
               conf.getSiteAuth(rootUrl)
-                  .orElseGet(
-                      () -> {
-                        String user = userInput.askNonBlank("Gerrit http login");
-                        String password = userInput.askNonBlank("Gerrit http password");
-                        return conf.setAndGetSiteAuth(rootUrl, user, password);
-                      }));
+                  .orElseGet(() -> conf.setAndGetSiteAuth(rootUrl, fetchUser(), fetchPassword())));
+    }
+
+    /** @return The user passed as parameter or the user provided via user input */
+    private GerritUser fetchUser() {
+      GerritUser u = user.getAndSet(null);
+      if (u != null) {
+        return u;
+      }
+      return GerritUser.of(userInput.askNonBlank("Gerrit http login"));
+    }
+
+    /** @return The password passed as parameter or the user provided via user input */
+    private GerritPassword fetchPassword() {
+      GerritPassword p = password.getAndSet(null);
+      if (p != null) {
+        return p;
+      }
+      return GerritPassword.of(userInput.askNonBlank("Gerrit http password"));
     }
   }
 }
