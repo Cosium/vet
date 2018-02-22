@@ -35,21 +35,24 @@ public class Vet {
   public Vet() {
     this(
         Paths.get(System.getProperty("user.dir")),
-        new DefaultFileSystem(),
-        new BasicCommandRunner(),
-        new InteractiveUserInput());
+        new InteractiveUserInput(),
+        new BasicCommandRunner());
+  }
+
+  public Vet(Path workingDir, UserInput userInput, CommandRunner commandRunner) {
+    this(workingDir, userInput, commandRunner, new DefaultFileSystem());
   }
 
   public Vet(
-      Path workingDir, FileSystem fileSystem, CommandRunner commandRunner, UserInput userInput) {
+      Path workingDir, UserInput userInput, CommandRunner commandRunner, FileSystem fileSystem) {
     requireNonNull(workingDir);
-    requireNonNull(fileSystem);
-    requireNonNull(commandRunner);
     requireNonNull(userInput);
+    requireNonNull(commandRunner);
+    requireNonNull(fileSystem);
 
     GitProvider gitProvider = new GitProvider(workingDir, commandRunner);
-    this.gitClientFactory = gitProvider;
     this.userInput = userInput;
+    this.gitClientFactory = gitProvider;
     this.gerritClientFactory =
         new DefaultGerritClientFactory(fileSystem, gitProvider, gitClientFactory, userInput);
   }
@@ -70,14 +73,14 @@ public class Vet {
   public void push(
       GerritUser user,
       GerritPassword password,
-      BranchShortName targetBranch,
-      ChangeSubject changeSubject) {
+      ChangeSubject changeSubject,
+      BranchShortName targetBranch) {
     new PushCommand(
             gitClientFactory.build(),
             gerritClientFactory.build(user, password),
             userInput,
-            targetBranch,
-            changeSubject)
+            changeSubject,
+            targetBranch)
         .execute();
   }
 

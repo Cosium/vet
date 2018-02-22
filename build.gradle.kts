@@ -14,8 +14,6 @@ plugins {
 
     // Apply the application plugin to add support for building an application
     application
-
-    id("com.avast.gradle.docker-compose").version("0.6.17")
 }
 
 application {
@@ -47,6 +45,7 @@ dependencies {
     testCompile("org.eclipse.jgit:org.eclipse.jgit.junit:4.10.0.201712302008-r")
     testCompile("org.assertj:assertj-core:3.9.0")
     testCompile("org.mockito:mockito-core:2.15.0")
+    testCompile("org.testcontainers:testcontainers:1.6.0")
 }
 
 // In this section you declare where to find the dependencies of your project
@@ -55,9 +54,3 @@ repositories {
     // You can declare any Maven/Ivy/file repository here.
     jcenter()
 }
-
-//dockerCompose.isRequiredBy(tasks["test"])
-//
-//dockerCompose {
-//    useComposeFiles = listOf("$buildDir/resources/test/gerrit/docker-compose.yml")
-//}

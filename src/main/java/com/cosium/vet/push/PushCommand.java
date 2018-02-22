@@ -10,8 +10,6 @@ import com.cosium.vet.git.GitUtils;
 import com.cosium.vet.git.RemoteName;
 import com.cosium.vet.runtime.UserInput;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
@@ -26,24 +24,24 @@ public class PushCommand implements VetCommand {
   private final GitClient git;
   private final GerritClient gerrit;
   private final UserInput userInput;
-  private final BranchShortName targetBranch;
   private final ChangeSubject changeSubject;
+  private final BranchShortName targetBranch;
 
   public PushCommand(
       GitClient gitClient,
       GerritClient gerritClient,
       UserInput userInput,
       // Optionals
-      BranchShortName targetBranch,
-      ChangeSubject changeSubject) {
+      ChangeSubject changeSubject,
+      BranchShortName targetBranch) {
     requireNonNull(gitClient);
     requireNonNull(gerritClient);
     requireNonNull(userInput);
     this.git = gitClient;
     this.gerrit = gerritClient;
     this.userInput = userInput;
-    this.targetBranch = ofNullable(targetBranch).orElse(BranchShortName.MASTER);
     this.changeSubject = changeSubject;
+    this.targetBranch = ofNullable(targetBranch).orElse(BranchShortName.MASTER);
   }
 
   @Override

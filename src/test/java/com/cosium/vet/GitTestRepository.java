@@ -1,10 +1,7 @@
-package com.cosium.vet.git;
+package com.cosium.vet;
 
-import com.cosium.vet.TestCommandRunner;
 import com.cosium.vet.runtime.CommandRunner;
 import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,12 +13,10 @@ import static java.util.Objects.requireNonNull;
  *
  * @author Reda.Housni-Alaoui
  */
-class GitTestRepository {
+public class GitTestRepository {
 
-  private static final Logger LOG = LoggerFactory.getLogger(GitTestRepository.class);
-
-  final Path repo;
-  final CommandRunner runner;
+  public final Path repo;
+  public final CommandRunner runner;
 
   private GitTestRepository(Path repo, CommandRunner runner) {
     requireNonNull(repo);
@@ -30,15 +25,15 @@ class GitTestRepository {
     this.runner = runner;
   }
 
-  static Builder builder() {
+  public static Builder builder() {
     return new Builder();
   }
 
-  static class Builder {
+  public static class Builder {
 
     private Builder() {}
 
-    GitTestRepository build() throws Exception {
+    public GitTestRepository build() throws Exception {
       Path workDir = Files.createTempDirectory("vet");
 
       Path remoteRepo = workDir.resolve("upstream");
@@ -58,8 +53,6 @@ class GitTestRepository {
       FileUtils.copyDirectory(workDir.resolve("downstream-tmp").toFile(), repo.toFile());
       runner.run(repo, "git", "config", "user.email", "\"you@example.com\"");
       runner.run(repo, "git", "config", "user.name", "\"Your Name\"");
-
-
 
       return new GitTestRepository(repo, runner);
     }
