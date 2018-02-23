@@ -4,6 +4,7 @@ import com.cosium.vet.VetCommand;
 import com.cosium.vet.VetCommandArgParser;
 import com.cosium.vet.gerrit.ChangeSubject;
 import com.cosium.vet.gerrit.GerritClientFactory;
+import com.cosium.vet.gerrit.PatchSetSubject;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitClientFactory;
 import com.cosium.vet.runtime.UserInput;
@@ -28,6 +29,7 @@ public class PushCommandArgParser implements VetCommandArgParser {
   private static final String COMMAND_NAME = "push";
   private static final String TARGET_BRANCH = "b";
   private static final String CHANGE_SUBJECT = "s";
+  private static final String PATCH_SET_SUBJECT = "p";
 
   private final GerritClientFactory gerritClientFactory;
   private final GitClientFactory gitRepositoryFactory;
@@ -72,6 +74,13 @@ public class PushCommandArgParser implements VetCommandArgParser {
             .hasArg()
             .desc("The subject of the change")
             .build());
+    options.addOption(
+        Option.builder(PATCH_SET_SUBJECT)
+            .argName("subject")
+            .longOpt("patch-set-subject")
+            .hasArg()
+            .desc("The subject of the patch set")
+            .build());
 
     CommandLineParser parser = new DefaultParser();
     try {
@@ -90,13 +99,19 @@ public class PushCommandArgParser implements VetCommandArgParser {
             .filter(StringUtils::isNotBlank)
             .map(ChangeSubject::of)
             .orElse(null);
+    PatchSetSubject patchSetSubject =
+        ofNullable(options.getOption(PATCH_SET_SUBJECT).getValue())
+            .filter(StringUtils::isNotBlank)
+            .map(PatchSetSubject::of)
+            .orElse(null);
 
     return Optional.of(
         new PushCommand(
             gitRepositoryFactory.build(),
             gerritClientFactory.build(null, null),
             userInput,
-                targetBranch, changeSubject
-        ));
+            targetBranch,
+            changeSubject,
+            patchSetSubject));
   }
 }

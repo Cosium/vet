@@ -4,6 +4,7 @@ import com.cosium.vet.VetCommand;
 import com.cosium.vet.gerrit.ChangeSubject;
 import com.cosium.vet.gerrit.GerritChange;
 import com.cosium.vet.gerrit.GerritClient;
+import com.cosium.vet.gerrit.PatchSetSubject;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitClient;
 import com.cosium.vet.git.RemoteName;
@@ -25,6 +26,7 @@ public class PushCommand implements VetCommand {
   private final UserInput userInput;
   private final BranchShortName targetBranch;
   private final ChangeSubject changeSubject;
+  private final PatchSetSubject patchSetSubject;
 
   public PushCommand(
       GitClient gitClient,
@@ -32,7 +34,8 @@ public class PushCommand implements VetCommand {
       UserInput userInput,
       // Optionals
       BranchShortName targetBranch,
-      ChangeSubject changeSubject) {
+      ChangeSubject changeSubject,
+      PatchSetSubject patchSetSubject) {
     requireNonNull(gitClient);
     requireNonNull(gerritClient);
     requireNonNull(userInput);
@@ -41,6 +44,7 @@ public class PushCommand implements VetCommand {
     this.userInput = userInput;
     this.targetBranch = ofNullable(targetBranch).orElse(BranchShortName.MASTER);
     this.changeSubject = changeSubject;
+    this.patchSetSubject = patchSetSubject;
   }
 
   @Override
@@ -60,7 +64,10 @@ public class PushCommand implements VetCommand {
     String parent = git.getMostRecentCommonCommit(String.format("%s/%s", remote, branch));
 
     String patchSetTitle =
-        userInput.askNonBlank("Title for patch set", firstLineOfLastCommitMessage);
+        ofNullable(patchSetSubject)
+            .map(PatchSetSubject::toString)
+            .orElseGet(
+                () -> userInput.askNonBlank("Title for patch set", firstLineOfLastCommitMessage));
     gerrit.createPatchSet(change, parent, git.getTree(), patchSetTitle);
   }
 

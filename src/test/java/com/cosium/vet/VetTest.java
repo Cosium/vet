@@ -4,6 +4,7 @@ import com.cosium.vet.file.DefaultFileSystem;
 import com.cosium.vet.gerrit.ChangeSubject;
 import com.cosium.vet.gerrit.GerritPassword;
 import com.cosium.vet.gerrit.GerritUser;
+import com.cosium.vet.gerrit.PatchSetSubject;
 import com.cosium.vet.runtime.CommandRunner;
 import com.cosium.vet.runtime.NonInteractiveUserInput;
 import org.apache.commons.io.IOUtils;
@@ -44,7 +45,11 @@ public class VetTest extends GerritEnvironmentTest {
     addAndCommitFile("bar");
     addAndCommitFile("baz");
     tested.push(
-        GerritUser.of(USER), GerritPassword.of(PASSWORD), null, ChangeSubject.of("Hello world"));
+        GerritUser.of(USER),
+        GerritPassword.of(PASSWORD),
+        null,
+        ChangeSubject.of("Hello world"),
+        PatchSetSubject.of("Oh yeah"));
   }
 
   private void addAndCommitFile(String name) throws Exception {
