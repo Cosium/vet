@@ -62,9 +62,9 @@ public abstract class GerritEnvironmentTest {
     FileUtils.copyDirectory(new File("src/test/resources/gerrit"), gerritDir.toFile());
 
     gerritHost = "localhost";
-    ServerSocket serverSocket = new ServerSocket(0);
-    gerritPort = serverSocket.getLocalPort();
-    serverSocket.close();
+    try (ServerSocket serverSocket = new ServerSocket(0)) {
+      gerritPort = serverSocket.getLocalPort();
+    }
     gerritRootHttpUrl = GerritHttpRootUrl.of("http://" + gerritHost + ":" + gerritPort + "/");
 
     writePort(gerritDir.resolve(RUN_YML));
