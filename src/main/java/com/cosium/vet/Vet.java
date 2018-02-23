@@ -65,14 +65,12 @@ public class Vet {
       GerritUser user,
       GerritPassword password,
       BranchShortName targetBranch,
-      ChangeSubject changeSubject,
       PatchSetSubject patchSetSubject) {
     new PushCommand(
             gitClientFactory.build(),
             gerritClientFactory.build(user, password),
             userInput,
             targetBranch,
-            changeSubject,
             patchSetSubject)
         .execute();
   }

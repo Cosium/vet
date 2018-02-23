@@ -1,6 +1,5 @@
 package com.cosium.vet;
 
-import com.cosium.vet.gerrit.ChangeSubject;
 import com.cosium.vet.gerrit.GerritPassword;
 import com.cosium.vet.gerrit.GerritUser;
 import com.cosium.vet.gerrit.PatchSetSubject;
@@ -40,23 +39,22 @@ public class VetTest extends GerritEnvironmentTest {
 
   @Test
   public void testFirstPush() throws Exception {
-    addAndCommitFile("bar");
-    addAndCommitFile("baz");
+    addAndCommitFile("bar", "Hello world\n\nWhat's up !");
     tested.push(
-        GerritUser.of(USER),
-        GerritPassword.of(PASSWORD),
-        null,
-        ChangeSubject.of("Hello world"),
-        PatchSetSubject.of("Oh yeah"));
+        GerritUser.of(USER), GerritPassword.of(PASSWORD), null, PatchSetSubject.of("Add bar"));
+
+    addAndCommitFile("baz", "Hello world\n\nWhat's up !");
+    tested.push(
+        GerritUser.of(USER), GerritPassword.of(PASSWORD), null, PatchSetSubject.of("Add baz"));
   }
 
-  private void addAndCommitFile(String name) throws Exception {
-    Path file = downstreamGitDir.resolve(name + ".txt");
+  private void addAndCommitFile(String fileName, String message) throws Exception {
+    Path file = downstreamGitDir.resolve(fileName + ".txt");
     Files.createFile(file);
     try (OutputStream outputStream = Files.newOutputStream(file)) {
-      IOUtils.write("I am a " + name + " !", outputStream, "UTF-8");
+      IOUtils.write("I am a " + fileName + " !", outputStream, "UTF-8");
     }
     runner.run(downstreamGitDir, "git", "add", ".");
-    runner.run(downstreamGitDir, "git", "commit", "-am", name);
+    runner.run(downstreamGitDir, "git", "commit", "-am", message);
   }
 }

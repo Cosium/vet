@@ -2,7 +2,6 @@ package com.cosium.vet.push;
 
 import com.cosium.vet.VetCommand;
 import com.cosium.vet.VetCommandArgParser;
-import com.cosium.vet.gerrit.ChangeSubject;
 import com.cosium.vet.gerrit.GerritClientFactory;
 import com.cosium.vet.gerrit.PatchSetSubject;
 import com.cosium.vet.git.BranchShortName;
@@ -28,7 +27,6 @@ public class PushCommandArgParser implements VetCommandArgParser {
   private static final Logger LOG = LoggerFactory.getLogger(PushCommandArgParser.class);
   private static final String COMMAND_NAME = "push";
   private static final String TARGET_BRANCH = "b";
-  private static final String CHANGE_SUBJECT = "s";
   private static final String PATCH_SET_SUBJECT = "p";
 
   private final GerritClientFactory gerritClientFactory;
@@ -68,13 +66,6 @@ public class PushCommandArgParser implements VetCommandArgParser {
             .desc("The branch targeted by the changes. Default value is 'master'.")
             .build());
     options.addOption(
-        Option.builder(CHANGE_SUBJECT)
-            .argName("subject")
-            .longOpt("change-subject")
-            .hasArg()
-            .desc("The subject of the change")
-            .build());
-    options.addOption(
         Option.builder(PATCH_SET_SUBJECT)
             .argName("subject")
             .longOpt("patch-set-subject")
@@ -94,11 +85,6 @@ public class PushCommandArgParser implements VetCommandArgParser {
             .filter(StringUtils::isNotBlank)
             .map(BranchShortName::of)
             .orElse(null);
-    ChangeSubject changeSubject =
-        ofNullable(options.getOption(CHANGE_SUBJECT).getValue())
-            .filter(StringUtils::isNotBlank)
-            .map(ChangeSubject::of)
-            .orElse(null);
     PatchSetSubject patchSetSubject =
         ofNullable(options.getOption(PATCH_SET_SUBJECT).getValue())
             .filter(StringUtils::isNotBlank)
@@ -111,7 +97,6 @@ public class PushCommandArgParser implements VetCommandArgParser {
             gerritClientFactory.build(null, null),
             userInput,
             targetBranch,
-            changeSubject,
             patchSetSubject));
   }
 }

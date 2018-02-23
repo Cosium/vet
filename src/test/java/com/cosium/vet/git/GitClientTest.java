@@ -89,5 +89,6 @@ public class GitClientTest {
     runner.run(repo, "git", "commit", "-am", "Add bar");
 
     assertThat(tested.getLastCommitMessage()).isEqualTo("Add bar");
+    assertThat(tested.getLastCommitMessageFirstLine()).isEqualTo("Add bar");
   }
 }

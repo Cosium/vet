@@ -4,10 +4,13 @@ import com.cosium.vet.gerrit.config.GerritConfigurationRepository;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitClient;
 import com.cosium.vet.git.GitUtils;
+import com.cosium.vet.utils.NonBlankString;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
 
 /**
  * Created on 16/02/18.
@@ -56,11 +59,11 @@ class DefaultGerritClient implements GerritClient {
   }
 
   @Override
-  public GerritChange createAndSetChange(BranchShortName targetBranch, ChangeSubject subject) {
+  public GerritChange setAndGetChange(BranchShortName targetBranch) {
     return configurationRepository.readAndWrite(
         conf -> {
           GerritChange change =
-              new DefaultGerritChange(buildChangeChangeId(targetBranch), targetBranch, subject);
+              new DefaultGerritChange(buildChangeChangeId(targetBranch), targetBranch);
           conf.setChangeTargetBranch(targetBranch);
           return change;
         });
@@ -68,21 +71,26 @@ class DefaultGerritClient implements GerritClient {
 
   @Override
   public void createPatchSet(
-      GerritChange change, String startRevision, String endRevision, String patchSetTitle) {
+      GerritChange change, String startRevision, String endRevision, PatchSetSubject subject) {
     if (!(change instanceof DefaultGerritChange)) {
       throw new RuntimeException("change must be an instance of " + DefaultGerritChange.class);
     }
     DefaultGerritChange theChange = (DefaultGerritChange) change;
 
     String commitMessage =
-        String.format("%s\n\nChange-Id: %s", theChange.getSubject().get(), theChange.getChangeId());
+        String.format("%s\n\nChange-Id: %s", git.getLastCommitMessage(), theChange.getChangeId());
     String commitId = git.commitTree(git.getTree(), startRevision, commitMessage);
+
+    String messageSuffix =
+        ofNullable(subject)
+            .map(NonBlankString::toString)
+            .map(GitUtils::encodeForGitRef)
+            .map(s -> String.format("m=%s", s))
+            .orElse(StringUtils.EMPTY);
 
     git.push(
         pushUrl.toString(),
-        String.format(
-            "%s:refs/for/%s%%m=%s",
-            commitId, theChange.getTargetBranch(), GitUtils.encodeForGitRef(patchSetTitle)));
+        String.format("%s:refs/for/%s%%%s", commitId, theChange.getTargetBranch(), messageSuffix));
   }
 
   /**
@@ -94,28 +102,17 @@ class DefaultGerritClient implements GerritClient {
 
     private final ChangeChangeId changeId;
     private final BranchShortName targetBranch;
-    private final ChangeSubject subject;
 
     DefaultGerritChange(ChangeChangeId changeId, BranchShortName targetBranch) {
-      this(changeId, targetBranch, null);
-    }
-
-    DefaultGerritChange(
-        ChangeChangeId changeId, BranchShortName targetBranch, ChangeSubject subject) {
       requireNonNull(changeId);
       requireNonNull(targetBranch);
 
       this.changeId = changeId;
       this.targetBranch = targetBranch;
-      this.subject = subject;
     }
 
     ChangeChangeId getChangeId() {
       return changeId;
-    }
-
-    Optional<ChangeSubject> getSubject() {
-      return Optional.ofNullable(subject);
     }
 
     @Override
@@ -128,7 +125,6 @@ class DefaultGerritClient implements GerritClient {
       final StringBuilder sb = new StringBuilder("GerritChange{");
       sb.append("changeId=").append(changeId);
       sb.append(", branch=").append(targetBranch);
-      sb.append(", subject=").append(subject);
       sb.append('}');
       return sb.toString();
     }

@@ -20,4 +20,9 @@ public interface UserInput {
    */
   String askNonBlank(String question);
 
+  /**
+   * @param question The question to ask
+   * @return The user answer that can be blank
+   */
+  String ask(String question);
 }

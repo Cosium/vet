@@ -1,7 +1,6 @@
 package com.cosium.vet.push;
 
 import com.cosium.vet.VetCommand;
-import com.cosium.vet.gerrit.ChangeSubject;
 import com.cosium.vet.gerrit.GerritChange;
 import com.cosium.vet.gerrit.GerritClient;
 import com.cosium.vet.gerrit.PatchSetSubject;
@@ -25,7 +24,6 @@ public class PushCommand implements VetCommand {
   private final GerritClient gerrit;
   private final UserInput userInput;
   private final BranchShortName targetBranch;
-  private final ChangeSubject changeSubject;
   private final PatchSetSubject patchSetSubject;
 
   public PushCommand(
@@ -34,7 +32,6 @@ public class PushCommand implements VetCommand {
       UserInput userInput,
       // Optionals
       BranchShortName targetBranch,
-      ChangeSubject changeSubject,
       PatchSetSubject patchSetSubject) {
     requireNonNull(gitClient);
     requireNonNull(gerritClient);
@@ -43,16 +40,12 @@ public class PushCommand implements VetCommand {
     this.gerrit = gerritClient;
     this.userInput = userInput;
     this.targetBranch = targetBranch;
-    this.changeSubject = changeSubject;
     this.patchSetSubject = patchSetSubject;
   }
 
   @Override
   public void execute() {
-    String firstLineOfLastCommitMessage =
-        StringUtils.substringBefore(git.getLastCommitMessage(), "\n");
-    GerritChange change =
-        gerrit.getChange().orElseGet(() -> createChange(firstLineOfLastCommitMessage));
+    GerritChange change = gerrit.getChange().orElseGet(this::setAndGetChange);
 
     BranchShortName branch = change.getTargetBranch();
     RemoteName remote =
@@ -63,28 +56,25 @@ public class PushCommand implements VetCommand {
 
     String parent = git.getMostRecentCommonCommit(String.format("%s/%s", remote, branch));
 
-    String patchSetTitle =
-        ofNullable(patchSetSubject)
-            .map(PatchSetSubject::toString)
-            .orElseGet(
-                () -> userInput.askNonBlank("Title for patch set", firstLineOfLastCommitMessage));
-    gerrit.createPatchSet(change, parent, git.getTree(), patchSetTitle);
+    PatchSetSubject subject = patchSetSubject;
+    if (subject == null) {
+      subject =
+          ofNullable(userInput.ask("Title for patch set"))
+              .filter(StringUtils::isNotBlank)
+              .map(PatchSetSubject::of)
+              .orElse(null);
+    }
+
+    gerrit.createPatchSet(change, parent, git.getTree(), subject);
   }
 
-  private GerritChange createChange(String defaultSubject) {
+  private GerritChange setAndGetChange() {
     BranchShortName targetBranch =
         ofNullable(this.targetBranch)
             .orElseGet(
                 () ->
                     BranchShortName.of(
                         userInput.askNonBlank("Target branch", BranchShortName.MASTER.value())));
-
-    ChangeSubject subject =
-        ofNullable(changeSubject)
-            .orElseGet(
-                () ->
-                    ChangeSubject.of(
-                        userInput.askNonBlank("Title for change set", defaultSubject)));
-    return gerrit.createAndSetChange(targetBranch, subject);
+    return gerrit.setAndGetChange(targetBranch);
   }
 }

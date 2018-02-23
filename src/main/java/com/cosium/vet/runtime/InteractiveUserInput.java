@@ -31,4 +31,11 @@ public class InteractiveUserInput implements UserInput {
     }
     return value;
   }
+
+  @Override
+  public String ask(String question) {
+    Scanner scanner = new Scanner(System.in);
+    System.out.println(String.format("%s:", question));
+    return scanner.nextLine();
+  }
 }

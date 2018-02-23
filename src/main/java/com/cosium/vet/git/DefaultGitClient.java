@@ -76,6 +76,11 @@ class DefaultGitClient implements GitClient {
   }
 
   @Override
+  public String getLastCommitMessageFirstLine() {
+    return StringUtils.substringBefore(getLastCommitMessage(), "\n");
+  }
+
+  @Override
   public void push(String remote, String refspec) {
     commandRunner.run(repositoryDirectory, GIT, "push", remote, refspec);
   }

@@ -43,5 +43,7 @@ public interface GitClient {
 
   String getLastCommitMessage();
 
+  String getLastCommitMessageFirstLine();
+
   void push(String remote, String refspec);
 }
