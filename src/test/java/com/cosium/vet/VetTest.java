@@ -38,7 +38,7 @@ public class VetTest extends GerritEnvironmentTest {
   }
 
   @Test
-  public void testFirstPush() throws Exception {
+  public void testPush() throws Exception {
     addAndCommitFile("bar", "Hello world\n\nWhat's up !");
     tested.push(
         GerritUser.of(USER), GerritPassword.of(PASSWORD), null, PatchSetSubject.of("Add bar"));

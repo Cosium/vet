@@ -79,7 +79,7 @@ class DefaultGerritClient implements GerritClient {
 
     String commitMessage =
         String.format("%s\n\nChange-Id: %s", git.getLastCommitMessage(), theChange.getChangeId());
-    String commitId = git.commitTree(git.getTree(), startRevision, commitMessage);
+    String commitId = git.commitTree(endRevision, startRevision, commitMessage);
 
     String messageSuffix =
         ofNullable(subject)
