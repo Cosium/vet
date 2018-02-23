@@ -14,7 +14,7 @@ import static org.mockito.Mockito.when;
  *
  * @author Reda.Housni-Alaoui
  */
-public class DefaultGerritConfigurationRepositoryTest {
+public class DefaultGerritConfigurationRepositoryUnitTest {
 
   private static final BranchShortName CHANGE_TARGET_BRANCH = BranchShortName.MASTER;
 
