@@ -16,5 +16,5 @@ public interface VetCommandArgParser {
    * @param args The arguments to parse
    * @return The parsed command or empty
    */
-  Optional<VetCommand> parse(String args[]);
+  Optional<VetCommand> parse(String... args);
 }

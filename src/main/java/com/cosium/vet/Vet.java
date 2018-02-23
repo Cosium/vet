@@ -1,11 +1,13 @@
 package com.cosium.vet;
 
-import com.cosium.vet.gerrit.*;
+import com.cosium.vet.gerrit.DefaultGerritClientFactory;
+import com.cosium.vet.gerrit.GerritClientFactory;
+import com.cosium.vet.gerrit.PatchSetSubject;
 import com.cosium.vet.git.BranchShortName;
-import com.cosium.vet.git.GitClientFactory;
 import com.cosium.vet.git.GitProvider;
 import com.cosium.vet.push.PushCommand;
 import com.cosium.vet.push.PushCommandArgParser;
+import com.cosium.vet.push.PushCommandFactory;
 import com.cosium.vet.runtime.BasicCommandRunner;
 import com.cosium.vet.runtime.CommandRunner;
 import com.cosium.vet.runtime.InteractiveUserInput;
@@ -26,9 +28,7 @@ import static java.util.Objects.requireNonNull;
  */
 public class Vet {
 
-  private final GitClientFactory gitClientFactory;
-  private final GerritClientFactory gerritClientFactory;
-  private final UserInput userInput;
+  private final PushCommandFactory pushCommandFactory;
 
   public Vet() {
     this(
@@ -43,14 +43,13 @@ public class Vet {
     requireNonNull(commandRunner);
 
     GitProvider gitProvider = new GitProvider(workingDir, commandRunner);
-    this.userInput = userInput;
-    this.gitClientFactory = gitProvider;
-    this.gerritClientFactory = new DefaultGerritClientFactory(gitProvider, gitClientFactory);
+    GerritClientFactory gerritClientFactory =
+        new DefaultGerritClientFactory(gitProvider, gitProvider);
+    this.pushCommandFactory = new PushCommand.Factory(gitProvider, gerritClientFactory, userInput);
   }
 
   public void run(String args[]) {
-    PushCommandArgParser pushCommandArgParser =
-        new PushCommandArgParser(gitClientFactory, gerritClientFactory, userInput);
+    PushCommandArgParser pushCommandArgParser = new PushCommandArgParser(pushCommandFactory);
     Lists.newArrayList(pushCommandArgParser)
         .stream()
         .map(commandParser -> commandParser.parse(Arrays.copyOf(args, args.length)))
@@ -61,18 +60,8 @@ public class Vet {
         .execute();
   }
 
-  public void push(
-      GerritUser user,
-      GerritPassword password,
-      BranchShortName targetBranch,
-      PatchSetSubject patchSetSubject) {
-    new PushCommand(
-            gitClientFactory.build(),
-            gerritClientFactory.build(user, password),
-            userInput,
-            targetBranch,
-            patchSetSubject)
-        .execute();
+  public void push(BranchShortName targetBranch, PatchSetSubject patchSetSubject) {
+    pushCommandFactory.build(targetBranch, patchSetSubject).execute();
   }
 
   public void help() {

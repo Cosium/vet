@@ -3,9 +3,11 @@ package com.cosium.vet.push;
 import com.cosium.vet.VetCommand;
 import com.cosium.vet.gerrit.GerritChange;
 import com.cosium.vet.gerrit.GerritClient;
+import com.cosium.vet.gerrit.GerritClientFactory;
 import com.cosium.vet.gerrit.PatchSetSubject;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitClient;
+import com.cosium.vet.git.GitClientFactory;
 import com.cosium.vet.git.RemoteName;
 import com.cosium.vet.runtime.UserInput;
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +28,7 @@ public class PushCommand implements VetCommand {
   private final BranchShortName targetBranch;
   private final PatchSetSubject patchSetSubject;
 
-  public PushCommand(
+  private PushCommand(
       GitClient gitClient,
       GerritClient gerritClient,
       UserInput userInput,
@@ -76,5 +78,35 @@ public class PushCommand implements VetCommand {
                     BranchShortName.of(
                         userInput.askNonBlank("Target branch", BranchShortName.MASTER.value())));
     return gerrit.setAndGetChange(targetBranch);
+  }
+
+  public static class Factory implements PushCommandFactory {
+
+    private final GitClientFactory gitClientFactory;
+    private final GerritClientFactory gerritClientFactory;
+    private final UserInput userInput;
+
+    public Factory(
+        GitClientFactory gitClientFactory,
+        GerritClientFactory gerritClientFactory,
+        UserInput userInput) {
+      requireNonNull(gitClientFactory);
+      requireNonNull(gerritClientFactory);
+      requireNonNull(userInput);
+
+      this.gitClientFactory = gitClientFactory;
+      this.gerritClientFactory = gerritClientFactory;
+      this.userInput = userInput;
+    }
+
+    @Override
+    public PushCommand build(BranchShortName targetBranch, PatchSetSubject patchSetSubject) {
+      return new PushCommand(
+          gitClientFactory.build(),
+          gerritClientFactory.build(),
+          userInput,
+          targetBranch,
+          patchSetSubject);
+    }
   }
 }

@@ -7,10 +7,6 @@ package com.cosium.vet.gerrit;
  */
 public interface GerritClientFactory {
 
-  /**
-   * @param user The optional gerrit user
-   * @param password The optional gerrit password
-   * @return A new ready to use gerrit client
-   */
-  GerritClient build(GerritUser user, GerritPassword password);
+  /** @return A new ready to use gerrit client */
+  GerritClient build();
 }

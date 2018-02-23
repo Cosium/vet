@@ -40,7 +40,7 @@ public class DefaultGerritClientFactory implements GerritClientFactory {
   }
 
   @Override
-  public GerritClient build(GerritUser user, GerritPassword password) {
+  public GerritClient build() {
     GitClient gitClient = gitClientFactory.build();
     GerritConfigurationRepository configurationRepository = configurationRepositoryFactory.build();
 
