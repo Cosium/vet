@@ -8,7 +8,6 @@ import com.cosium.vet.git.GitUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -32,9 +31,9 @@ public class DefaultGerritClientUnitTest {
   private AtomicReference<GerritConfiguration> lastSavedConfiguration;
 
   private GerritConfiguration gerritConfiguration;
+  private ChangeChangeId changeChangeId;
   private GitClient git;
   private GerritPushUrl pushUrl;
-  private GerritProjectName project;
 
   private GerritClient tested;
 
@@ -54,14 +53,16 @@ public class DefaultGerritClientUnitTest {
               lastSavedConfiguration.set(gerritConfiguration);
               return res;
             });
+    ChangeChangeIdFactory changeChangeIdFactory = mock(ChangeChangeIdFactory.class);
+    changeChangeId = mock(ChangeChangeId.class);
+    when(changeChangeIdFactory.build(any(), any())).thenReturn(changeChangeId);
 
     git = mock(GitClient.class);
     when(git.getBranch()).thenReturn(BranchShortName.of("feature/a"));
 
     pushUrl = GerritPushUrl.of("https://bar.com/foo");
-    project = GerritProjectName.of("foo");
 
-    tested = new DefaultGerritClient(configurationRepository, git, pushUrl, project);
+    tested = new DefaultGerritClient(configurationRepository, changeChangeIdFactory, git, pushUrl);
   }
 
   @Test
@@ -100,12 +101,22 @@ public class DefaultGerritClientUnitTest {
       GIVEN_last_commit_message_hello_world_WHEN_create_patch_set_THEN_commit_tree_message_should_contain_hello_world() {
     when(git.getLastCommitMessage()).thenReturn(HELLO_WORLD);
     GerritChange gerritChange = tested.setAndGetChange(BranchShortName.MASTER);
+
     tested.createPatchSet(gerritChange, "start", "end", null);
 
-    ArgumentCaptor<String> commitMessage = ArgumentCaptor.forClass(String.class);
-    verify(git).commitTree(any(), any(), commitMessage.capture());
+    verify(git).commitTree(any(), any(), contains(HELLO_WORLD));
+  }
 
-    assertThat(commitMessage.getValue()).contains(HELLO_WORLD);
+  @Test
+  public void
+      GIVEN_changeid_I1234_WHEN_create_patch_set_THEN_commit_tree_message_should_end_with_I1234() {
+    when(git.getLastCommitMessage()).thenReturn(HELLO_WORLD);
+    GerritChange gerritChange = tested.setAndGetChange(BranchShortName.MASTER);
+
+    when(changeChangeId.toString()).thenReturn("I1234");
+    tested.createPatchSet(gerritChange, "start", "end", null);
+
+    verify(git).commitTree(any(), any(), endsWith("\nChange-Id: I1234"));
   }
 
   @Test

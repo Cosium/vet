@@ -20,32 +20,27 @@ import static java.util.Optional.ofNullable;
 class DefaultGerritClient implements GerritClient {
 
   private final GerritConfigurationRepository configurationRepository;
+  private final ChangeChangeIdFactory changeChangeIdFactory;
   private final GitClient git;
   private final GerritPushUrl pushUrl;
-  private final GerritProjectName project;
 
   DefaultGerritClient(
       GerritConfigurationRepository configurationRepository,
+      ChangeChangeIdFactory changeChangeIdFactory,
       GitClient gitClient,
-      GerritPushUrl pushUrl,
-      GerritProjectName project) {
+      GerritPushUrl pushUrl) {
     requireNonNull(configurationRepository);
     requireNonNull(gitClient);
     requireNonNull(pushUrl);
-    requireNonNull(project);
 
     this.configurationRepository = configurationRepository;
+    this.changeChangeIdFactory = changeChangeIdFactory;
     this.git = gitClient;
     this.pushUrl = pushUrl;
-    this.project = project;
   }
 
   private ChangeChangeId buildChangeChangeId(BranchShortName targetBranch) {
-    return ChangeChangeId.builder()
-        .project(project)
-        .sourceBranch(git.getBranch())
-        .targetBranch(targetBranch)
-        .build();
+    return changeChangeIdFactory.build(git.getBranch(), targetBranch);
   }
 
   @Override

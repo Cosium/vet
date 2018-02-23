@@ -17,70 +17,18 @@ class ChangeChangeId extends NonBlankString {
     super(value);
   }
 
-  static ProjectBuilder builder() {
-    return new ProjectBuilder();
-  }
+  static class Factory implements ChangeChangeIdFactory {
+    private final GerritProjectName project;
 
-  // Builders
-
-  static class ProjectBuilder {
-    private GerritProjectName project;
-
-    SourceBranchBuilder project(GerritProjectName project) {
+    Factory(GerritProjectName project) {
       requireNonNull(project);
       this.project = project;
-      return new SourceBranchBuilder(this);
-    }
-  }
-
-  static class SourceBranchBuilder {
-    private final ProjectBuilder projectBuilder;
-    private BranchShortName sourceBranch;
-
-    SourceBranchBuilder(ProjectBuilder projectBuilder) {
-      requireNonNull(projectBuilder);
-      this.projectBuilder = projectBuilder;
     }
 
-    TargetBranchBuilder sourceBranch(BranchShortName featureBranch) {
-      requireNonNull(featureBranch);
-      this.sourceBranch = featureBranch;
-      return new TargetBranchBuilder(this);
-    }
-  }
-
-  static class TargetBranchBuilder {
-    private final SourceBranchBuilder sourceBranchBuilder;
-    private BranchShortName targetBranch;
-
-    TargetBranchBuilder(SourceBranchBuilder sourceBranchBuilder) {
-      requireNonNull(sourceBranchBuilder);
-      this.sourceBranchBuilder = sourceBranchBuilder;
-    }
-
-    FinalBuilder targetBranch(BranchShortName targetBranch) {
-      requireNonNull(targetBranch);
-      this.targetBranch = targetBranch;
-      return new FinalBuilder(this);
-    }
-  }
-
-  static class FinalBuilder {
-    private final TargetBranchBuilder targetBranchBuilder;
-
-    FinalBuilder(TargetBranchBuilder targetBranchBuilder) {
-      requireNonNull(targetBranchBuilder);
-      this.targetBranchBuilder = targetBranchBuilder;
-    }
-
-    ChangeChangeId build() {
+    @Override
+    public ChangeChangeId build(BranchShortName sourceBranch, BranchShortName targetBranch) {
       String checksum =
-          DigestUtils.shaHex(
-              String.format(
-                  "%s:%s->%s",
-                  targetBranchBuilder.sourceBranchBuilder.projectBuilder.project,
-                  targetBranchBuilder.sourceBranchBuilder.sourceBranch,
-                  targetBranchBuilder.targetBranch));
+          DigestUtils.shaHex(String.format("%s:%s->%s", project, sourceBranch, targetBranch));
       return new ChangeChangeId(String.format("I%s", checksum));
     }
   }

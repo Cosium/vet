@@ -14,13 +14,10 @@ public class ChangeChangeIdTest {
 
   @Test
   public void test() {
+    ChangeChangeIdFactory factory = new ChangeChangeId.Factory(GerritProjectName.of("foo"));
+
     String value =
-        ChangeChangeId.builder()
-            .project(GerritProjectName.of("foo"))
-            .sourceBranch(BranchShortName.of("feature"))
-            .targetBranch(BranchShortName.of("target"))
-            .build()
-            .toString();
+        factory.build(BranchShortName.of("feature"), BranchShortName.of("target")).toString();
 
     // The expected result must remain constant
     assertThat(value).isEqualTo("I47d5e4224d7cb6fe731541a4e9451fbb03e6effe");

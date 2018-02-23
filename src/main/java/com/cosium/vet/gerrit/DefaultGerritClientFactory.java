@@ -59,6 +59,8 @@ public class DefaultGerritClientFactory implements GerritClientFactory {
     GerritProjectName project = pushUrl.parseProjectName();
     LOG.debug("Gerrit project is '{}'", project);
 
-    return new DefaultGerritClient(configurationRepository, gitClient, pushUrl, project);
+    ChangeChangeIdFactory changeChangeIdFactory = new ChangeChangeId.Factory(project);
+    return new DefaultGerritClient(
+        configurationRepository, changeChangeIdFactory, gitClient, pushUrl);
   }
 }
