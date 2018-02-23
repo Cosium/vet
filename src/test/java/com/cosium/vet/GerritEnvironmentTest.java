@@ -1,13 +1,17 @@
 package com.cosium.vet;
 
 import com.cosium.vet.runtime.CommandRunner;
+import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicNameValuePair;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.Description;
@@ -22,6 +26,8 @@ import java.net.ServerSocket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.regex.Pattern;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Created on 22/02/18.
@@ -64,8 +70,7 @@ public abstract class GerritEnvironmentTest {
     try (ServerSocket serverSocket = new ServerSocket(0)) {
       gerritPort = serverSocket.getLocalPort();
     }
-    gerritRootHttpUrl =
-        "http://" + gerritHost + ":" + gerritPort + "/";
+    gerritRootHttpUrl = "http://" + gerritHost + ":" + gerritPort + "/";
 
     writePort(gerritDir.resolve(RUN_YML));
     writePort(gerritDir.resolve("etc").resolve("gerrit.config"));
@@ -108,11 +113,22 @@ public abstract class GerritEnvironmentTest {
 
     LOG.info("Gerrit starting on {}", gerritRootHttpUrl);
 
+    CloseableHttpClient client = HttpClientBuilder.create().build();
+    HttpUriRequest request =
+        RequestBuilder.post(gerritRootHttpUrl + "login/")
+            .setHeader("Content-Type", "application/x-www-form-urlencoded")
+            .setEntity(
+                new UrlEncodedFormEntity(
+                    Lists.newArrayList(
+                        new BasicNameValuePair("username", USER),
+                        new BasicNameValuePair("password", PASSWORD))))
+            .build();
     while (true) {
-      CloseableHttpClient client = HttpClientBuilder.create().build();
-      try (CloseableHttpResponse ignored = client.execute(new HttpGet(gerritRootHttpUrl))) {
+      try (CloseableHttpResponse response = client.execute(request)) {
+        assertThat(response.getStatusLine().getStatusCode()).isLessThan(400);
         break;
       } catch (Throwable e) {
+        LOG.info("Waiting on {}", gerritRootHttpUrl);
         Thread.sleep(1000);
       }
     }

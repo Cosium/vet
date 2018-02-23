@@ -31,6 +31,10 @@ public class GitClientTest {
     tested = gitProvider.build();
   }
 
+  @Test
+  public void testGetBranch() {
+    assertThat(tested.getBranch()).isEqualTo(BranchShortName.MASTER);
+  }
 
   @Test
   public void testGetTree() {

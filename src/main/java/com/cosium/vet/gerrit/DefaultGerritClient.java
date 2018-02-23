@@ -75,7 +75,7 @@ class DefaultGerritClient implements GerritClient {
     DefaultGerritChange theChange = (DefaultGerritChange) change;
 
     String commitMessage =
-        String.format("%s\n\nChange-Id: %s", theChange.getSubject(), theChange.getChangeId());
+        String.format("%s\n\nChange-Id: %s", theChange.getSubject().get(), theChange.getChangeId());
     String commitId = git.commitTree(git.getTree(), startRevision, commitMessage);
 
     git.push(
