@@ -1,13 +1,9 @@
 package com.cosium.vet.gerrit;
 
-import com.cosium.vet.file.FileSystem;
 import com.cosium.vet.gerrit.config.DefaultGerritConfigurationRepositoryFactory;
 import com.cosium.vet.gerrit.config.GerritConfigurationRepository;
 import com.cosium.vet.gerrit.config.GerritConfigurationRepositoryFactory;
 import com.cosium.vet.git.*;
-import com.cosium.vet.runtime.UserInput;
-import com.google.gerrit.extensions.api.GerritApi;
-import com.urswolfer.gerrit.client.rest.GerritRestApiFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,34 +22,21 @@ public class DefaultGerritClientFactory implements GerritClientFactory {
 
   private final GerritConfigurationRepositoryFactory configurationRepositoryFactory;
   private final GitClientFactory gitClientFactory;
-  private final GerritRestApiFactory gerritRestApiFactory;
-  private final UserInput userInput;
 
   public DefaultGerritClientFactory(
-      FileSystem fileSystem,
-      GitConfigRepositoryFactory gitConfigRepositoryfactory,
-      GitClientFactory gitClientFactory,
-      UserInput userInput) {
+      GitConfigRepositoryFactory gitConfigRepositoryfactory, GitClientFactory gitClientFactory) {
     this(
-        new DefaultGerritConfigurationRepositoryFactory(fileSystem, gitConfigRepositoryfactory),
-        gitClientFactory,
-        new GerritRestApiFactory(),
-        userInput);
+        new DefaultGerritConfigurationRepositoryFactory(gitConfigRepositoryfactory),
+        gitClientFactory);
   }
 
   public DefaultGerritClientFactory(
       GerritConfigurationRepositoryFactory configurationRepositoryFactory,
-      GitClientFactory gitClientFactory,
-      GerritRestApiFactory gerritRestApiFactory,
-      UserInput userInput) {
+      GitClientFactory gitClientFactory) {
     requireNonNull(configurationRepositoryFactory);
     requireNonNull(gitClientFactory);
-    requireNonNull(gerritRestApiFactory);
-    requireNonNull(userInput);
     this.configurationRepositoryFactory = configurationRepositoryFactory;
     this.gitClientFactory = gitClientFactory;
-    this.gerritRestApiFactory = gerritRestApiFactory;
-    this.userInput = userInput;
   }
 
   @Override
@@ -73,17 +56,9 @@ public class DefaultGerritClientFactory implements GerritClientFactory {
 
     GerritPushUrl pushUrl = GerritPushUrl.of(remoteUrl.toString());
     LOG.debug("Gerrit push url is {}", pushUrl);
-    GerritHttpRootUrl rootUrl = pushUrl.parseHttpRootUrl();
-    LOG.debug("Gerrit root url is {}", rootUrl);
     GerritProjectName project = pushUrl.parseProjectName();
     LOG.debug("Gerrit project is '{}'", project);
 
-    GerritCredentials credentials =
-        new DefaultGerritCredentials(configurationRepository, userInput, rootUrl, user, password);
-
-    GerritApiBuilder gerritApiBuilder = new GerritApiBuilder(gerritRestApiFactory, credentials);
-    GerritApi gerritApi = gerritApiBuilder.build();
-    return new DefaultGerritClient(
-        configurationRepository, credentials, gitClient, gerritApi, pushUrl, project);
+    return new DefaultGerritClient(configurationRepository, gitClient, pushUrl, project);
   }
 }

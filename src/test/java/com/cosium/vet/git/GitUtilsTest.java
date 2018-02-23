@@ -2,7 +2,7 @@ package com.cosium.vet.git;
 
 import org.junit.Test;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Created on 21/02/18.

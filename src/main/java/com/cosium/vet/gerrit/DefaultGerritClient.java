@@ -4,12 +4,6 @@ import com.cosium.vet.gerrit.config.GerritConfigurationRepository;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitClient;
 import com.cosium.vet.git.GitUtils;
-import com.google.gerrit.extensions.api.GerritApi;
-import com.google.gerrit.extensions.common.ChangeInfo;
-import com.google.gerrit.extensions.common.ChangeInput;
-import com.google.gerrit.extensions.restapi.RestApiException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
@@ -22,84 +16,121 @@ import static java.util.Objects.requireNonNull;
  */
 class DefaultGerritClient implements GerritClient {
 
-  private static final Logger LOG = LoggerFactory.getLogger(DefaultGerritClient.class);
-
   private final GerritConfigurationRepository configurationRepository;
-  private final GerritCredentials credentials;
   private final GitClient git;
-  private final GerritApi gerritApi;
   private final GerritPushUrl pushUrl;
   private final GerritProjectName project;
 
   DefaultGerritClient(
       GerritConfigurationRepository configurationRepository,
-      GerritCredentials credentials,
       GitClient gitClient,
-      GerritApi gerritApi,
       GerritPushUrl pushUrl,
       GerritProjectName project) {
     requireNonNull(configurationRepository);
-    requireNonNull(credentials);
     requireNonNull(gitClient);
-    requireNonNull(gerritApi);
     requireNonNull(pushUrl);
     requireNonNull(project);
 
     this.configurationRepository = configurationRepository;
-    this.credentials = credentials;
     this.git = gitClient;
-    this.gerritApi = gerritApi;
     this.pushUrl = pushUrl;
     this.project = project;
   }
 
-  @Override
-  public Optional<GerritChange> getChange() {
-    return configurationRepository.read().getChangeId().map(this::fetchChange);
+  private ChangeChangeId buildChangeChangeId(BranchShortName targetBranch) {
+    return ChangeChangeId.builder()
+        .project(project)
+        .sourceBranch(git.getBranch())
+        .targetBranch(targetBranch)
+        .build();
   }
 
-  private GerritChange fetchChange(ChangeId changeId) {
-    try {
-      ChangeInfo change = gerritApi.changes().id(changeId.value()).get();
-      GerritChange gerritChange = new GerritChange(pushUrl, change);
-      LOG.debug("Fetched change {}", gerritChange);
-      return gerritChange;
-    } catch (RestApiException e) {
-      throw new RuntimeException(e);
-    }
+  @Override
+  public Optional<GerritChange> getChange() {
+    return configurationRepository
+        .read()
+        .getChangeTargetBranch()
+        .map(
+            targetBranch ->
+                new DefaultGerritChange(buildChangeChangeId(targetBranch), targetBranch));
   }
 
   @Override
   public GerritChange createAndSetChange(BranchShortName targetBranch, ChangeSubject subject) {
-    ChangeInput changeInput =
-        new ChangeInput(project.value(), targetBranch.value(), subject.value());
-    changeInput.workInProgress = true;
-    try {
-      ChangeInfo change = gerritApi.changes().create(changeInput).get();
-      configurationRepository.readAndWrite(
-          conf -> {
-            conf.setChangeId(ChangeId.of(change.id));
-            return null;
-          });
-      GerritChange gerritChange = new GerritChange(pushUrl, change);
-      LOG.debug("Created change {}", gerritChange);
-      return gerritChange;
-    } catch (RestApiException e) {
-      throw new RuntimeException(e);
-    }
+    return configurationRepository.readAndWrite(
+        conf -> {
+          GerritChange change =
+              new DefaultGerritChange(buildChangeChangeId(targetBranch), targetBranch, subject);
+          conf.setChangeTargetBranch(targetBranch);
+          return change;
+        });
   }
 
   @Override
   public void createPatchSet(
       GerritChange change, String startRevision, String endRevision, String patchSetTitle) {
+    if (!(change instanceof DefaultGerritChange)) {
+      throw new RuntimeException("change must be an instance of " + DefaultGerritChange.class);
+    }
+    DefaultGerritChange theChange = (DefaultGerritChange) change;
+
     String commitMessage =
-        String.format("%s\n\nChange-Id: %s", change.getSubject(), change.getChangeId());
+        String.format("%s\n\nChange-Id: %s", theChange.getSubject(), theChange.getChangeId());
     String commitId = git.commitTree(git.getTree(), startRevision, commitMessage);
 
     git.push(
-        change.getPushUrl().withCredentials(credentials).toString(),
+        pushUrl.toString(),
         String.format(
             "%s:refs/for/%s%%m=%s",
-            commitId, change.getBranch(), GitUtils.encodeForGitRef(patchSetTitle)));
+            commitId, theChange.getTargetBranch(), GitUtils.encodeForGitRef(patchSetTitle)));
+  }
+
+  /**
+   * Created on 21/02/18.
+   *
+   * @author Reda.Housni-Alaoui
+   */
+  private class DefaultGerritChange implements GerritChange {
+
+    private final ChangeChangeId changeId;
+    private final BranchShortName targetBranch;
+    private final ChangeSubject subject;
+
+    DefaultGerritChange(ChangeChangeId changeId, BranchShortName targetBranch) {
+      this(changeId, targetBranch, null);
+    }
+
+    DefaultGerritChange(
+        ChangeChangeId changeId, BranchShortName targetBranch, ChangeSubject subject) {
+      requireNonNull(changeId);
+      requireNonNull(targetBranch);
+
+      this.changeId = changeId;
+      this.targetBranch = targetBranch;
+      this.subject = subject;
+    }
+
+    ChangeChangeId getChangeId() {
+      return changeId;
+    }
+
+    Optional<ChangeSubject> getSubject() {
+      return Optional.ofNullable(subject);
+    }
+
+    @Override
+    public BranchShortName getTargetBranch() {
+      return targetBranch;
+    }
+
+    @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder("GerritChange{");
+      sb.append("changeId=").append(changeId);
+      sb.append(", branch=").append(targetBranch);
+      sb.append(", subject=").append(subject);
+      sb.append('}');
+      return sb.toString();
+    }
   }
 }

@@ -9,6 +9,9 @@ import java.util.Optional;
  */
 public interface GitClient {
 
+  /** @return The current branch */
+  BranchShortName getBranch();
+
   /**
    * @param branch The branch to look for
    * @return The remote tracked by the branch

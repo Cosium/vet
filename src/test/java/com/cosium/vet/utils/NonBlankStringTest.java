@@ -1,6 +1,5 @@
 package com.cosium.vet.utils;
 
-import com.cosium.vet.utils.NonBlankString;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -1,7 +1,5 @@
 package com.cosium.vet;
 
-import com.cosium.vet.file.DefaultFileSystem;
-import com.cosium.vet.file.FileSystem;
 import com.cosium.vet.gerrit.*;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitClientFactory;
@@ -40,21 +38,14 @@ public class Vet {
   }
 
   public Vet(Path workingDir, UserInput userInput, CommandRunner commandRunner) {
-    this(workingDir, userInput, commandRunner, new DefaultFileSystem());
-  }
-
-  public Vet(
-      Path workingDir, UserInput userInput, CommandRunner commandRunner, FileSystem fileSystem) {
     requireNonNull(workingDir);
     requireNonNull(userInput);
     requireNonNull(commandRunner);
-    requireNonNull(fileSystem);
 
     GitProvider gitProvider = new GitProvider(workingDir, commandRunner);
     this.userInput = userInput;
     this.gitClientFactory = gitProvider;
-    this.gerritClientFactory =
-        new DefaultGerritClientFactory(fileSystem, gitProvider, gitClientFactory, userInput);
+    this.gerritClientFactory = new DefaultGerritClientFactory(gitProvider, gitClientFactory);
   }
 
   public void run(String args[]) {

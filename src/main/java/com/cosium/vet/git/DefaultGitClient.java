@@ -35,6 +35,12 @@ class DefaultGitClient implements GitClient {
   }
 
   @Override
+  public BranchShortName getBranch() {
+    return BranchShortName.of(
+        commandRunner.run(repositoryDirectory, GIT, "symbolic-ref", "--short", "HEAD"));
+  }
+
+  @Override
   public Optional<RemoteName> getRemote(BranchShortName branch) {
     return ofNullable(gitConfigRepository.getValue(String.format("branch.%s.remote", branch)))
         .filter(StringUtils::isNotBlank)

@@ -1,6 +1,5 @@
 package com.cosium.vet;
 
-import com.cosium.vet.file.DefaultFileSystem;
 import com.cosium.vet.gerrit.ChangeSubject;
 import com.cosium.vet.gerrit.GerritPassword;
 import com.cosium.vet.gerrit.GerritUser;
@@ -32,12 +31,7 @@ public class VetTest extends GerritEnvironmentTest {
     downstreamGitDir = workDir.resolve(PROJECT);
     runner = new TestCommandRunner();
     runner.run(workDir, "git", "clone", "http://" + gerritHost + ":" + gerritPort + "/" + PROJECT);
-    tested =
-        new Vet(
-            downstreamGitDir,
-            new NonInteractiveUserInput(),
-            runner,
-            new DefaultFileSystem(workDir));
+    tested = new Vet(downstreamGitDir, new NonInteractiveUserInput(), runner);
   }
 
   @Test

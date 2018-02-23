@@ -1,6 +1,5 @@
 package com.cosium.vet.gerrit.config;
 
-import com.cosium.vet.file.FileSystem;
 import com.cosium.vet.git.GitConfigRepositoryFactory;
 
 import static java.util.Objects.requireNonNull;
@@ -10,22 +9,19 @@ import static java.util.Objects.requireNonNull;
  *
  * @author Reda.Housni-Alaoui
  */
-public class DefaultGerritConfigurationRepositoryFactory implements GerritConfigurationRepositoryFactory {
+public class DefaultGerritConfigurationRepositoryFactory
+    implements GerritConfigurationRepositoryFactory {
 
-  private final FileSystem fileSystem;
   private final GitConfigRepositoryFactory gitConfigRepositoryFactory;
 
   public DefaultGerritConfigurationRepositoryFactory(
-      FileSystem fileSystem, GitConfigRepositoryFactory gitConfigRepositoryFactory) {
-    requireNonNull(fileSystem);
+      GitConfigRepositoryFactory gitConfigRepositoryFactory) {
     requireNonNull(gitConfigRepositoryFactory);
-    this.fileSystem = fileSystem;
     this.gitConfigRepositoryFactory = gitConfigRepositoryFactory;
   }
 
   @Override
   public GerritConfigurationRepository build() {
-    return new MixedGerritConfigurationRepository(
-        fileSystem, gitConfigRepositoryFactory.buildRepository());
+    return new DefaultGerritConfigurationRepository(gitConfigRepositoryFactory.buildRepository());
   }
 }

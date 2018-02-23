@@ -1,6 +1,5 @@
 package com.cosium.vet;
 
-import com.cosium.vet.gerrit.GerritHttpRootUrl;
 import com.cosium.vet.runtime.CommandRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -41,7 +40,7 @@ public abstract class GerritEnvironmentTest {
   private static DockerComposeContainer gerritRunner;
   protected static String gerritHost;
   protected static int gerritPort;
-  protected static GerritHttpRootUrl gerritRootHttpUrl;
+  private static String gerritRootHttpUrl;
 
   private static void writePort(Path file) throws Exception {
     try (InputStream inputStream = Files.newInputStream(file)) {
@@ -65,7 +64,8 @@ public abstract class GerritEnvironmentTest {
     try (ServerSocket serverSocket = new ServerSocket(0)) {
       gerritPort = serverSocket.getLocalPort();
     }
-    gerritRootHttpUrl = GerritHttpRootUrl.of("http://" + gerritHost + ":" + gerritPort + "/");
+    gerritRootHttpUrl =
+        "http://" + gerritHost + ":" + gerritPort + "/";
 
     writePort(gerritDir.resolve(RUN_YML));
     writePort(gerritDir.resolve("etc").resolve("gerrit.config"));
@@ -110,8 +110,7 @@ public abstract class GerritEnvironmentTest {
 
     while (true) {
       CloseableHttpClient client = HttpClientBuilder.create().build();
-      try (CloseableHttpResponse ignored =
-          client.execute(new HttpGet(gerritRootHttpUrl.toString()))) {
+      try (CloseableHttpResponse ignored = client.execute(new HttpGet(gerritRootHttpUrl))) {
         break;
       } catch (Throwable e) {
         Thread.sleep(1000);

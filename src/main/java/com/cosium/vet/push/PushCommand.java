@@ -42,7 +42,7 @@ public class PushCommand implements VetCommand {
     this.git = gitClient;
     this.gerrit = gerritClient;
     this.userInput = userInput;
-    this.targetBranch = ofNullable(targetBranch).orElse(BranchShortName.MASTER);
+    this.targetBranch = targetBranch;
     this.changeSubject = changeSubject;
     this.patchSetSubject = patchSetSubject;
   }
@@ -54,7 +54,7 @@ public class PushCommand implements VetCommand {
     GerritChange change =
         gerrit.getChange().orElseGet(() -> createChange(firstLineOfLastCommitMessage));
 
-    BranchShortName branch = change.getBranch();
+    BranchShortName branch = change.getTargetBranch();
     RemoteName remote =
         git.getRemote(branch)
             .orElseThrow(
@@ -72,6 +72,13 @@ public class PushCommand implements VetCommand {
   }
 
   private GerritChange createChange(String defaultSubject) {
+    BranchShortName targetBranch =
+        ofNullable(this.targetBranch)
+            .orElseGet(
+                () ->
+                    BranchShortName.of(
+                        userInput.askNonBlank("Target branch", BranchShortName.MASTER.value())));
+
     ChangeSubject subject =
         ofNullable(changeSubject)
             .orElseGet(
