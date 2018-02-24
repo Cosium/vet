@@ -93,6 +93,17 @@ public abstract class GerritEnvironmentTest {
 
     CommandRunner runner = new TestCommandRunner();
 
+    LOG.info("Printing docker user");
+    runner.run(
+        gerritDir,
+        "docker-compose",
+        "-f",
+        RUN_YML,
+        "-f",
+        "show-gerrit-user.yml",
+        "up",
+        "--abort-on-container-exit");
+
     LOG.info("Initializing Gerrit");
     long initStart = System.currentTimeMillis();
     runner.run(
