@@ -4,5 +4,3 @@ services:
   - docker
 jdk:
   - oraclejdk9
-script:
-  - ./gradlew check --scan
