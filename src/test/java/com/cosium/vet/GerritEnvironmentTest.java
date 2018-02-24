@@ -81,6 +81,7 @@ public abstract class GerritEnvironmentTest {
     Files.createDirectories(gerritDir.resolve("plugins"));
     Files.createDirectories(gerritDir.resolve("logs"));
     Files.createDirectories(gerritDir.resolve("db"));
+    Files.createDirectories(gerritDir.resolve("etc").resolve("mail"));
 
     CommandRunner runner = new TestCommandRunner();
 
