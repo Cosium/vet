@@ -59,9 +59,6 @@ public abstract class GerritEnvironmentTest {
                 content, Pattern.quote("${httpPort}"), String.valueOf(gerritPort));
 
         String uid = new UserUtils().getCurrentUserId();
-        if (StringUtils.isNotBlank(uid)) {
-          LOG.info("Current user id is {}", uid);
-        }
         content =
             StringUtils.replaceAll(
                 content, Pattern.quote("${userId}"), StringUtils.defaultString(uid, "1000"));
