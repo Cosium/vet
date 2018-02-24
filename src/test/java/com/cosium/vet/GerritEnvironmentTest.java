@@ -4,7 +4,7 @@ import com.cosium.vet.runtime.CommandRunner;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.filefilter.FalseFileFilter;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListener;
@@ -72,7 +72,7 @@ public abstract class GerritEnvironmentTest {
   private static void setFullPermissions(Path dir) throws IOException {
     Files.setPosixFilePermissions(dir, Set.of(PosixFilePermission.values()));
 
-    FileUtils.listFilesAndDirs(dir.toFile(), FalseFileFilter.INSTANCE, TrueFileFilter.INSTANCE)
+    FileUtils.listFilesAndDirs(dir.toFile(), DirectoryFileFilter.INSTANCE, TrueFileFilter.INSTANCE)
         .stream()
         .map(File::toPath)
         .forEach(
