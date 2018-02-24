@@ -88,7 +88,6 @@ public abstract class GerritEnvironmentTest {
   @BeforeClass
   public static void beforeClass() throws Exception {
     Path gerritDir = Files.createTempDirectory("vet-gerrit_");
-    setFullPermissions(gerritDir);
     FileUtils.copyDirectory(new File("src/test/resources/gerrit"), gerritDir.toFile());
 
     gerritHost = "localhost";
@@ -106,12 +105,12 @@ public abstract class GerritEnvironmentTest {
     Files.createDirectories(gerritDir.resolve("plugins"));
     Files.createDirectories(gerritDir.resolve("logs"));
     Files.createDirectories(gerritDir.resolve("db"));
+    Files.createDirectories(gerritDir.resolve("etc").resolve("mail"));
 
     setFullPermissions(gerritDir);
 
     CommandRunner runner = new TestCommandRunner();
 
-    LOG.info("Current user is {}", UserUtils.getCurrentUser());
     LOG.info("Initializing Gerrit");
     long initStart = System.currentTimeMillis();
     runner.run(
