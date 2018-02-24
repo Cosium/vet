@@ -4,8 +4,6 @@ import com.cosium.vet.runtime.CommandRunner;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.filefilter.DirectoryFileFilter;
-import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListener;
 import org.apache.commons.io.input.TailerListenerAdapter;
@@ -25,14 +23,11 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.DockerComposeContainer;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.PosixFilePermission;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,33 +51,22 @@ public abstract class GerritEnvironmentTest {
   protected static int gerritPort;
   private static String gerritRootHttpUrl;
 
-  private static void writePort(Path file) throws Exception {
+  private static void writeVariableValues(Path file) throws Exception {
     try (InputStream inputStream = Files.newInputStream(file)) {
       String content = IOUtils.toString(inputStream, "UTF-8");
       try (OutputStream outputStream = Files.newOutputStream(file)) {
-        IOUtils.write(
+        content =
             StringUtils.replaceAll(
-                content, Pattern.quote("${httpPort}"), String.valueOf(gerritPort)),
-            outputStream,
-            "UTF-8");
+                content, Pattern.quote("${httpPort}"), String.valueOf(gerritPort));
+
+        String uid = new UserUtils().getCurrentUserId();
+        content =
+            StringUtils.replaceAll(
+                content, Pattern.quote("${userId}"), StringUtils.defaultString(uid, "1000"));
+
+        IOUtils.write(content, outputStream, "UTF-8");
       }
     }
-  }
-
-  private static void setFullPermissions(Path dir) throws IOException {
-    Files.setPosixFilePermissions(dir, Set.of(PosixFilePermission.values()));
-
-    FileUtils.listFilesAndDirs(dir.toFile(), DirectoryFileFilter.INSTANCE, TrueFileFilter.INSTANCE)
-        .stream()
-        .map(File::toPath)
-        .forEach(
-            subDir -> {
-              try {
-                Files.setPosixFilePermissions(subDir, Set.of(PosixFilePermission.values()));
-              } catch (IOException e) {
-                throw new RuntimeException(e);
-              }
-            });
   }
 
   @BeforeClass
@@ -96,8 +80,8 @@ public abstract class GerritEnvironmentTest {
     }
     gerritRootHttpUrl = "http://" + gerritHost + ":" + gerritPort + "/";
 
-    writePort(gerritDir.resolve(RUN_YML));
-    writePort(gerritDir.resolve("etc").resolve("gerrit.config"));
+    writeVariableValues(gerritDir.resolve(RUN_YML));
+    writeVariableValues(gerritDir.resolve("etc").resolve("gerrit.config"));
 
     Files.createDirectories(gerritDir.resolve("git"));
     Files.createDirectories(gerritDir.resolve("cache"));
@@ -106,8 +90,6 @@ public abstract class GerritEnvironmentTest {
     Files.createDirectories(gerritDir.resolve("logs"));
     Files.createDirectories(gerritDir.resolve("db"));
     Files.createDirectories(gerritDir.resolve("etc").resolve("mail"));
-
-    setFullPermissions(gerritDir);
 
     CommandRunner runner = new TestCommandRunner();
 
@@ -133,8 +115,6 @@ public abstract class GerritEnvironmentTest {
     Files.createFile(gerritProjectGitDir.resolve("foo.txt"));
     runner.run(gerritProjectGitDir, "git", "add", ".");
     runner.run(gerritProjectGitDir, "git", "commit", "-am", "Initial commit");
-
-    setFullPermissions(gerritDir);
 
     LOG.info("Starting Gerrit");
     gerritRunner = new DockerComposeContainer(gerritDir.resolve(RUN_YML).toFile());

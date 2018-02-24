@@ -24,9 +24,11 @@ public class TestCommandRunner implements CommandRunner {
   private static Boolean gitAvailable;
 
   private final CommandRunner delegate;
+  private final UserUtils userUtils;
 
   public TestCommandRunner() {
     this.delegate = new BasicCommandRunner();
+    this.userUtils = new UserUtils(delegate);
   }
 
   @Override
@@ -44,12 +46,7 @@ public class TestCommandRunner implements CommandRunner {
       }
 
       if (!gitAvailable) {
-        String uid;
-        try {
-          uid = delegate.run(workingDir, "id", "-u", UserUtils.getCurrentUser());
-        } catch (Throwable t) {
-          uid = null;
-        }
+        String uid = userUtils.getCurrentUserId();
 
         String[] gitBaseCommand = {
           DOCKER_CMD, "run", "--rm", "-v", String.format("%s:/git", workingDir), "--net", "host"

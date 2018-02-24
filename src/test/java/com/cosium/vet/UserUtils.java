@@ -1,5 +1,11 @@
 package com.cosium.vet;
 
+import com.cosium.vet.runtime.CommandRunner;
+
+import java.nio.file.Paths;
+
+import static java.util.Objects.requireNonNull;
+
 /**
  * Created on 24/02/18.
  *
@@ -7,7 +13,29 @@ package com.cosium.vet;
  */
 class UserUtils {
 
-  static String getCurrentUser() {
-    return System.getProperty("user.name");
+  private final CommandRunner runner;
+
+  UserUtils() {
+    this(new TestCommandRunner());
+  }
+
+  UserUtils(CommandRunner runner) {
+    requireNonNull(runner);
+    this.runner = runner;
+  }
+
+  String getCurrentUserId() {
+    String uid;
+    try {
+      uid =
+          runner.run(
+              Paths.get(System.getProperty("user.dir")),
+              "id",
+              "-u",
+              System.getProperty("user.name"));
+    } catch (Throwable t) {
+      uid = null;
+    }
+    return uid;
   }
 }
