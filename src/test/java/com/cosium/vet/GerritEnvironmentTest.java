@@ -49,7 +49,6 @@ public abstract class GerritEnvironmentTest {
   private static DockerComposeContainer gerritRunner;
   protected static String gerritHost;
   protected static int gerritPort;
-  private static String gerritRootHttpUrl;
 
   private static void writeVariableValues(Path file) throws Exception {
     try (InputStream inputStream = Files.newInputStream(file)) {
@@ -81,7 +80,7 @@ public abstract class GerritEnvironmentTest {
     try (ServerSocket serverSocket = new ServerSocket(0)) {
       gerritPort = serverSocket.getLocalPort();
     }
-    gerritRootHttpUrl = "http://" + gerritHost + ":" + gerritPort + "/";
+    String gerritRootHttpUrl = "http://" + gerritHost + ":" + gerritPort + "/";
 
     writeVariableValues(gerritDir.resolve(RUN_YML));
     writeVariableValues(gerritDir.resolve("etc").resolve("gerrit.config"));
