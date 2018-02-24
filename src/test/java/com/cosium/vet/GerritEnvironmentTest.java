@@ -20,11 +20,14 @@ import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.DockerComposeContainer;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -61,9 +64,19 @@ public abstract class GerritEnvironmentTest {
     }
   }
 
+  private static void setFullPermissions(Path dir) throws IOException {
+    Files.setPosixFilePermissions(dir, Set.of(PosixFilePermission.values()));
+  }
+
+  private static void createDirs(Path dir) throws IOException {
+    Files.createDirectories(dir);
+    setFullPermissions(dir);
+  }
+
   @BeforeClass
   public static void beforeClass() throws Exception {
     Path gerritDir = Files.createTempDirectory("vet-gerrit_");
+    setFullPermissions(gerritDir);
     FileUtils.copyDirectory(new File("src/test/resources/gerrit"), gerritDir.toFile());
 
     gerritHost = "localhost";
@@ -75,13 +88,13 @@ public abstract class GerritEnvironmentTest {
     writePort(gerritDir.resolve(RUN_YML));
     writePort(gerritDir.resolve("etc").resolve("gerrit.config"));
 
-    Files.createDirectories(gerritDir.resolve("git"));
-    Files.createDirectories(gerritDir.resolve("cache"));
-    Files.createDirectories(gerritDir.resolve("index"));
-    Files.createDirectories(gerritDir.resolve("plugins"));
-    Files.createDirectories(gerritDir.resolve("logs"));
-    Files.createDirectories(gerritDir.resolve("db"));
-    Files.createDirectories(gerritDir.resolve("etc").resolve("mail"));
+    createDirs(gerritDir.resolve("git"));
+    createDirs(gerritDir.resolve("cache"));
+    createDirs(gerritDir.resolve("index"));
+    createDirs(gerritDir.resolve("plugins"));
+    createDirs(gerritDir.resolve("logs"));
+    createDirs(gerritDir.resolve("db"));
+    setFullPermissions(gerritDir.resolve("etc"));
 
     CommandRunner runner = new TestCommandRunner();
 
@@ -100,7 +113,7 @@ public abstract class GerritEnvironmentTest {
     LOG.info("Gerrit initialized in {}ms", System.currentTimeMillis() - initStart);
 
     Path gerritProjectGitDir = gerritDir.resolve("git").resolve(PROJECT);
-    Files.createDirectories(gerritProjectGitDir);
+    createDirs(gerritProjectGitDir);
 
     runner.run(gerritProjectGitDir, "git", "init");
     runner.run(gerritProjectGitDir, "git", "config", "user.email", "you@example.com");
