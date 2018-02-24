@@ -4,6 +4,8 @@ import com.cosium.vet.runtime.CommandRunner;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.filefilter.FalseFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListener;
 import org.apache.commons.io.input.TailerListenerAdapter;
@@ -69,11 +71,18 @@ public abstract class GerritEnvironmentTest {
 
   private static void setFullPermissions(Path dir) throws IOException {
     Files.setPosixFilePermissions(dir, Set.of(PosixFilePermission.values()));
-  }
 
-  private static void createDirs(Path dir) throws IOException {
-    Files.createDirectories(dir);
-    setFullPermissions(dir);
+    FileUtils.listFilesAndDirs(dir.toFile(), FalseFileFilter.INSTANCE, TrueFileFilter.INSTANCE)
+        .stream()
+        .map(File::toPath)
+        .forEach(
+            subDir -> {
+              try {
+                Files.setPosixFilePermissions(subDir, Set.of(PosixFilePermission.values()));
+              } catch (IOException e) {
+                throw new RuntimeException(e);
+              }
+            });
   }
 
   @BeforeClass
@@ -91,13 +100,14 @@ public abstract class GerritEnvironmentTest {
     writePort(gerritDir.resolve(RUN_YML));
     writePort(gerritDir.resolve("etc").resolve("gerrit.config"));
 
-    createDirs(gerritDir.resolve("git"));
-    createDirs(gerritDir.resolve("cache"));
-    createDirs(gerritDir.resolve("index"));
-    createDirs(gerritDir.resolve("plugins"));
-    createDirs(gerritDir.resolve("logs"));
-    createDirs(gerritDir.resolve("db"));
-    setFullPermissions(gerritDir.resolve("etc"));
+    Files.createDirectories(gerritDir.resolve("git"));
+    Files.createDirectories(gerritDir.resolve("cache"));
+    Files.createDirectories(gerritDir.resolve("index"));
+    Files.createDirectories(gerritDir.resolve("plugins"));
+    Files.createDirectories(gerritDir.resolve("logs"));
+    Files.createDirectories(gerritDir.resolve("db"));
+
+    setFullPermissions(gerritDir);
 
     CommandRunner runner = new TestCommandRunner();
 
@@ -116,7 +126,7 @@ public abstract class GerritEnvironmentTest {
     LOG.info("Gerrit initialized in {}ms", System.currentTimeMillis() - initStart);
 
     Path gerritProjectGitDir = gerritDir.resolve("git").resolve(PROJECT);
-    createDirs(gerritProjectGitDir);
+    Files.createDirectories(gerritProjectGitDir);
 
     runner.run(gerritProjectGitDir, "git", "init");
     runner.run(gerritProjectGitDir, "git", "config", "user.email", "you@example.com");
@@ -124,6 +134,8 @@ public abstract class GerritEnvironmentTest {
     Files.createFile(gerritProjectGitDir.resolve("foo.txt"));
     runner.run(gerritProjectGitDir, "git", "add", ".");
     runner.run(gerritProjectGitDir, "git", "commit", "-am", "Initial commit");
+
+    setFullPermissions(gerritDir);
 
     LOG.info("Starting Gerrit");
     gerritRunner = new DockerComposeContainer(gerritDir.resolve(RUN_YML).toFile());
