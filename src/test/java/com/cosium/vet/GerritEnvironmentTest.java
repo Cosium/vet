@@ -60,6 +60,9 @@ public abstract class GerritEnvironmentTest {
                 content, Pattern.quote("${httpPort}"), String.valueOf(gerritPort));
 
         String uid = new UserUtils().getCurrentUserId();
+        if (StringUtils.isNotBlank(uid)) {
+          LOG.info("Current user id is {}", uid);
+        }
         content =
             StringUtils.replaceAll(
                 content, Pattern.quote("${userId}"), StringUtils.defaultString(uid, "1000"));
@@ -89,20 +92,8 @@ public abstract class GerritEnvironmentTest {
     Files.createDirectories(gerritDir.resolve("plugins"));
     Files.createDirectories(gerritDir.resolve("logs"));
     Files.createDirectories(gerritDir.resolve("db"));
-    Files.createDirectories(gerritDir.resolve("etc").resolve("mail"));
 
     CommandRunner runner = new TestCommandRunner();
-
-    LOG.info("Printing docker user");
-    runner.run(
-        gerritDir,
-        "docker-compose",
-        "-f",
-        RUN_YML,
-        "-f",
-        "show-gerrit-user.yml",
-        "up",
-        "--abort-on-container-exit");
 
     LOG.info("Initializing Gerrit");
     long initStart = System.currentTimeMillis();

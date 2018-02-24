@@ -1,5 +1,0 @@
-version: '2'
-
-services:
-  gerrit:
-    entrypoint: sh -c "echo \"USER=$$(whoami), UID=$$UID\""
