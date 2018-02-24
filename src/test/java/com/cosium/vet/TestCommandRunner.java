@@ -3,6 +3,7 @@ package com.cosium.vet;
 import com.cosium.vet.runtime.BasicCommandRunner;
 import com.cosium.vet.runtime.CommandRunner;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,9 +44,21 @@ public class TestCommandRunner implements CommandRunner {
       }
 
       if (!gitAvailable) {
+        String uid;
+        try {
+          uid = delegate.run(workingDir, "id", "-u", System.getProperty("user.name"));
+        } catch (Throwable t) {
+          uid = null;
+        }
+
         String[] gitBaseCommand = {
-          DOCKER_CMD, "run", "--rm", "-v", String.format("%s:/git", workingDir), DOCKER_GIT_IMAGE
+          DOCKER_CMD, "run", "--rm", "-v", String.format("%s:/git", workingDir), "--net", "host"
         };
+
+        if (StringUtils.isNotBlank(uid)) {
+          gitBaseCommand = ArrayUtils.addAll(gitBaseCommand, "--user", uid);
+        }
+        gitBaseCommand = ArrayUtils.add(gitBaseCommand, DOCKER_GIT_IMAGE);
         command = ArrayUtils.addAll(gitBaseCommand, ArrayUtils.remove(command, 0));
       }
     }

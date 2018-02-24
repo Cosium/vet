@@ -2,7 +2,6 @@ package com.cosium.vet.git;
 
 import com.cosium.vet.TestCommandRunner;
 import com.cosium.vet.runtime.CommandRunner;
-import org.apache.commons.io.FileUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -49,9 +48,8 @@ public class GitTestRepository {
       runner.run(remoteRepo, "git", "add", ".");
       runner.run(remoteRepo, "git", "commit", "-am", "Initial commit");
 
-      runner.run(workDir, "git", "clone", "./upstream", "downstream-tmp");
+      runner.run(workDir, "git", "clone", "./upstream", "downstream");
       Path repo = workDir.resolve("downstream");
-      FileUtils.copyDirectory(workDir.resolve("downstream-tmp").toFile(), repo.toFile());
       runner.run(repo, "git", "config", "user.email", "you@example.com");
       runner.run(repo, "git", "config", "user.name", "Your Name");
 
