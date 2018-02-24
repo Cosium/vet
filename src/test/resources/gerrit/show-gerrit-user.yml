@@ -2,4 +2,4 @@ version: '2'
 
 services:
   gerrit:
-    entrypoint: id -u
+    entrypoint: sh -c "echo \"USER=$$(whoami), UID=$$UID\""
