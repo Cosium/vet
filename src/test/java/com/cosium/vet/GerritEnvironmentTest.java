@@ -85,6 +85,7 @@ public abstract class GerritEnvironmentTest {
 
     CommandRunner runner = new TestCommandRunner();
 
+    LOG.info("Current user is {}", UserUtils.getCurrentUser());
     LOG.info("Initializing Gerrit");
     long initStart = System.currentTimeMillis();
     runner.run(

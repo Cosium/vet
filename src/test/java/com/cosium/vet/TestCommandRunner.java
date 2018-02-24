@@ -46,7 +46,7 @@ public class TestCommandRunner implements CommandRunner {
       if (!gitAvailable) {
         String uid;
         try {
-          uid = delegate.run(workingDir, "id", "-u", System.getProperty("user.name"));
+          uid = delegate.run(workingDir, "id", "-u", UserUtils.getCurrentUser());
         } catch (Throwable t) {
           uid = null;
         }
