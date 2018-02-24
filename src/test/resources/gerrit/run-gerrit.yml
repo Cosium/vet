@@ -3,10 +3,8 @@ version: '2'
 services:
   gerrit:
     build: .
-#    image: cosiumoss/gerrit:2.15.rc2-centos7-cosfork4
     ports:
       - "${httpPort}:8080"
-    user: "${userId}"
     depends_on:
       - gerrit-ldap
     volumes:

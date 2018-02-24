@@ -12,7 +12,7 @@ RUN rpm -i https://gerritforge.com/gerritforge-repo-1-2.noarch.rpm
 RUN yum -y install java-1.8.0-openjdk
 RUN yum -y install gerrit-2.15.rc2-1
 
-RUN chown -R gerrit /var/gerrit
+RUN usermod -u ${userId} gerrit
 USER gerrit
 
 RUN java -jar /var/gerrit/bin/gerrit.war init --batch --install-all-plugins -d /var/gerrit

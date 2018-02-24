@@ -80,6 +80,7 @@ public abstract class GerritEnvironmentTest {
     String gerritRootHttpUrl = "http://" + gerritHost + ":" + gerritPort + "/";
 
     writeVariableValues(gerritDir.resolve(RUN_YML));
+    writeVariableValues(gerritDir.resolve("Dockerfile"));
     writeVariableValues(gerritDir.resolve("etc").resolve("gerrit.config"));
 
     Files.createDirectories(gerritDir.resolve("git"));
