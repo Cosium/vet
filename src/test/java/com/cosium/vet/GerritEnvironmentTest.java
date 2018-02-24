@@ -4,6 +4,9 @@ import com.cosium.vet.runtime.CommandRunner;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.Tailer;
+import org.apache.commons.io.input.TailerListener;
+import org.apache.commons.io.input.TailerListenerAdapter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -147,11 +150,24 @@ public abstract class GerritEnvironmentTest {
         Thread.sleep(1000);
       }
     }
+
+    TailerListener listener = new GerritServerListener();
+    Tailer tailer =
+        new Tailer(gerritDir.resolve("logs").resolve("log.log").toFile(), listener, 200);
+    Thread thread = new Thread(tailer);
+    thread.setDaemon(true);
+    thread.start();
   }
 
   @AfterClass
   public static void afterClass() {
     LOG.info("Stopping Gerrit");
     gerritRunner.finished(Description.EMPTY);
+  }
+
+  private static class GerritServerListener extends TailerListenerAdapter {
+    public void handle(String line) {
+      System.out.println("[GerritServer] " + line);
+    }
   }
 }
