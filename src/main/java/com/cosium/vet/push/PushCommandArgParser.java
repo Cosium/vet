@@ -1,7 +1,7 @@
 package com.cosium.vet.push;
 
-import com.cosium.vet.command.VetCommand;
 import com.cosium.vet.command.VetAdvancedCommandArgParser;
+import com.cosium.vet.command.VetCommand;
 import com.cosium.vet.gerrit.PatchSetSubject;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.thirdparty.apache_commons_cli.*;
@@ -51,9 +51,9 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
     formatter.setOptionComparator(null);
     formatter.printHelp(
         String.format("%s %s", executableName, COMMAND_NAME),
-        "Push the changes to Gerrit by adding a new patch set.",
+        StringUtils.EMPTY,
         options,
-        "If the change set does not exist, patch set will be appended to a new one, otherwise to the existing one.",
+        "Push the changes to Gerrit by adding a new patch set to the current change set.\nIf no change set exists, patch set will be appended to a new one.",
         true);
   }
 

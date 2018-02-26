@@ -48,7 +48,7 @@ public class DebugOptions {
       builder
           .append(" ")
           .append(StringUtils.join(verboseArgNames, ","))
-          .append("        Enable verbose mode")
+          .append("         Enable verbose mode")
           .append("\n");
     }
     return builder.toString();
