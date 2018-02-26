@@ -4,8 +4,8 @@ import com.cosium.vet.gerrit.config.GerritConfigurationRepository;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitClient;
 import com.cosium.vet.git.GitUtils;
+import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 import com.cosium.vet.utils.NonBlankString;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Optional;
 

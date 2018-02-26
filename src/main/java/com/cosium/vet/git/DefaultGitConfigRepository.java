@@ -2,7 +2,7 @@ package com.cosium.vet.git;
 
 import com.cosium.vet.runtime.CommandRunException;
 import com.cosium.vet.runtime.CommandRunner;
-import org.apache.commons.lang3.StringUtils;
+import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 
 import java.nio.file.Path;
 

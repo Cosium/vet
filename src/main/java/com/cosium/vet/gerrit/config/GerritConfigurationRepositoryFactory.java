@@ -6,5 +6,5 @@ package com.cosium.vet.gerrit.config;
  * @author Reda.Housni-Alaoui
  */
 public interface GerritConfigurationRepositoryFactory {
-    GerritConfigurationRepository build();
+  GerritConfigurationRepository build();
 }

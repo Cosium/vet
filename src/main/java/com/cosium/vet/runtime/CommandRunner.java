@@ -15,5 +15,4 @@ public interface CommandRunner {
    * @return The command output
    */
   String run(Path workingDir, String... command);
-
 }

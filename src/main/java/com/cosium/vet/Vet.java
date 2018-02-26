@@ -8,15 +8,12 @@ import com.cosium.vet.git.GitProvider;
 import com.cosium.vet.push.PushCommand;
 import com.cosium.vet.push.PushCommandArgParser;
 import com.cosium.vet.push.PushCommandFactory;
-import com.cosium.vet.runtime.BasicCommandRunner;
-import com.cosium.vet.runtime.CommandRunner;
-import com.cosium.vet.runtime.InteractiveUserInput;
-import com.cosium.vet.runtime.UserInput;
-import com.google.common.collect.Lists;
+import com.cosium.vet.runtime.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
@@ -30,17 +27,20 @@ public class Vet {
 
   private final PushCommandFactory pushCommandFactory;
 
-  public Vet() {
-    this(
-        Paths.get(System.getProperty("user.dir")),
-        new InteractiveUserInput(),
-        new BasicCommandRunner());
+  public Vet(boolean interactive) {
+    this(Paths.get(System.getProperty("user.dir")), new BasicCommandRunner(), interactive);
   }
 
-  public Vet(Path workingDir, UserInput userInput, CommandRunner commandRunner) {
+  public Vet(Path workingDir, CommandRunner commandRunner, boolean interactive) {
     requireNonNull(workingDir);
-    requireNonNull(userInput);
     requireNonNull(commandRunner);
+
+    UserInput userInput;
+    if (interactive) {
+      userInput = new InteractiveUserInput();
+    } else {
+      userInput = new NonInteractiveUserInput();
+    }
 
     GitProvider gitProvider = new GitProvider(workingDir, commandRunner);
     GerritClientFactory gerritClientFactory =
@@ -50,7 +50,7 @@ public class Vet {
 
   public void run(String args[]) {
     PushCommandArgParser pushCommandArgParser = new PushCommandArgParser(pushCommandFactory);
-    Lists.newArrayList(pushCommandArgParser)
+    List.of(pushCommandArgParser)
         .stream()
         .map(commandParser -> commandParser.parse(Arrays.copyOf(args, args.length)))
         .filter(Optional::isPresent)

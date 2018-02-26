@@ -5,7 +5,7 @@ package com.cosium.vet.runtime;
  *
  * @author Reda.Housni-Alaoui
  */
-interface UserOutput {
+public interface UserOutput {
 
   /** @param message The message to display to the user */
   void display(String message);

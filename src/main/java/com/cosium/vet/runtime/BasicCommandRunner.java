@@ -1,9 +1,9 @@
 package com.cosium.vet.runtime;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.cosium.vet.log.Logger;
+import com.cosium.vet.log.LoggerFactory;
+import com.cosium.vet.thirdparty.apache_commons_io.IOUtils;
+import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;

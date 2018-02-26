@@ -5,7 +5,7 @@ package com.cosium.vet.runtime;
  *
  * @author Reda.Housni-Alaoui
  */
-interface InputScanner {
+public interface InputScanner {
 
   String nextLine();
 }

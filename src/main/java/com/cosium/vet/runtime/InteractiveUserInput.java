@@ -1,6 +1,6 @@
 package com.cosium.vet.runtime;
 
-import org.apache.commons.lang3.StringUtils;
+import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 
 import static java.util.Objects.requireNonNull;
 

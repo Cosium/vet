@@ -10,7 +10,7 @@ import com.cosium.vet.git.GitClient;
 import com.cosium.vet.git.GitClientFactory;
 import com.cosium.vet.git.RemoteName;
 import com.cosium.vet.runtime.UserInput;
-import org.apache.commons.lang3.StringUtils;
+import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;

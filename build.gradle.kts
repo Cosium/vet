@@ -1,19 +1,18 @@
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.internal.impldep.com.google.common.collect.Lists
 
 plugins {
-    // Apply the java plugin to add support for Java
     java
 
-    // Apply the application plugin to add support for building an application
     application
 }
 
-application {
+val mainClass = "com.cosium.vet.App"
 
-    // Define the main class for the application
-    mainClassName = "App"
+application {
+    mainClassName = mainClass
 }
 
 java {
@@ -22,34 +21,93 @@ java {
 }
 
 dependencies {
-    // This dependency is found on compile classpath of this component and consumers.
-    compile("com.google.guava:guava:23.0")
-    compile("commons-cli:commons-cli:1.4")
-    compile("org.slf4j:slf4j-api:1.7.25")
-    compile("org.apache.commons:commons-lang3:3.7")
-    compile("commons-io:commons-io:2.6")
-    compile("commons-codec:commons-codec:20041127.091804")
-
-    runtime("org.slf4j:slf4j-simple:1.7.25")
-
-    // Use JUnit test framework
     testCompile("junit:junit:4.12")
-    testCompile("org.eclipse.jgit:org.eclipse.jgit.junit:4.10.0.201712302008-r")
     testCompile("org.assertj:assertj-core:3.9.0")
     testCompile("org.mockito:mockito-core:2.15.0")
-    testCompile("org.testcontainers:testcontainers:1.6.0")
+    testCompile("org.apache.httpcomponents:httpclient:4.5.5")
 }
 
-// In this section you declare where to find the dependencies of your project
 repositories {
-    // Use jcenter for resolving your dependencies.
-    // You can declare any Maven/Ivy/file repository here.
+    mavenLocal()
     jcenter()
 }
 
-tasks.withType<Test> {
-    testLogging {
-        exceptionFormat = TestExceptionFormat.FULL
-        showStandardStreams = true
+tasks {
+    "test"(Test::class) {
+        testLogging {
+            exceptionFormat = TestExceptionFormat.FULL
+            showStandardStreams = true
+        }
     }
+
+    "jar"(Jar::class) {
+        manifest {
+            attributes["Main-Class"] = mainClass
+        }
+    }
+
+//------------------------------- jigsaw#start -----------------------------------------------------
+    val moduleName = "com.cosium.vet"
+
+    "compileJava"(JavaCompile::class) {
+        inputs.property("moduleName", moduleName)
+        doFirst {
+            options.compilerArgs = listOf(
+                    "--module-path", classpath.asPath
+            )
+            classpath = files()
+        }
+    }
+
+    "compileTestJava"(JavaCompile::class) {
+        inputs.property("moduleName", moduleName)
+
+
+        doFirst {
+            options.compilerArgs = listOf(
+                    "--module-path", classpath.asPath,
+                    "--add-modules", "junit",
+                    "--add-reads", "$moduleName=junit",
+                    "--add-reads", "$moduleName=org.mockito",
+                    "--add-reads", "$moduleName=assertj.core",
+                    "--add-reads", "$moduleName=httpclient",
+                    "--add-reads", "$moduleName=httpcore",
+                    "--patch-module", "$moduleName=" + files(java.sourceSets["test"].java.srcDirs).asPath
+            )
+            classpath = files()
+        }
+    }
+
+    "test"(Test::class) {
+        inputs.property("moduleName", moduleName)
+        doFirst {
+            jvmArgs = listOf(
+                    "--module-path", classpath.asPath,
+                    "--add-modules", "ALL-MODULE-PATH",
+                    "--add-reads", "$moduleName=junit",
+                    "--add-reads", "$moduleName=org.mockito",
+                    "--add-reads", "$moduleName=assertj.core",
+                    "--add-reads", "$moduleName=httpclient",
+                    "--add-reads", "$moduleName=httpcore",
+                    "--patch-module", "$moduleName=" + files(java.sourceSets["test"].java.outputDir).asPath
+            )
+            classpath = files()
+        }
+    }
+
+    "jlink"(Exec::class) {
+        dependsOn("build")
+
+        delete("$buildDir/dist")
+
+        workingDir("$buildDir")
+        val javaHome = System.getProperty("java.home")!!
+        commandLine("$javaHome/bin/jlink", "--module-path", "libs${File.pathSeparatorChar}$javaHome/jmods",
+                "--add-modules", moduleName, "--launcher", "vet=$moduleName/$mainClass", "--output", "dist", "--strip-debug",
+                "--compress", "2", "--no-header-files", "--no-man-pages")
+
+    }
+
+//------------------------------- jigsaw#end -----------------------------------------------------
 }
+

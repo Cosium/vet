@@ -4,8 +4,8 @@ import com.cosium.vet.gerrit.config.DefaultGerritConfigurationRepositoryFactory;
 import com.cosium.vet.gerrit.config.GerritConfigurationRepository;
 import com.cosium.vet.gerrit.config.GerritConfigurationRepositoryFactory;
 import com.cosium.vet.git.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.cosium.vet.log.Logger;
+import com.cosium.vet.log.LoggerFactory;
 
 import java.net.URL;
 

@@ -1,7 +1,7 @@
 package com.cosium.vet.runtime;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.cosium.vet.log.Logger;
+import com.cosium.vet.log.LoggerFactory;
 
 /**
  * Created on 20/02/18.

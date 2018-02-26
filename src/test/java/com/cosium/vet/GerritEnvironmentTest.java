@@ -1,13 +1,14 @@
 package com.cosium.vet;
 
+import com.cosium.vet.log.Logger;
+import com.cosium.vet.log.LoggerFactory;
 import com.cosium.vet.runtime.CommandRunner;
-import com.google.common.collect.Lists;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.Tailer;
-import org.apache.commons.io.input.TailerListener;
-import org.apache.commons.io.input.TailerListenerAdapter;
-import org.apache.commons.lang3.StringUtils;
+import com.cosium.vet.thirdparty.apache_commons_io.FileUtils;
+import com.cosium.vet.thirdparty.apache_commons_io.IOUtils;
+import com.cosium.vet.thirdparty.apache_commons_io.input.Tailer;
+import com.cosium.vet.thirdparty.apache_commons_io.input.TailerListener;
+import com.cosium.vet.thirdparty.apache_commons_io.input.TailerListenerAdapter;
+import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -17,10 +18,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.runner.Description;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.DockerComposeContainer;
 
 import java.io.File;
 import java.io.InputStream;
@@ -28,6 +25,7 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,14 +39,15 @@ public abstract class GerritEnvironmentTest {
 
   private static final Logger LOG = LoggerFactory.getLogger(GerritEnvironmentTest.class);
   private static final String RUN_YML = "run-gerrit.yml";
+  private static final String INIT_YML = "init-gerrit.yml";
 
   protected static final String USER = "fry";
   protected static final String PASSWORD = "fry";
   protected static final String PROJECT = "foo";
 
-  private static DockerComposeContainer gerritRunner;
   protected static String gerritHost;
   protected static int gerritPort;
+  private static Path gerritDir;
 
   private static void writeVariableValues(Path file) throws Exception {
     try (InputStream inputStream = Files.newInputStream(file)) {
@@ -61,7 +60,7 @@ public abstract class GerritEnvironmentTest {
         String uid = new UserUtils().getCurrentUserId();
         content =
             StringUtils.replaceAll(
-                content, Pattern.quote("${userId}"), StringUtils.defaultString(uid, "1000"));
+                content, Pattern.quote("${userId}"), StringUtils.defaultIfBlank(uid, "1000"));
 
         IOUtils.write(content, outputStream, "UTF-8");
       }
@@ -70,7 +69,11 @@ public abstract class GerritEnvironmentTest {
 
   @BeforeClass
   public static void beforeClass() throws Exception {
-    Path gerritDir = Files.createTempDirectory("vet-gerrit_");
+    gerritDir = Files.createTempDirectory("vet-gerrit_");
+    LOG.info(
+        "Copying from {} to {}",
+        new File("src/test/resources/gerrit").getAbsoluteFile(),
+        gerritDir);
     FileUtils.copyDirectory(new File("src/test/resources/gerrit"), gerritDir.toFile());
 
     gerritHost = "localhost";
@@ -100,7 +103,7 @@ public abstract class GerritEnvironmentTest {
         "-f",
         RUN_YML,
         "-f",
-        "init-gerrit.yml",
+        INIT_YML,
         "up",
         "--abort-on-container-exit");
     LOG.info("Gerrit initialized in {}ms", System.currentTimeMillis() - initStart);
@@ -116,9 +119,7 @@ public abstract class GerritEnvironmentTest {
     runner.run(gerritProjectGitDir, "git", "commit", "-am", "Initial commit");
 
     LOG.info("Starting Gerrit");
-    gerritRunner = new DockerComposeContainer(gerritDir.resolve(RUN_YML).toFile());
-    gerritRunner.starting(Description.EMPTY);
-
+    ProcessUtils.create(gerritDir, "docker-compose", "-f", RUN_YML, "up", "-d");
     LOG.info("Gerrit starting on {}", gerritRootHttpUrl);
 
     CloseableHttpClient client = HttpClientBuilder.create().build();
@@ -127,7 +128,7 @@ public abstract class GerritEnvironmentTest {
             .setHeader("Content-Type", "application/x-www-form-urlencoded")
             .setEntity(
                 new UrlEncodedFormEntity(
-                    Lists.newArrayList(
+                    List.of(
                         new BasicNameValuePair("username", USER),
                         new BasicNameValuePair("password", PASSWORD))))
             .build();
@@ -151,8 +152,14 @@ public abstract class GerritEnvironmentTest {
 
   @AfterClass
   public static void afterClass() {
-    LOG.info("Stopping Gerrit");
-    gerritRunner.finished(Description.EMPTY);
+    try {
+      LOG.info("Stopping Gerrit");
+      int exitCode =
+          ProcessUtils.create(gerritDir, "docker-compose", "-f", RUN_YML, "stop").waitFor();
+      LOG.info("Gerrit stopped with code {}", exitCode);
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   private static class GerritServerListener extends TailerListenerAdapter {

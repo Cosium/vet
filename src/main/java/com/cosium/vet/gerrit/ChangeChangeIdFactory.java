@@ -7,7 +7,7 @@ import com.cosium.vet.git.BranchShortName;
  *
  * @author Reda.Housni-Alaoui
  */
-interface ChangeChangeIdFactory {
+public interface ChangeChangeIdFactory {
 
   ChangeChangeId build(BranchShortName sourceBranch, BranchShortName targetBranch);
 }

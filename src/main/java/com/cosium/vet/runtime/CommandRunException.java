@@ -1,6 +1,6 @@
 package com.cosium.vet.runtime;
 
-import org.apache.commons.lang3.StringUtils;
+import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 
 /**
  * Created on 20/02/18.
@@ -14,7 +14,8 @@ public class CommandRunException extends RuntimeException {
   CommandRunException(int exitCode, String output, String... command) {
     super(
         String.format(
-            "'%s' failed with code %s: \n\n %s", StringUtils.join(command, " "), exitCode, output));
+            "'%s' failed with code %s: \n\n %s",
+            StringUtils.join(command, StringUtils.SPACE), exitCode, output));
     this.exitCode = exitCode;
   }
 

@@ -1,8 +1,8 @@
 package com.cosium.vet.gerrit;
 
 import com.cosium.vet.git.BranchShortName;
+import com.cosium.vet.thirdparty.apache_commons_codec.DigestUtils;
 import com.cosium.vet.utils.NonBlankString;
-import org.apache.commons.codec.digest.DigestUtils;
 
 import static java.util.Objects.requireNonNull;
 
@@ -11,7 +11,7 @@ import static java.util.Objects.requireNonNull;
  *
  * @author Reda.Housni-Alaoui
  */
-class ChangeChangeId extends NonBlankString {
+public class ChangeChangeId extends NonBlankString {
 
   private ChangeChangeId(String value) {
     super(value);
