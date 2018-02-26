@@ -1,20 +1,29 @@
 package com.cosium.vet;
 
-import java.util.Optional;
-
 /**
  * Created on 14/02/18.
  *
  * @author Reda.Housni-Alaoui
  */
-@FunctionalInterface
 public interface VetCommandArgParser {
 
+  /** Display help for the managed command */
+  void displayHelp(String executableName);
+
+  /** @return The command arg name. i.e. 'push' */
+  String getCommandArgName();
+
   /**
-   * Parse the arguments and maybe return a new command.
+   * @param args The arguments to parse
+   * @return True if the current parser is able to parse the arguments
+   */
+  boolean canParse(String... args);
+
+  /**
+   * Parse the arguments and return a new command.
    *
    * @param args The arguments to parse
-   * @return The parsed command or empty
+   * @return The parsed command
    */
-  Optional<VetCommand> parse(String... args);
+  VetCommand parse(String... args);
 }

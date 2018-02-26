@@ -31,12 +31,12 @@ public class PushCommandArgParserUnitTest {
 
   @Test
   public void testNonPushCommand() {
-    assertThat(tested.parse("help")).isEmpty();
+    assertThat(tested.canParse("help")).isFalse();
   }
 
   @Test
   public void testZeroArg() {
-    assertThat(tested.parse()).isEmpty();
+    assertThat(tested.canParse()).isFalse();
   }
 
   @Test
@@ -67,5 +67,10 @@ public class PushCommandArgParserUnitTest {
   public void testAll() {
     tested.parse("push", "--target-branch", "b1", "--patch-set-subject", "hello");
     verify(factory).build(eq(BranchShortName.of("b1")), eq(PatchSetSubject.of("hello")));
+  }
+
+  @Test
+  public void displayHelp() {
+    tested.displayHelp("vet");
   }
 }

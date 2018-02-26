@@ -8,6 +8,7 @@ module com.cosium.vet {
   opens com.cosium.vet.push;
   opens com.cosium.vet.runtime;
   opens com.cosium.vet.utils;
+  opens com.cosium.vet.help;
 
   exports com.cosium.vet.thirdparty.apache_commons_io;
   exports com.cosium.vet.thirdparty.apache_commons_lang3;

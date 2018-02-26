@@ -5,6 +5,7 @@ import com.cosium.vet.gerrit.GerritClientFactory;
 import com.cosium.vet.gerrit.PatchSetSubject;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitProvider;
+import com.cosium.vet.help.HelpCommand;
 import com.cosium.vet.push.PushCommand;
 import com.cosium.vet.push.PushCommandArgParser;
 import com.cosium.vet.push.PushCommandFactory;
@@ -12,9 +13,9 @@ import com.cosium.vet.runtime.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 
@@ -25,7 +26,11 @@ import static java.util.Objects.requireNonNull;
  */
 public class Vet {
 
+  private static final String APP_NAME = "vet";
+
   private final PushCommandFactory pushCommandFactory;
+  private final List<VetCommandArgParser> commandParsers;
+  private final VetCommandArgParser helpCommandParser;
 
   public Vet(boolean interactive) {
     this(Paths.get(System.getProperty("user.dir")), new BasicCommandRunner(), interactive);
@@ -46,17 +51,23 @@ public class Vet {
     GerritClientFactory gerritClientFactory =
         new DefaultGerritClientFactory(gitProvider, gitProvider);
     this.pushCommandFactory = new PushCommand.Factory(gitProvider, gerritClientFactory, userInput);
+
+    List<VetCommandArgParser> nonHelpParsers =
+        List.of(new PushCommandArgParser(pushCommandFactory));
+    this.helpCommandParser = new HelpCommand.ArgParser(APP_NAME, nonHelpParsers);
+    List<VetCommandArgParser> parsers = new ArrayList<>();
+    parsers.add(helpCommandParser);
+    parsers.addAll(nonHelpParsers);
+    this.commandParsers = Collections.unmodifiableList(parsers);
   }
 
   public void run(String args[]) {
-    PushCommandArgParser pushCommandArgParser = new PushCommandArgParser(pushCommandFactory);
-    List.of(pushCommandArgParser)
+    commandParsers
         .stream()
-        .map(commandParser -> commandParser.parse(Arrays.copyOf(args, args.length)))
-        .filter(Optional::isPresent)
-        .map(Optional::get)
+        .filter(p -> p.canParse(args))
         .findFirst()
-        .orElseGet(HelpCommand::new)
+        .orElse(helpCommandParser)
+        .parse(args)
         .execute();
   }
 
@@ -64,7 +75,7 @@ public class Vet {
     pushCommandFactory.build(targetBranch, patchSetSubject).execute();
   }
 
-  public void help() {
-    new HelpCommand().execute();
+  public void help(String commandToDescribe) {
+    new HelpCommand(APP_NAME, commandParsers, commandToDescribe).execute();
   }
 }
