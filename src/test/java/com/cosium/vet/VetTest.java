@@ -1,5 +1,6 @@
 package com.cosium.vet;
 
+import com.cosium.vet.command.DebugOptions;
 import com.cosium.vet.gerrit.PatchSetSubject;
 import com.cosium.vet.runtime.CommandRunner;
 import com.cosium.vet.thirdparty.apache_commons_io.IOUtils;
@@ -33,7 +34,7 @@ public class VetTest extends GerritEnvironmentTest {
         "http://" + USER + ":" + PASSWORD + "@" + gerritHost + ":" + gerritPort + "/" + PROJECT);
     runner.run(downstreamGitDir, "git", "config", "user.email", "you@example.com");
     runner.run(downstreamGitDir, "git", "config", "user.name", "Your Name");
-    tested = new Vet(downstreamGitDir, runner, false);
+    tested = new Vet(downstreamGitDir, runner, false, DebugOptions.empty());
   }
 
   @Test

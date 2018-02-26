@@ -1,6 +1,6 @@
 package com.cosium.vet.push;
 
-import com.cosium.vet.VetCommand;
+import com.cosium.vet.command.VetCommand;
 import com.cosium.vet.gerrit.GerritChange;
 import com.cosium.vet.gerrit.GerritClient;
 import com.cosium.vet.gerrit.GerritClientFactory;

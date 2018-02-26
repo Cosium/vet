@@ -1,7 +1,7 @@
 package com.cosium.vet.push;
 
-import com.cosium.vet.VetCommand;
-import com.cosium.vet.VetCommandArgParser;
+import com.cosium.vet.command.VetCommand;
+import com.cosium.vet.command.VetAdvancedCommandArgParser;
 import com.cosium.vet.gerrit.PatchSetSubject;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.thirdparty.apache_commons_cli.*;
@@ -15,7 +15,7 @@ import static java.util.Optional.ofNullable;
  *
  * @author Reda.Housni-Alaoui
  */
-public class PushCommandArgParser implements VetCommandArgParser {
+public class PushCommandArgParser implements VetAdvancedCommandArgParser {
 
   private static final String COMMAND_NAME = "push";
   private static final String TARGET_BRANCH = "b";

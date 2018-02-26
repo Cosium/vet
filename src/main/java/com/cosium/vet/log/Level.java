@@ -5,7 +5,7 @@ package com.cosium.vet.log;
  *
  * @author Reda.Housni-Alaoui
  */
-enum Level {
+public enum Level {
   ERROR(4),
   WARN(3),
   INFO(2),

@@ -1,6 +1,6 @@
 package com.cosium.vet.push;
 
-import com.cosium.vet.VetCommandArgParser;
+import com.cosium.vet.command.VetAdvancedCommandArgParser;
 import com.cosium.vet.gerrit.PatchSetSubject;
 import com.cosium.vet.git.BranchShortName;
 import org.junit.Before;
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 public class PushCommandArgParserUnitTest {
 
   private PushCommandFactory factory;
-  private VetCommandArgParser tested;
+  private VetAdvancedCommandArgParser tested;
 
   @Before
   public void before() {

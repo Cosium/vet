@@ -1,11 +1,11 @@
-package com.cosium.vet;
+package com.cosium.vet.command;
 
 /**
  * Created on 14/02/18.
  *
  * @author Reda.Housni-Alaoui
  */
-public interface VetCommandArgParser {
+public interface VetAdvancedCommandArgParser extends VetCommandArgParser {
 
   /** Display help for the managed command */
   void displayHelp(String executableName);
@@ -18,12 +18,4 @@ public interface VetCommandArgParser {
    * @return True if the current parser is able to parse the arguments
    */
   boolean canParse(String... args);
-
-  /**
-   * Parse the arguments and return a new command.
-   *
-   * @param args The arguments to parse
-   * @return The parsed command
-   */
-  VetCommand parse(String... args);
 }
