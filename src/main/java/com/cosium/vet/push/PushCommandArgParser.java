@@ -33,14 +33,14 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
             .argName("branch-name")
             .longOpt("target-branch")
             .hasArg()
-            .desc("The branch targeted by the changes. Default to 'master'.")
+            .desc("The branch targeted by the changes. If not set, it will be asked if needed.")
             .build());
     options.addOption(
         Option.builder(PATCH_SET_SUBJECT)
             .argName("subject")
             .longOpt("patch-set-subject")
             .hasArg()
-            .desc("The subject of the patch set.")
+            .desc("The subject of the patch set. If not set, it will be asked if needed.")
             .build());
     options.addOption(Option.builder("h").longOpt("help").build());
   }
@@ -53,7 +53,8 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
         String.format("%s %s", executableName, COMMAND_NAME),
         StringUtils.EMPTY,
         options,
-        "Push the changes to Gerrit by adding a new patch set to the current change set.\nIf no change set exists, patch set will be appended to a new one.",
+        "Push the changes to Gerrit by adding a new patch set to the current change set.\n"
+            + "If no change set exists, patch set will be appended to a new one.",
         true);
   }
 
