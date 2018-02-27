@@ -1,4 +1,5 @@
 [![Build Status][travis-image]][travis-url]
+[![Maven Central Latest][maven-central-image]][maven-central-url]
 
 # vet
 
@@ -30,3 +31,5 @@ If no change set exists, patch set will be appended to a new one.
 
 [travis-image]: https://travis-ci.org/Cosium/vet.svg?branch=master
 [travis-url]: https://travis-ci.org/Cosium/vet
+[maven-central-image]: https://img.shields.io/maven-central/v/com.cosium.vet/vet.svg
+[maven-central-url]: https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.cosium.vet%22%20AND%20a%3A%22vet%22
