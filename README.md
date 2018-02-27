@@ -23,7 +23,6 @@ usage: vet push [-b <branch-name>] [-s <subject>] [-h]
                                     not set, it will be asked if needed.
  -s,--patch-set-subject <subject>   The subject of the patch set. If not
                                     set, it will be asked if needed.
- -h,--help
 Push the changes to Gerrit by adding a new patch set to the current change
 set.
 If no change set exists, patch set will be appended to a new one.
