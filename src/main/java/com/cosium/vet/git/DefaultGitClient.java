@@ -77,12 +77,15 @@ class DefaultGitClient implements GitClient {
 
   @Override
   public CommitMessage getLastCommitMessage() {
-    return CommitMessage.of(commandRunner.run(repositoryDirectory, GIT, "log", "-1", "--pretty=%B"));
+    return CommitMessage.of(
+        commandRunner.run(repositoryDirectory, GIT, "log", "-1", "--pretty=%B"));
   }
 
   @Override
   public CommitMessage getCommitMessage(RevisionId revisionId) {
-    return CommitMessage.of(commandRunner.run(repositoryDirectory, GIT, "log", revisionId.toString(), "-1", "--pretty=%B"));
+    return CommitMessage.of(
+        commandRunner.run(
+            repositoryDirectory, GIT, "log", revisionId.toString(), "-1", "--pretty=%B"));
   }
 
   @Override

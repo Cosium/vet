@@ -102,4 +102,9 @@ public class GitClientTest {
             branchRef ->
                 branchRef.getBranchRefName().equals(BranchRefName.of("refs/heads/master")));
   }
+
+  @Test
+  public void testGetCommitMessage() {
+    assertThat(tested.getCommitMessage(RevisionId.of("HEAD"))).isNotNull();
+  }
 }
