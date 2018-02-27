@@ -36,7 +36,7 @@ Vet is able to manage git remote pushed or local only source branch the same way
 Vet computes the Gerrit change id on the fly before pushing to Gerrit.  
 Say bye to the pre-commit script.
 
-##### No REST or SSH api involved
+##### No Gerrit REST or SSH api involved
 
 Git is the only channel used by Vet to communicate with Gerrit.  
 Vet doesn't need to know your credentials.
