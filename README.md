@@ -44,7 +44,7 @@ With Vet, you can have feature branches.
 If you set the correct Gerrit authorizations, you can push them as standard branches.  
 Vet is able to manage git remote pushed or local only source branches the same way.
 
-#### Checkout the feature branch to test or hack the changeset
+##### Checkout the feature branch to test or hack the changeset
 
 As a reviewer you want to test the change set locally? 
 Just checkout the feature branch.  
@@ -62,7 +62,7 @@ Say bye to the pre-commit script.
 Git is the only channel used by Vet to communicate with Gerrit.  
 Vet doesn't need to know your credentials.
 
-#### Use any git remote protocol
+##### Use any git remote protocol
  
 Because Vet delegates all Gerrit communication to git, your remote access protocol is only limited by git:
 
