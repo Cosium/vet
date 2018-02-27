@@ -17,7 +17,7 @@ Vet: The Gerrit client using pull request review workflow
 ```
 
 ```bash
-$ vet --help
+$ vet --help push
 usage: vet push [-b <branch-name>] [-s <subject>] [-h]
  -b,--target-branch <branch-name>   The branch targeted by the changes. If
                                     not set, it will be asked if needed.
