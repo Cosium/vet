@@ -5,6 +5,8 @@ import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.CommitMessage;
 import com.cosium.vet.git.GitClient;
 import com.cosium.vet.git.GitUtils;
+import com.cosium.vet.log.Logger;
+import com.cosium.vet.log.LoggerFactory;
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 import com.cosium.vet.utils.NonBlankString;
 
@@ -19,6 +21,8 @@ import static java.util.Optional.ofNullable;
  * @author Reda.Housni-Alaoui
  */
 class DefaultGerritClient implements GerritClient {
+
+  private static final Logger LOG = LoggerFactory.getLogger(DefaultGerritClient.class);
 
   private static final String COMMIT_MESSAGE_CHANGE_ID_PREFIX = "Change-Id: ";
 
@@ -63,6 +67,7 @@ class DefaultGerritClient implements GerritClient {
 
   @Override
   public GerritChange setAndGetChange(BranchShortName targetBranch) {
+    LOG.debug("Enabling change for target branch '{}'", targetBranch);
     return configurationRepository.readAndWrite(
         conf -> {
           GerritChange change =
@@ -80,19 +85,26 @@ class DefaultGerritClient implements GerritClient {
     }
     DefaultGerritChange theChange = (DefaultGerritChange) change;
 
+    LOG.debug(
+        "Creating patch set for change '{}' between start revision '{}' and end revision '{}'",
+        change,
+        startRevision,
+        endRevision);
+
     CommitMessage commitMessage =
         patchSetRepository
             .getLastestPatchSetCommitMessage(pushUrl, theChange.getChangeId())
             .orElseGet(git::getLastCommitMessage)
             .removeLinesContaining(COMMIT_MESSAGE_CHANGE_ID_PREFIX);
 
-    String commitId =
-        git.commitTree(
-            endRevision,
-            startRevision,
-            String.format(
-                "%s\n\n%s%s",
-                commitMessage, COMMIT_MESSAGE_CHANGE_ID_PREFIX, theChange.getChangeId()));
+    String commitMessageWithChangeId =
+        String.format(
+            "%s\n\n%s%s", commitMessage, COMMIT_MESSAGE_CHANGE_ID_PREFIX, theChange.getChangeId());
+
+    LOG.debug("Create commit tree with message '{}'", commitMessageWithChangeId);
+
+    String commitId = git.commitTree(endRevision, startRevision, commitMessageWithChangeId);
+    LOG.debug("Commit tree id is '{}'", commitId);
 
     String messageSuffix =
         ofNullable(subject)
@@ -100,6 +112,12 @@ class DefaultGerritClient implements GerritClient {
             .map(GitUtils::encodeForGitRef)
             .map(s -> String.format("m=%s", s))
             .orElse(StringUtils.EMPTY);
+
+    LOG.debug(
+        "Pushing '{}' to '{}', with suffix '{}'",
+        commitId,
+        theChange.getTargetBranch(),
+        messageSuffix);
 
     git.push(
         pushUrl.toString(),

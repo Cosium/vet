@@ -2,6 +2,8 @@ package com.cosium.vet.gerrit.config;
 
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitConfigRepository;
+import com.cosium.vet.log.Logger;
+import com.cosium.vet.log.LoggerFactory;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -16,6 +18,9 @@ import static java.util.Optional.ofNullable;
  * @author Reda.Housni-Alaoui
  */
 class DefaultGerritConfigurationRepository implements GerritConfigurationRepository {
+
+  private static final Logger LOG =
+      LoggerFactory.getLogger(DefaultGerritConfigurationRepository.class);
 
   private static final String VET_CHANGE_TARGET_BRANCH = "vet-change-target-branch";
 
@@ -44,6 +49,7 @@ class DefaultGerritConfigurationRepository implements GerritConfigurationReposit
   }
 
   private void doWrite(GitStoredConfig config) {
+    LOG.debug("Writing {}", config);
     gitConfigRepository.setCurrentBranchValue(
         VET_CHANGE_TARGET_BRANCH, config.changeTargetBranch.get());
   }
@@ -69,6 +75,14 @@ class DefaultGerritConfigurationRepository implements GerritConfigurationReposit
     @Override
     public void setChangeTargetBranch(BranchShortName targetBranch) {
       changeTargetBranch.set(ofNullable(targetBranch).map(BranchShortName::toString).orElse(null));
+    }
+
+    @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder("GitStoredConfig{");
+      sb.append("changeTargetBranch=").append(changeTargetBranch);
+      sb.append('}');
+      return sb.toString();
     }
   }
 }

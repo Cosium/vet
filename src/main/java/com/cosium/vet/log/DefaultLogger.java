@@ -71,7 +71,8 @@ class DefaultLogger implements Logger {
     Matcher matcher = MUSTACHE.matcher(message);
     int consumedParamIndex = -1;
     while (matcher.find()) {
-      matcher.appendReplacement(log, String.valueOf(parameters[++consumedParamIndex]));
+      consumedParamIndex++;
+      matcher.appendReplacement(log, String.valueOf(parameters[consumedParamIndex]));
     }
     matcher.appendTail(log);
 

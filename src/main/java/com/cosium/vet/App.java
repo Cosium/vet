@@ -27,6 +27,13 @@ public class App {
         LoggerFactory.setPrintContext(true);
         LoggerFactory.setLevel(Level.TRACE);
       }
+
+      if (stacktrace) {
+        LOG.info("Stacktrace printing enabled");
+      }
+      if (verbose) {
+        LOG.info("Verbose enabled");
+      }
       String[] filteredArgs =
           Arrays.stream(args)
               .filter(arg -> !STACKTRACE_ARG_NAMES.contains(arg))

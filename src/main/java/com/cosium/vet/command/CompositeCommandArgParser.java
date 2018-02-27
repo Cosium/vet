@@ -1,5 +1,7 @@
 package com.cosium.vet.command;
 
+import com.cosium.vet.log.Logger;
+import com.cosium.vet.log.LoggerFactory;
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 
 import java.util.Arrays;
@@ -16,6 +18,7 @@ import static java.util.Objects.requireNonNull;
  */
 public class CompositeCommandArgParser implements VetCommandArgParser {
 
+  private static final Logger LOG = LoggerFactory.getLogger(CompositeCommandArgParser.class);
   private static final List<String> HELP_ARGS = List.of("-h", "--help");
 
   private final String executableName;
@@ -43,13 +46,16 @@ public class CompositeCommandArgParser implements VetCommandArgParser {
     Optional<VetAdvancedCommandArgParser> parser =
         availableParsers.stream().filter(p -> p.canParse(args)).findFirst();
     if (!isHelp && parser.isPresent()) {
+      LOG.debug("Parsing using command using {}", parser.get());
       return parser.get().parse(args);
     }
 
     if (isHelp && parser.isPresent()) {
+      LOG.debug("Building help display command using {}", parser.get());
       return () -> parser.get().displayHelp(executableName);
     }
 
+    LOG.debug("Building global help command");
     return new GlobalHelpCommand(
         executableName,
         availableParsers
@@ -88,7 +94,8 @@ public class CompositeCommandArgParser implements VetCommandArgParser {
 
     @Override
     public void execute() {
-      String builder =
+      LOG.debug("Displaying global help");
+      System.out.println(
           "usage: "
               + executableName
               + " <command>\n\n"
@@ -101,9 +108,7 @@ public class CompositeCommandArgParser implements VetCommandArgParser {
               + StringUtils.join(HELP_ARGS, ",")
               + "  Display help on <command>"
               + "\n\n"
-              + debugOptions.buildHelp();
-
-      System.out.println(builder);
+              + debugOptions.buildHelp());
     }
   }
 }

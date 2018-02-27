@@ -9,7 +9,9 @@ import java.util.function.Function;
  */
 public interface GerritConfigurationRepository {
 
+  /** @return The stored gerrit configuration */
   GerritConfiguration read();
 
+  /** Read and write the gerrit configuration. */
   <T> T readAndWrite(Function<GerritConfiguration, T> functor);
 }
