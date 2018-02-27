@@ -30,7 +30,7 @@ public class App {
         LOG.info("Stacktrace printing enabled");
       }
       if (verbose) {
-        LOG.info("Verbose enabled");
+        LOG.info("Verbose mode enabled");
       }
       String[] filteredArgs =
           Arrays.stream(args)
