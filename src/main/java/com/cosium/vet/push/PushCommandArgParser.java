@@ -56,7 +56,7 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
         StringUtils.EMPTY,
         options,
         "Push the changes to Gerrit by adding a new patch set to the current change set.\n"
-            + "If no change set exists, patch set will be appended to a new one.",
+            + "If no change set exists, the patch set will be appended to a new one.",
         true);
   }
 
