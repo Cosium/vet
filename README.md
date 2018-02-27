@@ -22,23 +22,23 @@ Gerrit can't manage more than one commit per change set.
 Because of that, the widespread and cumbersome workflow is to have a single local commit and amend it every time you 
 want to update the changeset.
 
-Using Vet, Gerrit keeps seeing one commit per change set while you don't have to rewrite your history anymore. 
+Using Vet, Gerrit keeps seeing one commit per change set while you don't have to rewrite your history anymore.    
 Each time you will ask to push to Gerrit, Vet will forge and push a single commit based on your source branch commit sequence.
 
 ##### Now you can have feature branches
 
-With Vet, you can have feature branches. 
-If you set the correct Gerrit authorizations, you can push them as standard branches. 
+With Vet, you can have feature branches.  
+If you set the correct Gerrit authorizations, you can push them as standard branches.  
 Vet is able to manage git remote pushed or local only source branch the same way.
 
 ##### No pre commit hook needed
 
-Vet computes the Gerrit change id on the fly before pushing to Gerrit.
+Vet computes the Gerrit change id on the fly before pushing to Gerrit.  
 Say bye to the pre-commit script.
 
 ##### No REST or SSH api involved
 
-Git is the only channel used by Vet to communicate with Gerrit. 
+Git is the only channel used by Vet to communicate with Gerrit.  
 Vet doesn't need to know your credentials.
 
 #### Use any git remote protocol
