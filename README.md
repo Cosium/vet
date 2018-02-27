@@ -27,7 +27,7 @@ From http://localhost:38391/foo
  * branch            refs/changes/01/1001/1 -> FETCH_HEAD
 ```
 
-## Why
+## Benefits
 
 ##### No more commit amend
 
@@ -43,6 +43,14 @@ Each time you will ask to push to Gerrit, Vet will forge and push a single commi
 With Vet, you can have feature branches.  
 If you set the correct Gerrit authorizations, you can push them as standard branches.  
 Vet is able to manage git remote pushed or local only source branch the same way.
+
+#### Checkout the feature branch to test or hack the changeset
+
+As a reviewer you want to test the change set locally? 
+Just checkout the feature branch.  
+
+Now maybe you want to contribute to the change set?  
+Run Vet push and your changes are added to the correct change set.
 
 ##### No pre commit hook needed
 
@@ -102,6 +110,10 @@ If no change set exists, patch set will be appended to a new one.
    <version>${vet.version}</version>
 </dependency>
 ```
+
+## Limitation
+
+Since Vet has its own change id computation system, all clients of the same Gerrit instance must use Vet.
 
 [travis-image]: https://travis-ci.org/Cosium/vet.svg?branch=master
 [travis-url]: https://travis-ci.org/Cosium/vet
