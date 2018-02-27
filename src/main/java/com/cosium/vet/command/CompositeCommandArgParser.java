@@ -1,5 +1,6 @@
 package com.cosium.vet.command;
 
+import com.cosium.vet.VetVersion;
 import com.cosium.vet.log.Logger;
 import com.cosium.vet.log.LoggerFactory;
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
@@ -96,7 +97,11 @@ public class CompositeCommandArgParser implements VetCommandArgParser {
     public void execute() {
       LOG.debug("Displaying global help");
       System.out.println(
-          "usage: "
+          "Vet "
+              + VetVersion.VALUE
+              + "\n"
+              + "Gerrit client using pull request review workflow\n\n"
+              + "usage: "
               + executableName
               + " <command>\n\n"
               + "where <command> is one of:\n"

@@ -46,7 +46,7 @@ public class DebugOptions {
       builder
           .append(" ")
           .append(StringUtils.join(stracktraceEnabledArgNames, ","))
-          .append("     Print stacktraces")
+          .append("      Print stacktraces")
           .append("\n");
     }
     if (!verboseArgNames.isEmpty()) {

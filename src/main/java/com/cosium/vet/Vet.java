@@ -15,6 +15,7 @@ import com.cosium.vet.push.PushCommandArgParser;
 import com.cosium.vet.push.PushCommandFactory;
 import com.cosium.vet.runtime.*;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -28,7 +29,6 @@ import static java.util.Objects.requireNonNull;
  */
 public class Vet {
 
-  private static final Logger LOG = LoggerFactory.getLogger(Vet.class);
   private static final String APP_NAME = "vet";
 
   private final PushCommandFactory pushCommandFactory;
@@ -86,7 +86,6 @@ public class Vet {
             APP_NAME, List.of(new PushCommandArgParser(pushCommandFactory)), debugOptions);
   }
 
-  /** @return True on success, false on failure. */
   public void run(String args[]) {
     commandParser.parse(args).execute();
   }

@@ -2,12 +2,16 @@ import org.gradle.kotlin.dsl.dependencies
 import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.internal.impldep.com.google.common.collect.Lists
+import org.gradle.internal.impldep.com.google.common.io.Files
 
 plugins {
     java
 
     application
 }
+
+group = "com.cosium.vet"
+version = "1.0"
 
 val mainClass = "com.cosium.vet.App"
 
@@ -44,6 +48,20 @@ tasks {
         manifest {
             attributes["Main-Class"] = mainClass
         }
+    }
+
+    "addVersionFile"(Task::class) {
+        dependsOn("processResources")
+        doLast {
+            val versionFile = File("$buildDir/resources/main/com/cosium/vet/version.txt")
+            versionFile.parentFile.mkdirs()
+            versionFile.createNewFile()
+            versionFile.writeText(project.version.toString())
+        }
+    }
+
+    "classes"(Task::class) {
+        dependsOn("addVersionFile")
     }
 
 //------------------------------- jigsaw#start -----------------------------------------------------
