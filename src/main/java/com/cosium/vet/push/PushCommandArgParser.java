@@ -7,6 +7,8 @@ import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.thirdparty.apache_commons_cli.*;
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 
+import java.util.Arrays;
+
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 
@@ -65,7 +67,7 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
 
   @Override
   public boolean canParse(String... args) {
-    return args.length != 0 && COMMAND_NAME.equals(args[0]);
+    return Arrays.stream(args).anyMatch(COMMAND_NAME::equals);
   }
 
   @Override
