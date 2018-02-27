@@ -91,15 +91,16 @@ class DefaultGerritClient implements GerritClient {
         startRevision,
         endRevision);
 
+    String changeIdLine =
+        String.format("%s%s", COMMIT_MESSAGE_CHANGE_ID_PREFIX, theChange.getChangeId());
+
     CommitMessage commitMessage =
         patchSetRepository
             .getLastestPatchSetCommitMessage(pushUrl, theChange.getChangeId())
             .orElseGet(git::getLastCommitMessage)
-            .removeLinesContaining(COMMIT_MESSAGE_CHANGE_ID_PREFIX);
+            .removeLinesContaining(changeIdLine);
 
-    String commitMessageWithChangeId =
-        String.format(
-            "%s\n\n%s%s", commitMessage, COMMIT_MESSAGE_CHANGE_ID_PREFIX, theChange.getChangeId());
+    String commitMessageWithChangeId = String.format("%s\n\n%s", commitMessage, changeIdLine);
 
     LOG.debug("Create commit tree with message '{}'", commitMessageWithChangeId);
 
