@@ -44,7 +44,6 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
             .hasArg()
             .desc("The subject of the patch set. If not set, it will be asked if needed.")
             .build());
-    options.addOption(Option.builder("h").longOpt("help").build());
   }
 
   @Override
