@@ -1,5 +1,5 @@
 FROM centos:7.3.1611
-MAINTAINER Gerrit Code Review Community
+MAINTAINER Cosium
 
 # Allow remote connectivity and sudo
 RUN yum -y install openssh-client initscripts sudo

@@ -95,15 +95,15 @@ tasks {
         }
     }
 
-    "jlink"(Exec::class) {
+    "createBinaries"(Exec::class) {
         dependsOn("build")
 
-        delete("$buildDir/dist")
+        delete("$buildDir/binaries")
 
         workingDir("$buildDir")
         val javaHome = System.getProperty("java.home")!!
         commandLine("$javaHome/bin/jlink", "--module-path", "libs${File.pathSeparatorChar}$javaHome/jmods",
-                "--add-modules", moduleName, "--launcher", "vet=$moduleName/$mainClass", "--output", "dist", "--strip-debug",
+                "--add-modules", moduleName, "--launcher", "vet=$moduleName/$mainClass", "--output", "binaries", "--strip-debug",
                 "--compress", "2", "--no-header-files", "--no-man-pages")
 
     }
