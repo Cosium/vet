@@ -30,7 +30,7 @@ public class DefaultGerritPatchSetRepository implements GerritPatchSetRepository
   }
 
   /** @return The latest revisions per change id */
-  private List<RevisionId> getLatestRevisions(GerritPushUrl pushUrl) {
+  private List<PatchSet> getLatestRevisions(GerritPushUrl pushUrl) {
     return git.listRemoteRefs(RemoteName.of(pushUrl.toString()))
         .stream()
         .map(PatchSetBuilder::new)
@@ -44,7 +44,6 @@ public class DefaultGerritPatchSetRepository implements GerritPatchSetRepository
         .stream()
         .filter(Optional::isPresent)
         .map(Optional::get)
-        .map(PatchSet::getRevisionId)
         .collect(Collectors.toList());
   }
 
@@ -53,6 +52,8 @@ public class DefaultGerritPatchSetRepository implements GerritPatchSetRepository
       GerritPushUrl pushUrl, ChangeChangeId changeChangeId) {
     return getLatestRevisions(pushUrl)
         .stream()
+        .peek(patchSet -> git.fetch(RemoteName.of(pushUrl.toString()), patchSet.getBranchRefName()))
+        .map(PatchSet::getRevisionId)
         .map(git::getCommitMessage)
         .filter(
             commitMessage ->
@@ -77,26 +78,28 @@ public class DefaultGerritPatchSetRepository implements GerritPatchSetRepository
       }
       return Optional.of(
           new PatchSet(
-              branchRef.getRevisionId(),
-              Integer.parseInt(matcher.group(1)),
-              Integer.parseInt(matcher.group(2))));
+              branchRef, Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(2))));
     }
   }
 
   private class PatchSet {
-    private final RevisionId revisionId;
+    private final BranchRef branchRef;
     private final int changeId;
     private final int id;
 
-    private PatchSet(RevisionId revisionId, int changeId, int id) {
-      requireNonNull(revisionId);
-      this.revisionId = revisionId;
+    private PatchSet(BranchRef branchRef, int changeId, int id) {
+      requireNonNull(branchRef);
+      this.branchRef = branchRef;
       this.changeId = changeId;
       this.id = id;
     }
 
+    public BranchRefName getBranchRefName() {
+      return branchRef.getBranchRefName();
+    }
+
     public RevisionId getRevisionId() {
-      return revisionId;
+      return branchRef.getRevisionId();
     }
 
     public int getId() {

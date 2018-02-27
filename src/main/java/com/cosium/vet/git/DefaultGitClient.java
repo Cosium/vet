@@ -105,4 +105,10 @@ class DefaultGitClient implements GitClient {
                 new BranchRef(RevisionId.of(matcher.group(1)), BranchRefName.of(matcher.group(2))))
         .collect(Collectors.toList());
   }
+
+  @Override
+  public void fetch(RemoteName remote, BranchRefName branchRefName) {
+    commandRunner.run(
+        repositoryDirectory, GIT, "fetch", remote.toString(), branchRefName.toString());
+  }
 }

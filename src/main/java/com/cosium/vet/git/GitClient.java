@@ -64,4 +64,6 @@ public interface GitClient {
    * @return All refs for the provided remote
    */
   List<BranchRef> listRemoteRefs(RemoteName remote);
+
+  void fetch(RemoteName remote, BranchRefName branchRefName);
 }

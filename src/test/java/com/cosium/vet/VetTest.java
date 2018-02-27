@@ -46,6 +46,10 @@ public class VetTest extends GerritEnvironmentTest {
     tested.push(null, PatchSetSubject.of("Add baz"));
   }
 
+  // TODO Add test for fetching commit message edition patchset
+
+  // TODO Add test for checking commit message stability
+
   private void addAndCommitFile(String fileName, String message) throws Exception {
     Path file = downstreamGitDir.resolve(fileName + ".txt");
     Files.createFile(file);

@@ -18,7 +18,7 @@ public abstract class NonBlankString {
     if (StringUtils.isBlank(value)) {
       throw new IllegalArgumentException(getClass().getSimpleName() + " can't be blank");
     }
-    this.value = value;
+    this.value = value.trim();
   }
 
   @Override

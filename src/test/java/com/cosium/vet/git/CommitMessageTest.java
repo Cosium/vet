@@ -22,6 +22,6 @@ public class CommitMessageTest {
 
     assertThat(message.toString())
         .isEqualTo(
-            "Merge remote-tracking branch 'origin/master' into feature/postgres-unsafe\n");
+            "Merge remote-tracking branch 'origin/master' into feature/postgres-unsafe");
   }
 }
