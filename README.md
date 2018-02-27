@@ -3,6 +3,57 @@
 
 # vet
 
+>vet
+/vɛt/
+
+>verb
+
+>make a careful and critical examination of (something).
+"proposals for vetting large takeover bids"
+synonymes :	screen, assess, evaluate, appraise, weigh up, examine, look over, review, consider, scrutinize, study, inspect; Plus
+
+Vet allows to review code on Gerrit using a pull-request workflow similar to GitHub, GitLab, Bitbucket and others.
+
+## Why
+
+##### No more commit amend
+
+Gerrit can't manage more than one commit per change set.  
+Because of that, the widespread and cumbersome workflow is to have a single local commit and amend it every time you 
+want to update the changeset.
+
+Using Vet, Gerrit keeps seeing one commit per change set while you don't have to rewrite your history anymore. 
+Each time you will ask to push to Gerrit, Vet will forge and push a single commit based on your source branch commit sequence.
+
+##### Now you can have feature branches
+
+With Vet, you can have feature branches. 
+If you set the correct Gerrit authorizations, you can push them as standard branches. 
+Vet is able to manage git remote pushed or local only source branch the same way.
+
+##### No pre commit hook needed
+
+Vet computes the Gerrit change id on the fly before pushing to Gerrit.
+Say bye to the pre-commit script.
+
+##### No REST or SSH api involved
+
+Git is the only channel used by Vet to communicate with Gerrit. 
+Vet doesn't need to know your credentials.
+
+#### Use any git remote protocol
+ 
+Because Vet delegates all Gerrit communication to git, your remote access protocol is only limited by git:
+
+- file
+- ssh
+- http(s)
+- ...
+
+## Usage
+
+#### Command line interface
+
 ```bash
 $ vet --help
 usage: vet [--version] [--help] <command> [<args>]
@@ -27,6 +78,16 @@ usage: vet push [-b <branch-name>] [-s <subject>] [-h]
 Push the changes to Gerrit by adding a new patch set to the current change
 set.
 If no change set exists, patch set will be appended to a new one.
+```
+
+#### Library
+
+```xml
+<dependency>
+   <groupId>com.cosium.vet</groupId>
+   <artifactId>vet</artifactId>
+   <version>${vet.version}</version>
+</dependency>
 ```
 
 [travis-image]: https://travis-ci.org/Cosium/vet.svg?branch=master
