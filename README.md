@@ -14,6 +14,20 @@ synonymes :	screen, assess, evaluate, appraise, weigh up, examine, look over, re
 
 Vet allows to review code on Gerrit using a pull-request workflow similar to GitHub, GitLab, Bitbucket and others.
 
+```bash
+$ vet --help
+usage: vet [--version] [--help] <command> [<args>]
+
+<command> can be one of:
+ push
+
+Debug options:
+ --stackstrace      Print stacktraces
+ --verbose         Enable verbose mode
+
+Vet: The Gerrit client using pull request review workflow
+```
+
 ## Why
 
 ##### No more commit amend
@@ -53,20 +67,6 @@ Because Vet delegates all Gerrit communication to git, your remote access protoc
 ## Usage
 
 #### Command line interface
-
-```bash
-$ vet --help
-usage: vet [--version] [--help] <command> [<args>]
-
-<command> can be one of:
- push
-
-Debug options:
- --stackstrace      Print stacktraces
- --verbose         Enable verbose mode
-
-Vet: The Gerrit client using pull request review workflow
-```
 
 ```bash
 $ vet --help push
