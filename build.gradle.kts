@@ -46,6 +46,9 @@ repositories {
 }
 
 signing {
+    gradle.taskGraph.whenReady{
+        isRequired = this.hasTask("uploadArchives")
+    }
     sign(configurations.archives)
 }
 
@@ -171,7 +174,7 @@ tasks {
                         "repository"("url" to uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")) {
                             "authentication"("userName" to "$ossrhUsername", "password" to "$ossrhPassword")
                         }
-                        "snapshotRepository"("url" to uri("https://oss.sonatype.org/content/repositories/snapshots/")){
+                        "snapshotRepository"("url" to uri("https://oss.sonatype.org/content/repositories/snapshots/")) {
                             "authentication"("userName" to "$ossrhUsername", "password" to "$ossrhPassword")
                         }
 
