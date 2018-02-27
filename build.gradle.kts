@@ -1,19 +1,28 @@
+import org.gradle.api.tasks.Exec
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.api.tasks.testing.Test
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.internal.impldep.com.esotericsoftware.kryo.util.Util.string
 import org.gradle.internal.impldep.com.google.common.collect.Lists
 import org.gradle.internal.impldep.com.google.common.io.Files
+import java.io.File
 
 plugins {
     java
 
     application
+
+    maven
+
+    signing
 }
 
 group = "com.cosium.vet"
 version = "1.0"
 
 val mainClass = "com.cosium.vet.App"
+val ossrhUsername by project
+val ossrhPassword by project
 
 application {
     mainClassName = mainClass
@@ -36,12 +45,31 @@ repositories {
     jcenter()
 }
 
+signing {
+    sign(configurations.archives)
+}
+
 tasks {
     "test"(Test::class) {
         testLogging {
             exceptionFormat = TestExceptionFormat.FULL
             showStandardStreams = true
         }
+    }
+
+    "javadocJar"(Jar::class) {
+        classifier = "javadoc"
+        from("javadoc")
+    }
+
+    "sourcesJar"(Jar::class) {
+        classifier = "sources"
+        from(java.sourceSets["main"].allSource)
+    }
+
+    artifacts {
+        add("archives", tasks.getByName("javadocJar"))
+        add("archives", tasks.getByName("sourcesJar"))
     }
 
     "jar"(Jar::class) {
@@ -64,7 +92,7 @@ tasks {
         dependsOn("addVersionFile")
     }
 
-//------------------------------- jigsaw#start -----------------------------------------------------
+//------------------------------- jigsaw#start -----------------------------------------------------------------------------
     val moduleName = "com.cosium.vet"
 
     "compileJava"(JavaCompile::class) {
@@ -121,11 +149,68 @@ tasks {
         workingDir("$buildDir")
         val javaHome = System.getProperty("java.home")!!
         commandLine("$javaHome/bin/jlink", "--module-path", "libs${File.pathSeparatorChar}$javaHome/jmods",
-                "--add-modules", moduleName, "--launcher", "vet=$moduleName/$mainClass", "--output", "binaries", "--strip-debug",
+                "--add-modules", moduleName, "--launcher", "${project.name}=$moduleName/$mainClass", "--output", "binaries", "--strip-debug",
                 "--compress", "2", "--no-header-files", "--no-man-pages")
 
     }
 
-//------------------------------- jigsaw#end -----------------------------------------------------
+//------------------------------- jigsaw#end -----------------------------------------------------------------------------------
+
+//---------------------------- oss-sonatype#start ------------------------------------------------------------------------------
+    "uploadArchives"(Upload::class) {
+        repositories {
+
+            withConvention(MavenRepositoryHandlerConvention::class) {
+
+                mavenDeployer {
+                    beforeDeployment {
+                        signing.signPom(this)
+                    }
+
+                    withGroovyBuilder {
+                        "repository"("url" to uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")) {
+                            "authentication"("userName" to "$ossrhUsername", "password" to "$ossrhPassword")
+                        }
+                        "snapshotRepository"("url" to uri("https://oss.sonatype.org/content/repositories/snapshots/")){
+                            "authentication"("userName" to "$ossrhUsername", "password" to "$ossrhPassword")
+                        }
+
+                        "pom" {
+                            "project"{
+                                "name"(project.name)
+                                "artifactId"(project.name)
+                                "packaging"("jar")
+                                "description"("Gerrit client using pull request review workflow")
+                                "url"("https://github.com/Cosium/${project.name}")
+                                "scm"{
+                                    "connection"("scm:git:https://github.com/Cosium/${project.name}")
+                                    "developerConnection"("scm:git:https://github.com/Cosium/${project.name}")
+                                    "url"("https://github.com/Cosium/${project.name}")
+                                }
+                                "licenses"{
+                                    "license" {
+                                        "name"("MIT License")
+                                        "url"("http://www.opensource.org/licenses/mit-license.php")
+                                    }
+                                }
+                                "developers" {
+                                    "developer" {
+                                        "id"("reda-alaoui")
+                                        "name"("Réda Housni Alaoui")
+                                        "email"("reda.housnialaoui@cosium.com")
+                                        "url"("https://github.com/reda-alaoui")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+
+        }
+
+    }
+//---------------------------- oss-sonatype#end ------------------------------------------------------------------------------
 }
 
