@@ -103,6 +103,8 @@ If no change set exists, patch set will be appended to a new one.
 
 #### Library
 
+You will need JDK 9+.
+
 ```xml
 <dependency>
    <groupId>com.cosium.vet</groupId>
