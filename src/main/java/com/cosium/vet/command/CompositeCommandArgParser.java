@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 public class CompositeCommandArgParser implements VetCommandArgParser {
 
   private static final Logger LOG = LoggerFactory.getLogger(CompositeCommandArgParser.class);
-  private static final List<String> HELP_ARGS = List.of("-h", "--help");
+  private static final List<String> HELP_ARGS = List.of("--help");
 
   private final String executableName;
   private final List<VetAdvancedCommandArgParser> availableParsers;

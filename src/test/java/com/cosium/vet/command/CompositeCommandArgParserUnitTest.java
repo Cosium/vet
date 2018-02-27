@@ -35,7 +35,7 @@ public class CompositeCommandArgParserUnitTest {
         new CompositeCommandArgParser(
             "vet",
             List.of(stdParser),
-            new DebugOptions(List.of("-x", "--stacktrace"), List.of("-v", "--verbose")));
+            new DebugOptions(List.of( "--stacktrace"), List.of("--verbose")));
   }
 
   @Test
