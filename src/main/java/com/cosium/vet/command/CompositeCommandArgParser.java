@@ -20,7 +20,8 @@ import static java.util.Objects.requireNonNull;
 public class CompositeCommandArgParser implements VetCommandArgParser {
 
   private static final Logger LOG = LoggerFactory.getLogger(CompositeCommandArgParser.class);
-  private static final List<String> HELP_ARGS = List.of("--help");
+  private static final String HELP_OPT = "--help";
+  private static final String VERSION_OPT = "--version";
 
   private final String executableName;
   private final List<VetAdvancedCommandArgParser> availableParsers;
@@ -42,7 +43,11 @@ public class CompositeCommandArgParser implements VetCommandArgParser {
 
   @Override
   public VetCommand parse(String... args) {
-    boolean isHelp = Arrays.stream(args).anyMatch(HELP_ARGS::contains);
+    if (Arrays.stream(args).anyMatch(VERSION_OPT::equals)) {
+      return () -> System.out.println(VetVersion.VALUE);
+    }
+
+    boolean isHelp = Arrays.stream(args).anyMatch(HELP_OPT::equals);
 
     Optional<VetAdvancedCommandArgParser> parser =
         availableParsers.stream().filter(p -> p.canParse(args)).findFirst();
@@ -97,23 +102,20 @@ public class CompositeCommandArgParser implements VetCommandArgParser {
     public void execute() {
       LOG.debug("Displaying global help");
       System.out.println(
-          "Vet "
-              + VetVersion.VALUE
-              + "\n"
-              + "Gerrit client using pull request review workflow\n\n"
-              + "usage: "
+          "usage: "
               + executableName
-              + " <command>\n\n"
-              + "where <command> is one of:\n"
+              + " ["
+              + VERSION_OPT
+              + "] ["
+              + HELP_OPT
+              + "]"
+              + " <command> [<args>]\n\n"
+              + "<command> can be one of:\n"
               + " "
               + availableCommands.stream().distinct().collect(Collectors.joining(", "))
               + "\n\n"
-              + executableName
-              + " <command> "
-              + StringUtils.join(HELP_ARGS, ",")
-              + "  Display help on <command>"
-              + "\n\n"
-              + debugOptions.buildHelp());
+              + debugOptions.buildHelp()
+              + "Vet: The Gerrit client using pull request review workflow");
     }
   }
 }

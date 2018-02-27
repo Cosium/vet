@@ -56,6 +56,6 @@ public class DebugOptions {
           .append("         Enable verbose mode")
           .append("\n");
     }
-    return builder.toString();
+    return builder.append("\n").toString();
   }
 }
