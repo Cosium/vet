@@ -20,11 +20,9 @@ public class App {
     try {
       boolean stacktrace = Arrays.stream(args).anyMatch(STACKTRACE_ARG_NAMES::contains);
       boolean verbose = Arrays.stream(args).anyMatch(VERBOSE_ARG_NAMES::contains);
-      if (stacktrace) {
-        LoggerFactory.setPrintStackTrace(true);
-      }
+      LoggerFactory.setPrintStackTrace(stacktrace);
+      LoggerFactory.setPrintContext(verbose);
       if (verbose) {
-        LoggerFactory.setPrintContext(true);
         LoggerFactory.setLevel(Level.TRACE);
       }
 

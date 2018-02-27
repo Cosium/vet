@@ -52,7 +52,9 @@ public class DefaultGerritClientFactory implements GerritClientFactory {
             .orElseThrow(
                 () ->
                     new RuntimeException(
-                        String.format("Could not find url of remote '%s'", remote)));
+                        String.format(
+                            "Could not find url of remote '%s'. Please verify that you are in a valid git repository.",
+                            remote)));
 
     GerritPushUrl pushUrl = GerritPushUrl.of(remoteUrl.toString());
     LOG.debug("Gerrit push url is {}", pushUrl);
