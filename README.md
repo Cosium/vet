@@ -42,7 +42,7 @@ Each time you will ask to push to Gerrit, Vet will forge and push a single commi
 
 With Vet, you can have feature branches.  
 If you set the correct Gerrit authorizations, you can push them as standard branches.  
-Vet is able to manage git remote pushed or local only source branch the same way.
+Vet is able to manage git remote pushed or local only source branches the same way.
 
 #### Checkout the feature branch to test or hack the changeset
 
