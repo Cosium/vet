@@ -76,7 +76,7 @@ public class PushCommand implements VetCommand {
             .orElseGet(
                 () ->
                     BranchShortName.of(
-                        userInput.askNonBlank("Target branch", BranchShortName.MASTER.value())));
+                        userInput.askNonBlank("Target branch", BranchShortName.MASTER.toString())));
     return gerrit.setAndGetChange(targetBranch);
   }
 

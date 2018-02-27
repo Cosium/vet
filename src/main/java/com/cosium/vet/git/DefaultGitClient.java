@@ -4,7 +4,12 @@ import com.cosium.vet.runtime.CommandRunner;
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
@@ -71,17 +76,30 @@ class DefaultGitClient implements GitClient {
   }
 
   @Override
-  public String getLastCommitMessage() {
-    return commandRunner.run(repositoryDirectory, GIT, "log", "-1", "--pretty=%B");
+  public CommitMessage getLastCommitMessage() {
+    return CommitMessage.of(commandRunner.run(repositoryDirectory, GIT, "log", "-1", "--pretty=%B"));
   }
 
   @Override
-  public String getLastCommitMessageFirstLine() {
-    return StringUtils.substringBefore(getLastCommitMessage(), "\n");
+  public CommitMessage getCommitMessage(RevisionId revisionId) {
+    return CommitMessage.of(commandRunner.run(repositoryDirectory, GIT, "log", revisionId.toString(), "-1", "--pretty=%B"));
   }
 
   @Override
   public void push(String remote, String refspec) {
     commandRunner.run(repositoryDirectory, GIT, "push", remote, refspec);
+  }
+
+  @Override
+  public List<BranchRef> listRemoteRefs(RemoteName remote) {
+    String output = commandRunner.run(repositoryDirectory, GIT, "ls-remote", remote.toString());
+    Pattern refMatcher = Pattern.compile("(.*?)\\s+(.*?)$");
+    return Arrays.stream(output.split("\n"))
+        .map(refMatcher::matcher)
+        .filter(Matcher::find)
+        .map(
+            matcher ->
+                new BranchRef(RevisionId.of(matcher.group(1)), BranchRefName.of(matcher.group(2))))
+        .collect(Collectors.toList());
   }
 }

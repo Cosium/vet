@@ -8,6 +8,6 @@ package com.cosium.vet.runtime;
 class DefaultUserOutput implements UserOutput {
   @Override
   public void display(String message) {
-    System.out.println(message);
+    System.out.print(message);
   }
 }

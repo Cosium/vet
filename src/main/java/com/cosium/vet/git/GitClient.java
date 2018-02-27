@@ -1,5 +1,6 @@
 package com.cosium.vet.git;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -41,9 +42,26 @@ public interface GitClient {
    */
   String commitTree(String tree, String parent, String commitMessage);
 
-  String getLastCommitMessage();
+  /** @return The last commit message */
+  CommitMessage getLastCommitMessage();
 
-  String getLastCommitMessageFirstLine();
+  /**
+   * @param revisionId The wanted revision id
+   * @return The commit message of the provided revision id
+   */
+  CommitMessage getCommitMessage(RevisionId revisionId);
 
+  /**
+   * Push the refspec to remote
+   *
+   * @param remote The remote to push to
+   * @param refspec The refspec to push
+   */
   void push(String remote, String refspec);
+
+  /**
+   * @param remote The remote to look for
+   * @return All refs for the provided remote
+   */
+  List<BranchRef> listRemoteRefs(RemoteName remote);
 }

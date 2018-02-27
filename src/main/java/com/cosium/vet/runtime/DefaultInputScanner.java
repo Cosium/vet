@@ -13,6 +13,8 @@ class DefaultInputScanner implements InputScanner {
 
   @Override
   public String nextLine() {
-    return scanner.nextLine();
+    String line = scanner.nextLine();
+    System.out.println();
+    return line;
   }
 }

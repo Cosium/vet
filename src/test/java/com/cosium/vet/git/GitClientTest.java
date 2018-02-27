@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -88,7 +89,17 @@ public class GitClientTest {
     runner.run(repo, "git", "add", ".");
     runner.run(repo, "git", "commit", "-am", "Add bar");
 
-    assertThat(tested.getLastCommitMessage()).isEqualTo("Add bar");
-    assertThat(tested.getLastCommitMessageFirstLine()).isEqualTo("Add bar");
+    assertThat(tested.getLastCommitMessage()).isEqualTo(CommitMessage.of("Add bar"));
+  }
+
+  @Test
+  public void testListRemoteRefs() {
+    List<BranchRef> branchRefs = tested.listRemoteRefs(RemoteName.ORIGIN);
+    assertThat(branchRefs)
+        .hasSize(2)
+        .anyMatch(branchRef -> branchRef.getBranchRefName().equals(BranchRefName.of("HEAD")))
+        .anyMatch(
+            branchRef ->
+                branchRef.getBranchRefName().equals(BranchRefName.of("refs/heads/master")));
   }
 }

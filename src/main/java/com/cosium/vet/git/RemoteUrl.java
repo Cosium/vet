@@ -22,7 +22,7 @@ public class RemoteUrl extends NonBlankString {
 
   public URL toURL() {
     try {
-      return new URL(value());
+      return new URL(toString());
     } catch (MalformedURLException e) {
       throw new IllegalArgumentException(e);
     }

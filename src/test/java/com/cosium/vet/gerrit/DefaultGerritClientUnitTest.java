@@ -3,6 +3,7 @@ package com.cosium.vet.gerrit;
 import com.cosium.vet.gerrit.config.GerritConfiguration;
 import com.cosium.vet.gerrit.config.GerritConfigurationRepository;
 import com.cosium.vet.git.BranchShortName;
+import com.cosium.vet.git.CommitMessage;
 import com.cosium.vet.git.GitClient;
 import com.cosium.vet.git.GitUtils;
 import org.junit.Assert;
@@ -32,6 +33,7 @@ public class DefaultGerritClientUnitTest {
 
   private GerritConfiguration gerritConfiguration;
   private ChangeChangeId changeChangeId;
+  private DefaultGerritPatchSetRepository patchSetRepository;
   private GitClient git;
   private GerritPushUrl pushUrl;
 
@@ -62,7 +64,10 @@ public class DefaultGerritClientUnitTest {
 
     pushUrl = GerritPushUrl.of("https://bar.com/foo");
 
-    tested = new DefaultGerritClient(configurationRepository, changeChangeIdFactory, git, pushUrl);
+    patchSetRepository = mock(DefaultGerritPatchSetRepository.class);
+    tested =
+        new DefaultGerritClient(
+            configurationRepository, changeChangeIdFactory, patchSetRepository, git, pushUrl);
   }
 
   @Test
@@ -99,7 +104,7 @@ public class DefaultGerritClientUnitTest {
   @Test
   public void
       GIVEN_last_commit_message_hello_world_WHEN_create_patch_set_THEN_commit_tree_message_should_contain_hello_world() {
-    when(git.getLastCommitMessage()).thenReturn(HELLO_WORLD);
+    when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
     GerritChange gerritChange = tested.setAndGetChange(BranchShortName.MASTER);
 
     tested.createPatchSet(gerritChange, "start", "end", null);
@@ -110,7 +115,7 @@ public class DefaultGerritClientUnitTest {
   @Test
   public void
       GIVEN_changeid_I1234_WHEN_create_patch_set_THEN_commit_tree_message_should_end_with_I1234() {
-    when(git.getLastCommitMessage()).thenReturn(HELLO_WORLD);
+    when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
     GerritChange gerritChange = tested.setAndGetChange(BranchShortName.MASTER);
 
     when(changeChangeId.toString()).thenReturn("I1234");
@@ -122,7 +127,7 @@ public class DefaultGerritClientUnitTest {
   @Test
   public void
       WHEN_create_patch_set_between_start_and_stop_THEN_commit_tree_between_start_and_end() {
-    when(git.getLastCommitMessage()).thenReturn(HELLO_WORLD);
+    when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
     GerritChange gerritChange = tested.setAndGetChange(BranchShortName.MASTER);
     tested.createPatchSet(gerritChange, "start", "end", null);
 
@@ -132,7 +137,7 @@ public class DefaultGerritClientUnitTest {
   @Test
   public void
       GIVEN_commit_tree_id_foo_and_target_master_WHEN_create_patch_set_THEN_it_should_push_foo_to_ref_for_master() {
-    when(git.getLastCommitMessage()).thenReturn(HELLO_WORLD);
+    when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
     GerritChange gerritChange = tested.setAndGetChange(BranchShortName.MASTER);
     when(git.commitTree(any(), any(), any())).thenReturn(FOO);
 
@@ -143,7 +148,7 @@ public class DefaultGerritClientUnitTest {
 
   @Test
   public void WHEN_create_patch_set_THEN_it_should_push_to_pushurl() {
-    when(git.getLastCommitMessage()).thenReturn(HELLO_WORLD);
+    when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
     GerritChange gerritChange = tested.setAndGetChange(BranchShortName.MASTER);
 
     tested.createPatchSet(gerritChange, "start", "end", null);
@@ -154,7 +159,7 @@ public class DefaultGerritClientUnitTest {
   @Test
   public void
       WHEN_create_patch_set_with_subject_WHERE_IS_MY_MIND_THEN_it_suffix_push_with_WHERE_IS_MY_MIND() {
-    when(git.getLastCommitMessage()).thenReturn(HELLO_WORLD);
+    when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
     GerritChange gerritChange = tested.setAndGetChange(BranchShortName.MASTER);
 
     tested.createPatchSet(gerritChange, "start", "end", PatchSetSubject.of(WHERE_IS_MY_MIND));

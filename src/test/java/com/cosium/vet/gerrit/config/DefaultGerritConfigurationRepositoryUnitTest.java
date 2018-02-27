@@ -36,7 +36,7 @@ public class DefaultGerritConfigurationRepositoryUnitTest {
   @Test
   public void GIVEN_conf_containing_targetbranch_master_WHEN_read_THEN_it_should_return_master() {
     when(gitConfigProvider.getCurrentBranchValue("vet-change-target-branch"))
-        .thenReturn(CHANGE_TARGET_BRANCH.value());
+        .thenReturn(CHANGE_TARGET_BRANCH.toString());
 
     GerritConfiguration gerritConfiguration = tested.read();
     assertThat(gerritConfiguration).isNotNull();

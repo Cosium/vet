@@ -2,6 +2,7 @@ package com.cosium.vet.gerrit;
 
 import com.cosium.vet.gerrit.config.GerritConfigurationRepository;
 import com.cosium.vet.git.BranchShortName;
+import com.cosium.vet.git.CommitMessage;
 import com.cosium.vet.git.GitClient;
 import com.cosium.vet.git.GitUtils;
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
@@ -19,22 +20,29 @@ import static java.util.Optional.ofNullable;
  */
 class DefaultGerritClient implements GerritClient {
 
+  private static final String COMMIT_MESSAGE_CHANGE_ID_PREFIX = "Change-Id: ";
+
   private final GerritConfigurationRepository configurationRepository;
   private final ChangeChangeIdFactory changeChangeIdFactory;
+  private final GerritPatchSetRepository patchSetRepository;
   private final GitClient git;
   private final GerritPushUrl pushUrl;
 
   DefaultGerritClient(
       GerritConfigurationRepository configurationRepository,
       ChangeChangeIdFactory changeChangeIdFactory,
+      GerritPatchSetRepository patchSetRepository,
       GitClient gitClient,
       GerritPushUrl pushUrl) {
     requireNonNull(configurationRepository);
+    requireNonNull(changeChangeIdFactory);
+    requireNonNull(patchSetRepository);
     requireNonNull(gitClient);
     requireNonNull(pushUrl);
 
     this.configurationRepository = configurationRepository;
     this.changeChangeIdFactory = changeChangeIdFactory;
+    this.patchSetRepository = patchSetRepository;
     this.git = gitClient;
     this.pushUrl = pushUrl;
   }
@@ -72,9 +80,19 @@ class DefaultGerritClient implements GerritClient {
     }
     DefaultGerritChange theChange = (DefaultGerritChange) change;
 
-    String commitMessage =
-        String.format("%s\n\nChange-Id: %s", git.getLastCommitMessage(), theChange.getChangeId());
-    String commitId = git.commitTree(endRevision, startRevision, commitMessage);
+    CommitMessage commitMessage =
+        patchSetRepository
+            .getLastestPatchSetCommitMessage(pushUrl, theChange.getChangeId())
+            .orElseGet(git::getLastCommitMessage)
+            .removeLinesContaining(COMMIT_MESSAGE_CHANGE_ID_PREFIX);
+
+    String commitId =
+        git.commitTree(
+            endRevision,
+            startRevision,
+            String.format(
+                "%s\n\n%s%s",
+                commitMessage, COMMIT_MESSAGE_CHANGE_ID_PREFIX, theChange.getChangeId()));
 
     String messageSuffix =
         ofNullable(subject)
