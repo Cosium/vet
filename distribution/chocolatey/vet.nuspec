@@ -8,7 +8,7 @@
 <!-- Do not remove this test for UTF-8: if “Ω” doesn’t appear as greek uppercase omega letter enclosed in quotation marks, you should use an editor that supports UTF-8, not this one. -->
 <package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
   <metadata>
-    <id>vet</id>
+    <id>gerrit-vet</id>
     <version>1.0</version>
     <packageSourceUrl>https://github.com/Cosium/vet</packageSourceUrl>
     <owners>Cosium</owners>
@@ -19,7 +19,7 @@
     <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
     <tags>vet SPACE_SEPARATED</tags>
     <summary>__REPLACE__</summary>
-    <description>Gerrit client using pull request review workflow Edit</description>
+    <description>Gerrit client using pull request review workflow</description>
   </metadata>
   <files>
 <!-- Use back slash when performing 'choco pack' on windows -->
