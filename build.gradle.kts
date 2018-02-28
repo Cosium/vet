@@ -144,14 +144,20 @@ tasks {
         }
     }
 
+    "prepareBinariesCreation"(Copy::class){
+        from(tasks.getByName("jar"))
+        into("$buildDir/module-path")
+    }
+
     "createBinaries"(Exec::class) {
         dependsOn("build")
+        dependsOn("prepareBinariesCreation")
 
         delete("$buildDir/binaries")
 
         workingDir("$buildDir")
         val javaHome = System.getProperty("java.home")!!
-        commandLine("$javaHome/bin/jlink", "--module-path", "libs${File.pathSeparatorChar}$javaHome/jmods",
+        commandLine("$javaHome/bin/jlink", "--module-path", "module-path${File.pathSeparatorChar}$javaHome/jmods",
                 "--add-modules", moduleName, "--launcher", "${project.name}=$moduleName/$mainClass", "--output", "binaries", "--strip-debug",
                 "--compress", "2", "--no-header-files", "--no-man-pages")
 
