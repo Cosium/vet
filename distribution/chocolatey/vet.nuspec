@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Read this before creating packages: https://chocolatey.org/docs/create-packages -->
+<!-- It is especially important to read the above link to understand additional requirements when publishing packages to the community feed aka dot org (https://chocolatey.org/packages). -->
+
+<!-- Test your packages in a test environment: https://github.com/chocolatey/chocolatey-test-environment -->
+
+
+<!-- Do not remove this test for UTF-8: if “Ω” doesn’t appear as greek uppercase omega letter enclosed in quotation marks, you should use an editor that supports UTF-8, not this one. -->
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>vet</id>
+    <version>1.0</version>
+    <packageSourceUrl>https://github.com/Cosium/vet</packageSourceUrl>
+    <owners>Cosium</owners>
+
+    <title>vet (Install)</title>
+    <authors>Cosium</authors>
+    <projectUrl>https://github.com/Cosium/vet</projectUrl>
+    <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
+    <tags>vet SPACE_SEPARATED</tags>
+    <summary>__REPLACE__</summary>
+    <description>Gerrit client using pull request review workflow Edit</description>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>

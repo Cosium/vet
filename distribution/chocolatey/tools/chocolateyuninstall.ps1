@@ -1,0 +1,2 @@
+﻿Uninstall-BinFile "vet"
+
