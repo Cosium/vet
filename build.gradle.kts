@@ -1,3 +1,4 @@
+import de.undercouch.gradle.tasks.download.Download
 import org.gradle.api.tasks.Exec
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.api.tasks.testing.Test
@@ -5,6 +6,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.internal.impldep.com.esotericsoftware.kryo.util.Util.string
 import org.gradle.internal.impldep.com.google.common.collect.Lists
 import org.gradle.internal.impldep.com.google.common.io.Files
+import org.gradle.internal.impldep.com.jcraft.jsch.MAC
 import java.io.File
 
 plugins {
@@ -15,6 +17,8 @@ plugins {
     maven
 
     signing
+
+    id("de.undercouch.download").version("3.3.0")
 }
 
 group = "com.cosium.vet"
@@ -23,6 +27,30 @@ version = "1.1"
 val mainClass = "com.cosium.vet.App"
 val ossrhUsername by project
 val ossrhPassword by project
+
+enum class OS(val alias: String, val dirname: String, val jvmArchiveName: String, val jvmArchiveRootDir: String, val jvmUrl: String) {
+    LINUX_X64(
+            "LinuxX64",
+            "linux_x64",
+            "linux_x64.tar.gz",
+            "zulu9.0.4.1-jdk9.0.4-linux_x64",
+            "https://cdn.azul.com/zulu/bin/zulu9.0.4.1-jdk9.0.4-linux_x64.tar.gz"
+    ),
+    WINDOWS_X64(
+            "WindowsX64",
+            "windows_x64",
+            "win_x64.zip",
+            "zulu9.0.4.1-jdk9.0.4-win_x64",
+            "https://cdn.azul.com/zulu/bin/zulu9.0.4.1-jdk9.0.4-win_x64.zip"
+    ),
+    MAC_X64(
+            "MacX64",
+            "macosx_x64",
+            "macosx_x64.zip",
+            "zulu9.0.4.1-jdk9.0.4-macosx_x64",
+            "https://cdn.azul.com/zulu/bin/zulu9.0.4.1-jdk9.0.4-macosx_x64.zip"
+    );
+}
 
 application {
     mainClassName = mainClass
@@ -46,7 +74,7 @@ repositories {
 }
 
 signing {
-    gradle.taskGraph.whenReady{
+    gradle.taskGraph.whenReady {
         isRequired = this.hasTask("uploadArchives")
     }
     sign(configurations.archives)
@@ -144,23 +172,69 @@ tasks {
         }
     }
 
-    "prepareBinariesCreation"(Copy::class){
+
+    val binariesGroup = "binaries"
+
+    val buildModulePath = "buildModulePath"(Copy::class) {
+        this.group = binariesGroup
         from(tasks.getByName("jar"))
         into("$buildDir/module-path")
     }
 
-    "createBinaries"(Exec::class) {
-        dependsOn("build")
-        dependsOn("prepareBinariesCreation")
+    val createBinariesTasks = OS.values().map { os ->
+        tasks.create("createBinaries${os.alias}") {
+            this.group = binariesGroup
 
-        delete("$buildDir/binaries")
+            val downloadJvm = "downloadJvm${os.alias}"(Download::class) {
+                this.group = binariesGroup
+                src(os.jvmUrl)
+                dest("$buildDir/jvm/${os.jvmArchiveName}")
+            }
 
-        workingDir("$buildDir")
-        val javaHome = System.getProperty("java.home")!!
-        commandLine("$javaHome/bin/jlink", "--module-path", "module-path${File.pathSeparatorChar}$javaHome/jmods",
-                "--add-modules", moduleName, "--launcher", "${project.name}=$moduleName/$mainClass", "--output", "binaries", "--strip-debug",
-                "--compress", "2", "--no-header-files", "--no-man-pages")
+            val unzipJvm = "unzipJvm${os.alias}"(Copy::class) {
+                this.group = binariesGroup
 
+                dependsOn(downloadJvm)
+                if (os.jvmArchiveName.contains(".tar")) {
+                    from(tarTree(downloadJvm.dest))
+                } else {
+                    from(zipTree(downloadJvm.dest))
+                }
+                into("$buildDir/jvm")
+            }
+
+            val jlink = "jlinkJvm${os.alias}"(Exec::class) {
+                this.group = binariesGroup
+
+                dependsOn("build")
+                dependsOn(buildModulePath)
+                dependsOn(unzipJvm)
+
+                val binariesOutput = "binaries/${os.dirname}"
+                delete("$buildDir/$binariesOutput")
+                workingDir("$buildDir")
+
+                val javaHome = System.getProperty("java.home")!!
+
+                commandLine("$javaHome/bin/jlink",
+                        "--module-path", "module-path${File.pathSeparatorChar}${unzipJvm.destinationDir}/${os.jvmArchiveRootDir}/jmods",
+                        "--add-modules", moduleName,
+                        "--launcher", "${project.name}=$moduleName/$mainClass",
+                        "--output", binariesOutput,
+                        "--strip-debug",
+                        "--compress", "2",
+                        "--no-header-files",
+                        "--no-man-pages")
+            }
+
+            dependsOn(jlink)
+        }
+    }
+    "binaries" {
+        this.group = binariesGroup
+        createBinariesTasks.forEach({ t ->
+            dependsOn(t)
+        })
     }
 
 //------------------------------- jigsaw#end -----------------------------------------------------------------------------------
