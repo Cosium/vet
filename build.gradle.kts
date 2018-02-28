@@ -203,15 +203,19 @@ tasks {
                 into("$buildDir/jvm")
             }
 
+            val binariesOutput = "binaries/${os.dirname}"
+            val deletePreviousBinariesOutput = "deletePreviousBinariesOutput${os.alias}"(Delete::class){
+                delete("$buildDir/$binariesOutput")
+            }
+
             val jlink = "jlinkJvm${os.alias}"(Exec::class) {
                 this.group = binariesGroup
 
                 dependsOn("build")
                 dependsOn(buildModulePath)
                 dependsOn(unzipJvm)
+                dependsOn(deletePreviousBinariesOutput)
 
-                val binariesOutput = "binaries/${os.dirname}"
-                delete("$buildDir/$binariesOutput")
                 workingDir("$buildDir")
 
                 val javaHome = System.getProperty("java.home")!!
