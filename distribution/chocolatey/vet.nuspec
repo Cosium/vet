@@ -17,8 +17,7 @@
     <authors>Cosium</authors>
     <projectUrl>https://github.com/Cosium/vet</projectUrl>
     <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
-    <tags>vet SPACE_SEPARATED</tags>
-    <summary>__REPLACE__</summary>
+    <tags>vet gerrit-review-cli pull-request gerrit pull-requests</tags>
     <description>Gerrit client using pull request review workflow</description>
   </metadata>
   <files>
