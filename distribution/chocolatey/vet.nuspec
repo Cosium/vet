@@ -22,6 +22,7 @@
     <description>Gerrit client using pull request review workflow Edit</description>
   </metadata>
   <files>
-    <file src="tools\**" target="tools" />
+<!-- Use back slash when performing 'choco pack' on windows -->
+    <file src="tools/**" target="tools" />
   </files>
 </package>
