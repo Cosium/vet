@@ -43,7 +43,7 @@ enum class OS(val alias: String, val dirname: String, val jvmArchiveName: String
             "zulu9.0.4.1-jdk9.0.4-win_x64",
             "https://cdn.azul.com/zulu/bin/zulu9.0.4.1-jdk9.0.4-win_x64.zip"
     ),
-    MAC_X64(
+    MACOSX_X64(
             "MacX64",
             "macosx_x64",
             "macosx_x64.zip",
