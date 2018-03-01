@@ -14,17 +14,22 @@ synonymes :	screen, assess, evaluate, appraise, weigh up, examine, look over, re
 
 Vet allows to review code on Gerrit using a pull-request workflow similar to GitHub, GitLab, Bitbucket and others.
 
-```bash
-$ vet push --patch-set-subject "Add bar"
-remote: Processing changes: new: 1, done            
-remote: 
-remote: New Changes:        
-remote:   http://localhost:38391/#/c/foo/+/1001 The topic        
-remote: 
-To http://localhost:38391/foo
- * [new branch]      ab1e39bc82d81d5ed80e2357e67f57e47d4a4cd0 -> refs/for/master%m=Add_bar
-From http://localhost:38391/foo
- * branch            refs/changes/01/1001/1 -> FETCH_HEAD
+## Install
+
+#### Linux
+
+TODO
+
+#### Mac OS X
+
+```
+brew tap cosium/vet && brew install vet
+```
+
+#### Windows
+
+```
+choco install gerrit-vet
 ```
 
 ## Benefits
@@ -73,21 +78,7 @@ Because Vet delegates all Gerrit communication to git, your remote access protoc
 
 ## Usage
 
-#### Command line interface
-
-```bash
-$ vet --help
-usage: vet [--version] [--help] <command> [<args>]
-
-<command> can be one of:
- push
-
-Debug options:
- --stackstrace      Print stacktraces
- --verbose         Enable verbose mode
-
-Vet: The Gerrit client using pull request review workflow
-```
+#### Push
 
 ```bash
 $ vet --help push
@@ -101,7 +92,20 @@ set.
 If no change set exists, patch set will be appended to a new one.
 ```
 
-#### Library
+```bash
+$ vet push --patch-set-subject "Add bar"
+remote: Processing changes: new: 1, done            
+remote: 
+remote: New Changes:        
+remote:   http://localhost:38391/#/c/foo/+/1001 The topic        
+remote: 
+To http://localhost:38391/foo
+ * [new branch]      ab1e39bc82d81d5ed80e2357e67f57e47d4a4cd0 -> refs/for/master%m=Add_bar
+From http://localhost:38391/foo
+ * branch            refs/changes/01/1001/1 -> FETCH_HEAD
+```
+
+## Library
 
 You will need JDK 9+.
 
@@ -116,6 +120,20 @@ You will need JDK 9+.
 ## Limitation
 
 Since Vet has its own change id computation system, all clients of the same Gerrit instance must use Vet.
+
+## Build
+
+You will need to have Docker installed to build the project. 
+
+#### Generating standalone binaries
+
+Vet uses Java 9 Jlink to generate standalone binaries for Linux, MacOSX and Windows.
+
+```
+./gradlew binaries
+```
+
+Generated binaries can be found in `build/binaries`
 
 [travis-image]: https://travis-ci.org/Cosium/vet.svg?branch=master
 [travis-url]: https://travis-ci.org/Cosium/vet
