@@ -12,13 +12,13 @@ The build process created the file vet-windows_x64.zip which is stored as a rele
 
 VERIFICATION PROCESS
 1. Download the official released file https://github.com/Cosium/vet/releases/download/1.1/vet-windows_x64.zip
-2. Check the file hash is as per this document. This zip file should have a SHA256 checksum of 5355AAEA37770A1D80F051E474F393DA769C202F132C2942A89E0F8B94804FD8
-3. Extract the bundled vet-windows_x64.zip from the chocolatey package, has with get-filehash and compare to the hash 5355AAEA37770A1D80F051E474F393DA769C202F132C2942A89E0F8B94804FD8 and the hash derived from 2 above
+2. Check the file hash is as per this document. This zip file should have a SHA256 checksum of 4E5E5A6D395062B1F3008921DC9DE8CB10518590A4C883B07BFDC232D2092FE2
+3. Extract the bundled vet-windows_x64.zip from the chocolatey package, has with get-filehash and compare to the hash 4E5E5A6D395062B1F3008921DC9DE8CB10518590A4C883B07BFDC232D2092FE2 and the hash derived from 2 above
 4. If all three hashes match (hash from github, hash from chocolatey, hash from build process), the file is verified.
 
 EXAMPLE:
 wget https://github.com/Cosium/vet/releases/download/1.1/vet-windows_x64.zip -OutFile .\vet-windows_x64.zip
-(get-filehash .\vet-windows_x64.zip).Hash -eq "5355AAEA37770A1D80F051E474F393DA769C202F132C2942A89E0F8B94804FD8"
+(get-filehash .\vet-windows_x64.zip).Hash -eq "4E5E5A6D395062B1F3008921DC9DE8CB10518590A4C883B07BFDC232D2092FE2"
 
 LICENSE:
 The file 'LICENSE.txt' has been obtained from <https://opensource.org/licenses/MIT>
