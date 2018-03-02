@@ -16,17 +16,17 @@ Vet allows to review code on Gerrit using a pull-request workflow similar to Git
 
 ## Install
 
-#### Linux
+### Linux
 
 TODO
 
-#### Mac OSX - [Homebrew](https://brew.sh/)
+### Mac OSX - [Homebrew](https://brew.sh/)
 
 ```
 brew tap cosium/vet && brew install vet
 ```
 
-#### Windows - [Chocolatey](https://chocolatey.org/)
+### Windows - [Chocolatey](https://chocolatey.org/)
 
 ```
 choco install gerrit-vet
@@ -125,7 +125,7 @@ Since Vet has its own change id computation system, all clients of the same Gerr
 
 You will need to have Docker installed to build the project. 
 
-#### Generating standalone binaries
+### Generating standalone binaries
 
 Vet uses Java 9 Jlink to generate standalone binaries for Linux, MacOSX and Windows.
 
