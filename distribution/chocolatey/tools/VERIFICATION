@@ -1,0 +1,23 @@
+VERIFICATION
+Verification is intended to assist the Chocolatey moderators and community
+in verifying that this package's contents are trustworthy.
+
+This is for the package version 1.0
+
+BACKGROUND
+The embedded software have been built from source held at <https://github.com/Cosium/vet>
+The full build script is hosted here: <https://github.com/Cosium/vet/tree/master/distribution/chocolatey>
+The build is executed on a hosted file server in Cosium
+
+VERIFICATION PROCESS
+1. Download the official released file https://github.com/Cosium/vet/releases/download/1.0/vet-windows_x64.zip
+2. Check the file hash is as per this document. This zip file should have a SHA256 checksum of 6A442FE8B361CC811C67A61B91B6F99D0D529B45C1B73848E1C779E7D6F20289
+3. Extract the bundled parqInstall.zip from the chocolatey package, has with get-filehash and compare to the hash 6A442FE8B361CC811C67A61B91B6F99D0D529B45C1B73848E1C779E7D6F20289 and the hash derived from 2 above
+4. If all three hashes match (hash from github, hash from chocolatey, hash from build process), the file is verified.
+
+EXAMPLE:
+wget https://github.com/Cosium/vet/releases/download/1.0/vet-windows_x64.zip -OutFile .\vet-windows_x64.zip
+(get-filehash .\vet-windows_x64.zip).Hash -eq "6A442FE8B361CC811C67A61B91B6F99D0D529B45C1B73848E1C779E7D6F20289"
+
+LICENSE:
+The file 'LICENSE.txt' has been obtained from <https://opensource.org/licenses/MIT>
