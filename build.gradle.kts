@@ -231,7 +231,26 @@ tasks {
                         "--no-man-pages")
             }
 
-            dependsOn(jlink)
+            val overrideLauncher = "overrideLauncher${os.alias}"(Copy::class){
+                dependsOn(jlink)
+                from("$rootDir/launcher-override.sh"){
+                    this.rename("launcher-override\\.sh", "vet")
+                }
+                into("$buildDir/$binariesOutput/bin")
+            }
+
+            val zipBinaries = "zipBinaries${os.alias}"(Zip::class){
+                this.group = binariesGroup
+
+                dependsOn(overrideLauncher)
+
+                from("$buildDir/$binariesOutput")
+                include("**/*")
+                archiveName = "vet-${os.dirname}.zip"
+                destinationDir = File("$buildDir/binaries")
+            }
+
+            dependsOn(zipBinaries)
         }
     }
     "binaries" {
