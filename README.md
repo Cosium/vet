@@ -39,7 +39,7 @@ choco install gerrit-vet
 
 ### Manual
 
-Download the binaries from from https://github.com/Cosium/vet/releases
+Download the binaries from https://github.com/Cosium/vet/releases
 
 ## Benefits
 
