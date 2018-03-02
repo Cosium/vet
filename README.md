@@ -78,7 +78,7 @@ Because Vet delegates all Gerrit communication to git, your remote access protoc
 
 ## Usage
 
-#### Push
+### Push
 
 ```bash
 $ vet --help push
