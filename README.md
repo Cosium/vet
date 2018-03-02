@@ -16,7 +16,7 @@ Vet allows to review code on Gerrit using a pull-request workflow similar to Git
 
 ## Install
 
-### Linux - Debian
+### Linux - Debian based distributions
 
 ```
 wget https://github.com/Cosium/vet/releases/download/1.1/vet-linux_x64.deb.zip -O vet.deb.zip \
@@ -36,6 +36,10 @@ brew tap cosium/vet && brew install vet
 ```
 choco install gerrit-vet
 ```
+
+### Manual
+
+Download the binaries from from https://github.com/Cosium/vet/releases
 
 ## Benefits
 
