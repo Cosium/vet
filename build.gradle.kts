@@ -250,7 +250,14 @@ tasks {
                 destinationDir = File("$buildDir/binaries")
             }
 
-            dependsOn(zipBinaries)
+            val cleanup = "cleanup${os.alias}"(Delete::class){
+                this.group = binariesGroup
+
+                dependsOn(zipBinaries)
+                delete("$buildDir/$binariesOutput")
+            }
+
+            dependsOn(cleanup)
         }
     }
     "binaries" {
@@ -318,5 +325,7 @@ tasks {
 
     }
 //---------------------------- oss-sonatype#end ------------------------------------------------------------------------------
+
+
 }
 
