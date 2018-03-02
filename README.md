@@ -20,13 +20,13 @@ Vet allows to review code on Gerrit using a pull-request workflow similar to Git
 
 TODO
 
-#### Mac OS X
+#### Mac OSX - [Homebrew](https://brew.sh/)
 
 ```
 brew tap cosium/vet && brew install vet
 ```
 
-#### Windows
+#### Windows - [Chocolatey](https://chocolatey.org/)
 
 ```
 choco install gerrit-vet
