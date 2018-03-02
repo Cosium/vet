@@ -28,3 +28,7 @@ Description: Gerrit client using pull request review workflow
 EOF
 
 dpkg-deb --build $DIR
+
+rm -rf $DIR
+mv vet_$1.deb vet.deb
+zip -r vet-linux_x64.deb.zip vet.deb
