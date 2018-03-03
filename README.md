@@ -3,15 +3,6 @@
 
 # vet
 
->vet
-/vɛt/
-
->verb
-
->make a careful and critical examination of (something).
-"proposals for vetting large takeover bids"
-synonymes :	screen, assess, evaluate, appraise, weigh up, examine, look over, review, consider, scrutinize, study, inspect; Plus
-
 Vet allows to review code on Gerrit using a pull-request workflow similar to GitHub, GitLab, Bitbucket and others.
 
 ## Install
