@@ -28,15 +28,14 @@ public class BasicCommandRunner implements CommandRunner {
 
       LOG.debug("Executing '{}'", StringUtils.join(command, StringUtils.SPACE));
       Process process = processBuilder.start();
+      String output = IOUtils.toString(process.getInputStream(), "UTF-8").trim();
 
       int exitCode = process.waitFor();
       if (exitCode != 0) {
-        throw new CommandRunException(
-            exitCode, IOUtils.toString(process.getInputStream(), "UTF-8"), command);
+        throw new CommandRunException(exitCode, output, command);
       }
 
-      return StringUtils.defaultIfBlank(
-          IOUtils.toString(process.getInputStream(), "UTF-8").trim(), null);
+      return StringUtils.defaultIfBlank(output, null);
     } catch (IOException | InterruptedException e) {
       throw new RuntimeException(e);
     }
