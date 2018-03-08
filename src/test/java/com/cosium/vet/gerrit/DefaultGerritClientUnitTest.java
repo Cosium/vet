@@ -6,9 +6,11 @@ import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.CommitMessage;
 import com.cosium.vet.git.GitClient;
 import com.cosium.vet.git.GitUtils;
+import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -28,6 +30,7 @@ public class DefaultGerritClientUnitTest {
   private static final String HELLO_WORLD = "Hello World";
   private static final String FOO = "foo";
   private static final String WHERE_IS_MY_MIND = "Where is my mind?!";
+  private static final String SOURCE_BRANCH = "feature/a";
 
   private AtomicReference<GerritConfiguration> lastSavedConfiguration;
 
@@ -60,7 +63,7 @@ public class DefaultGerritClientUnitTest {
     when(changeChangeIdFactory.build(any(), any())).thenReturn(changeChangeId);
 
     git = mock(GitClient.class);
-    when(git.getBranch()).thenReturn(BranchShortName.of("feature/a"));
+    when(git.getBranch()).thenReturn(BranchShortName.of(SOURCE_BRANCH));
 
     pushUrl = GerritPushUrl.of("https://bar.com/foo");
 
@@ -122,6 +125,33 @@ public class DefaultGerritClientUnitTest {
     tested.createPatchSet(gerritChange, "start", "end", null);
 
     verify(git).commitTree(any(), any(), endsWith("\nChange-Id: I1234"));
+  }
+
+  @Test
+  public void
+      GIVEN_existing_change_WHEN_create_patch_set_THEN_commit_tree_message_should_contains_SOURCE_BRANCH() {
+    when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
+    GerritChange gerritChange = tested.setAndGetChange(BranchShortName.MASTER);
+
+    tested.createPatchSet(gerritChange, "start", "end", null);
+
+    verify(git).commitTree(any(), any(), contains("\nSource-Branch: " + SOURCE_BRANCH));
+  }
+
+  @Test
+  public void
+      GIVEN_existing_change_WHEN_create_patch_set_THEN_commit_tree_message_should_contains_exactly_one_SOURCE_BRANCH() {
+    when(git.getLastCommitMessage()).thenReturn(CommitMessage.of("Source-Branch: foo"));
+    GerritChange gerritChange = tested.setAndGetChange(BranchShortName.MASTER);
+
+    tested.createPatchSet(gerritChange, "start", "end", null);
+
+    ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
+    verify(git).commitTree(any(), any(), messageCaptor.capture());
+
+    String message = messageCaptor.getValue();
+    assertThat(message).contains("\nSource-Branch: " + SOURCE_BRANCH);
+    assertThat(StringUtils.countMatches(message, "Source-Branch")).isEqualTo(1);
   }
 
   @Test

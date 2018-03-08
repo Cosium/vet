@@ -1,5 +1,6 @@
 package com.cosium.vet.git;
 
+import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 import com.cosium.vet.utils.NonBlankString;
 
 import java.util.Arrays;
@@ -19,10 +20,20 @@ public class CommitMessage extends NonBlankString {
     return new CommitMessage(value);
   }
 
-  public CommitMessage removeLinesContaining(String content) {
-    return new CommitMessage(
-        Arrays.stream(toString().split("\n"))
-            .filter(s -> !s.contains(content))
-            .collect(Collectors.joining("\n")));
+  public String removeLinesStartingWith(String... prefixes) {
+    return Arrays.stream(toString().split("\n"))
+        .filter(
+            line -> {
+              if (StringUtils.isBlank(line)) {
+                return false;
+              }
+              for (String prefix : prefixes) {
+                if (line.startsWith(prefix)) {
+                  return false;
+                }
+              }
+              return true;
+            })
+        .collect(Collectors.joining("\n"));
   }
 }

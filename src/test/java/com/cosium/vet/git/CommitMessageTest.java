@@ -13,14 +13,14 @@ public class CommitMessageTest {
 
   @Test
   public void testremoveLinesContaining() {
-    CommitMessage message =
+    String message =
         CommitMessage.of(
                 "Merge remote-tracking branch 'origin/master' into feature/postgres-unsafe\n"
                     + "\n"
                     + "Change-Id: Iac23231451e6dc7736f69a7b4e7e3cc8a1228241")
-            .removeLinesContaining("Change-Id: ");
+            .removeLinesStartingWith("Change-Id: ");
 
-    assertThat(message.toString())
+    assertThat(message)
         .isEqualTo(
             "Merge remote-tracking branch 'origin/master' into feature/postgres-unsafe");
   }

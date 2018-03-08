@@ -2,7 +2,6 @@ package com.cosium.vet.gerrit;
 
 import com.cosium.vet.gerrit.config.GerritConfigurationRepository;
 import com.cosium.vet.git.BranchShortName;
-import com.cosium.vet.git.CommitMessage;
 import com.cosium.vet.git.GitClient;
 import com.cosium.vet.git.GitUtils;
 import com.cosium.vet.log.Logger;
@@ -24,6 +23,7 @@ class DefaultGerritClient implements GerritClient {
 
   private static final Logger LOG = LoggerFactory.getLogger(DefaultGerritClient.class);
 
+  private static final String COMMIT_MESSAGE_SOURCE_BRANCH_PREFIX = "Source-Branch: ";
   private static final String COMMIT_MESSAGE_CHANGE_ID_PREFIX = "Change-Id: ";
 
   private final GerritConfigurationRepository configurationRepository;
@@ -51,27 +51,32 @@ class DefaultGerritClient implements GerritClient {
     this.pushUrl = pushUrl;
   }
 
-  private ChangeChangeId buildChangeChangeId(BranchShortName targetBranch) {
-    return changeChangeIdFactory.build(git.getBranch(), targetBranch);
+  private ChangeChangeId buildChangeChangeId(
+      BranchShortName sourceBranch, BranchShortName targetBranch) {
+    return changeChangeIdFactory.build(sourceBranch, targetBranch);
   }
 
   @Override
   public Optional<GerritChange> getChange() {
+    BranchShortName sourceBranch = git.getBranch();
     return configurationRepository
         .read()
         .getChangeTargetBranch()
         .map(
             targetBranch ->
-                new DefaultGerritChange(buildChangeChangeId(targetBranch), targetBranch));
+                new DefaultGerritChange(
+                    buildChangeChangeId(sourceBranch, targetBranch), sourceBranch, targetBranch));
   }
 
   @Override
   public GerritChange setAndGetChange(BranchShortName targetBranch) {
     LOG.debug("Enabling change for target branch '{}'", targetBranch);
+    BranchShortName sourceBranch = git.getBranch();
     return configurationRepository.readAndWrite(
         conf -> {
           GerritChange change =
-              new DefaultGerritChange(buildChangeChangeId(targetBranch), targetBranch);
+              new DefaultGerritChange(
+                  buildChangeChangeId(sourceBranch, targetBranch), sourceBranch, targetBranch);
           conf.setChangeTargetBranch(targetBranch);
           return change;
         });
@@ -91,20 +96,24 @@ class DefaultGerritClient implements GerritClient {
         startRevision,
         endRevision);
 
-    String changeIdLine =
-        String.format("%s%s", COMMIT_MESSAGE_CHANGE_ID_PREFIX, theChange.getChangeId());
-
-    CommitMessage commitMessage =
+    String commitMessage =
         patchSetRepository
             .getLastestPatchSetCommitMessage(pushUrl, theChange.getChangeId())
             .orElseGet(git::getLastCommitMessage)
-            .removeLinesContaining(changeIdLine);
+            .removeLinesStartingWith(
+                COMMIT_MESSAGE_SOURCE_BRANCH_PREFIX, COMMIT_MESSAGE_CHANGE_ID_PREFIX);
 
-    String commitMessageWithChangeId = String.format("%s\n\n%s", commitMessage, changeIdLine);
+    String sourceBranchLine =
+        String.format("%s%s", COMMIT_MESSAGE_SOURCE_BRANCH_PREFIX, theChange.sourceBranch);
+    String changeChangeIdLine =
+        String.format("%s%s", COMMIT_MESSAGE_CHANGE_ID_PREFIX, theChange.getChangeId());
 
-    LOG.debug("Create commit tree with message '{}'", commitMessageWithChangeId);
+    String commitMessageWithMetadata =
+        String.format("%s\n\n%s\n%s", commitMessage, sourceBranchLine, changeChangeIdLine);
 
-    String commitId = git.commitTree(endRevision, startRevision, commitMessageWithChangeId);
+    LOG.debug("Create commit tree with message '{}'", commitMessageWithMetadata);
+
+    String commitId = git.commitTree(endRevision, startRevision, commitMessageWithMetadata);
     LOG.debug("Commit tree id is '{}'", commitId);
 
     String messageSuffix =
@@ -133,13 +142,17 @@ class DefaultGerritClient implements GerritClient {
   private class DefaultGerritChange implements GerritChange {
 
     private final ChangeChangeId changeId;
+    private final BranchShortName sourceBranch;
     private final BranchShortName targetBranch;
 
-    DefaultGerritChange(ChangeChangeId changeId, BranchShortName targetBranch) {
+    DefaultGerritChange(
+        ChangeChangeId changeId, BranchShortName sourceBranch, BranchShortName targetBranch) {
       requireNonNull(changeId);
+      requireNonNull(sourceBranch);
       requireNonNull(targetBranch);
 
       this.changeId = changeId;
+      this.sourceBranch = sourceBranch;
       this.targetBranch = targetBranch;
     }
 
