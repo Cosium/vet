@@ -22,7 +22,7 @@ plugins {
 }
 
 group = "com.cosium.vet"
-version = "1.4"
+version = "1.5"
 
 val mainClass = "com.cosium.vet.App"
 val ossrhUsername by project
