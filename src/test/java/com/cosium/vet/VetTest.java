@@ -34,6 +34,7 @@ public class VetTest extends GerritEnvironmentTest {
         "http://" + USER + ":" + PASSWORD + "@" + gerritHost + ":" + gerritPort + "/" + PROJECT);
     runner.run(downstreamGitDir, "git", "config", "user.email", "you@example.com");
     runner.run(downstreamGitDir, "git", "config", "user.name", "Your Name");
+    runner.run(downstreamGitDir, "git", "checkout", "-b", "feature");
     tested = new Vet(downstreamGitDir, runner, false, DebugOptions.empty());
   }
 

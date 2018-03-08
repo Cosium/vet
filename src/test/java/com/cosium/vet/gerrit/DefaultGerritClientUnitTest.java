@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -195,5 +196,11 @@ public class DefaultGerritClientUnitTest {
     tested.createPatchSet(gerritChange, "start", "end", PatchSetSubject.of(WHERE_IS_MY_MIND));
 
     verify(git).push(any(), contains("m=" + GitUtils.encodeForGitRef(WHERE_IS_MY_MIND)));
+  }
+
+  @Test
+  public void WHEN_setChange_to_SOURCE_BRANCH_THEN_it_should_fail() {
+    assertThatThrownBy(() -> tested.setChange(BranchShortName.of(SOURCE_BRANCH)))
+        .hasMessage("Target branch can't be the same as the current branch");
   }
 }
