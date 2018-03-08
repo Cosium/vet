@@ -7,7 +7,7 @@ mkdir $DIR/usr/local
 mkdir $DIR/usr/local/bin
 mkdir $DIR/usr/local/lib
 mkdir $DIR/usr/local/lib/vet
-wget $2 -O $DIR/usr/local/lib/vet/vet.zip
+wget https://github.com/Cosium/vet/releases/download/$1/vet-linux_x64.zip -O $DIR/usr/local/lib/vet/vet.zip
 unzip $DIR/usr/local/lib/vet/vet.zip -d $DIR/usr/local/lib/vet
 rm $DIR/usr/local/lib/vet/vet.zip
 cd $DIR/usr/local/bin
@@ -32,3 +32,4 @@ dpkg-deb --build $DIR
 rm -rf $DIR
 mv vet_$1.deb vet.deb
 zip -r vet-linux_x64.deb.zip vet.deb
+rm vet.deb
