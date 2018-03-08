@@ -112,15 +112,17 @@ class DefaultGerritClient implements GerritClient {
     return body + "\n\n" + footer;
   }
 
-  private String buildPatchSetOptions(boolean publishDraftedComments, PatchSetSubject subject) {
+  private String buildPatchSetOptions(
+      boolean publishDraftedComments, boolean workInProgress, PatchSetSubject subject) {
     List<String> options = new ArrayList<>();
+    options.add(publishDraftedComments ? "publish-comments" : null);
+    options.add(workInProgress ? "wip" : null);
     options.add(
         ofNullable(subject)
             .map(NonBlankString::toString)
             .map(GitUtils::encodeForGitRef)
             .map(s -> String.format("m=%s", s))
             .orElse(null));
-    options.add(publishDraftedComments ? "publish-comments" : null);
     return options.stream().filter(StringUtils::isNotBlank).collect(Collectors.joining(","));
   }
 
@@ -130,6 +132,7 @@ class DefaultGerritClient implements GerritClient {
       String startRevision,
       String endRevision,
       boolean publishDraftedComments,
+      boolean workInProgress,
       PatchSetSubject subject) {
     if (!(change instanceof DefaultGerritChange)) {
       throw new RuntimeException("change must be an instance of " + DefaultGerritChange.class);
@@ -147,7 +150,7 @@ class DefaultGerritClient implements GerritClient {
     String commitId = git.commitTree(endRevision, startRevision, commitMessage);
     LOG.debug("Commit tree id is '{}'", commitId);
 
-    String options = buildPatchSetOptions(publishDraftedComments, subject);
+    String options = buildPatchSetOptions(publishDraftedComments, workInProgress, subject);
     LOG.debug(
         "Pushing '{}' to '{}', with options '{}'", commitId, theChange.getTargetBranch(), options);
 

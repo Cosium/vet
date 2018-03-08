@@ -22,6 +22,7 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
   private static final String COMMAND_NAME = "push";
   private static final String TARGET_BRANCH = "b";
   private static final String PUBLISH_DRAFTED_COMMENTS = "p";
+  private static final String WORK_IN_PROGRESS = "w";
   private static final String PATCH_SET_SUBJECT = "s";
 
   private final PushCommandFactory pushCommandFactory;
@@ -40,8 +41,15 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
             .build());
     options.addOption(
         Option.builder(PUBLISH_DRAFTED_COMMENTS)
+            .numberOfArgs(0)
             .longOpt("publish-drafted-comments")
             .desc("Publish currently drafted comments of the change set if any.")
+            .build());
+    options.addOption(
+        Option.builder(WORK_IN_PROGRESS)
+            .numberOfArgs(0)
+            .longOpt("work-in-progress")
+            .desc("Turn the change to work in progress (or wip)")
             .build());
     options.addOption(
         Option.builder(PATCH_SET_SUBJECT)
@@ -91,12 +99,14 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
             .map(BranchShortName::of)
             .orElse(null);
     Boolean publishDraftedComments = commandLine.hasOption(PUBLISH_DRAFTED_COMMENTS) ? true : null;
+    Boolean workInProgress = commandLine.hasOption(WORK_IN_PROGRESS) ? true : null;
     PatchSetSubject patchSetSubject =
         ofNullable(commandLine.getOptionValue(PATCH_SET_SUBJECT))
             .filter(StringUtils::isNotBlank)
             .map(PatchSetSubject::of)
             .orElse(null);
 
-    return pushCommandFactory.build(targetBranch, publishDraftedComments, patchSetSubject);
+    return pushCommandFactory.build(
+        targetBranch, publishDraftedComments, workInProgress, patchSetSubject);
   }
 }

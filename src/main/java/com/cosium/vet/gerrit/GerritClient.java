@@ -27,6 +27,7 @@ public interface GerritClient {
    * @param startRevision The start revision
    * @param endRevision The end revision
    * @param publishDraftComments True to publish comments in draft. False otherwise.
+   * @param workInProgress True to mark change set in work in progress
    * @param subject The patch set subject
    */
   void createPatchSet(
@@ -34,5 +35,6 @@ public interface GerritClient {
       String startRevision,
       String endRevision,
       boolean publishDraftComments,
+      boolean workInProgress,
       PatchSetSubject subject);
 }

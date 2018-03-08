@@ -113,7 +113,7 @@ public class DefaultGerritClientUnitTest {
     when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
     GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
 
-    tested.createPatchSet(gerritChange, "start", "end", false, null);
+    tested.createPatchSet(gerritChange, "start", "end", false, false, null);
 
     verify(git).commitTree(any(), any(), contains(HELLO_WORLD));
   }
@@ -125,7 +125,7 @@ public class DefaultGerritClientUnitTest {
     GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
 
     when(changeChangeId.toString()).thenReturn("I1234");
-    tested.createPatchSet(gerritChange, "start", "end", false, null);
+    tested.createPatchSet(gerritChange, "start", "end", false, false, null);
 
     verify(git).commitTree(any(), any(), endsWith("\nChange-Id: I1234"));
   }
@@ -136,7 +136,7 @@ public class DefaultGerritClientUnitTest {
     when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
     GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
 
-    tested.createPatchSet(gerritChange, "start", "end", false, null);
+    tested.createPatchSet(gerritChange, "start", "end", false, false, null);
 
     verify(git).commitTree(any(), any(), contains("\nSource-Branch: " + SOURCE_BRANCH));
   }
@@ -147,7 +147,7 @@ public class DefaultGerritClientUnitTest {
     when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
     GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
 
-    tested.createPatchSet(gerritChange, "start", "end", false, null);
+    tested.createPatchSet(gerritChange, "start", "end", false, false, null);
 
     verify(git).commitTree(any(), any(), contains("\nVet-Version: " + VetVersion.VALUE));
   }
@@ -158,7 +158,7 @@ public class DefaultGerritClientUnitTest {
     when(git.getLastCommitMessage()).thenReturn(CommitMessage.of("Source-Branch: foo"));
     GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
 
-    tested.createPatchSet(gerritChange, "start", "end", false, null);
+    tested.createPatchSet(gerritChange, "start", "end", false, false, null);
 
     ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
     verify(git).commitTree(any(), any(), messageCaptor.capture());
@@ -173,7 +173,7 @@ public class DefaultGerritClientUnitTest {
       WHEN_create_patch_set_between_start_and_stop_THEN_commit_tree_between_start_and_end() {
     when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
     GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
-    tested.createPatchSet(gerritChange, "start", "end", false, null);
+    tested.createPatchSet(gerritChange, "start", "end", false, false, null);
 
     verify(git).commitTree(eq("end"), eq("start"), any());
   }
@@ -185,7 +185,7 @@ public class DefaultGerritClientUnitTest {
     GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
     when(git.commitTree(any(), any(), any())).thenReturn(FOO);
 
-    tested.createPatchSet(gerritChange, "start", "end", false, null);
+    tested.createPatchSet(gerritChange, "start", "end", false, false, null);
 
     verify(git).push(any(), startsWith(FOO + ":refs/for/" + BranchShortName.MASTER));
   }
@@ -195,7 +195,7 @@ public class DefaultGerritClientUnitTest {
     when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
     GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
 
-    tested.createPatchSet(gerritChange, "start", "end", false, null);
+    tested.createPatchSet(gerritChange, "start", "end", false, false, null);
 
     verify(git).push(eq(pushUrl.toString()), any());
   }
@@ -207,7 +207,7 @@ public class DefaultGerritClientUnitTest {
     GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
 
     tested.createPatchSet(
-        gerritChange, "start", "end", false, PatchSetSubject.of(WHERE_IS_MY_MIND));
+        gerritChange, "start", "end", false, false, PatchSetSubject.of(WHERE_IS_MY_MIND));
 
     verify(git).push(any(), contains("m=" + GitUtils.encodeForGitRef(WHERE_IS_MY_MIND)));
   }
@@ -224,19 +224,39 @@ public class DefaultGerritClientUnitTest {
     when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
     GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
 
-    tested.createPatchSet(gerritChange, "start", "end", true, null);
+    tested.createPatchSet(gerritChange, "start", "end", true, false, null);
 
     verify(git).push(any(), contains("publish-comments"));
   }
 
   @Test
   public void
-      WHEN_create_patch_set_without_publish_drafted_comments_THEN_it_should_not_push_with_option_publish_comment() {
+      WHEN_create_patch_set_without_publish_drafted_comments_THEN_it_should_push_without_option_publish_comment() {
     when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
     GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
 
-    tested.createPatchSet(gerritChange, "start", "end", false, null);
+    tested.createPatchSet(gerritChange, "start", "end", false, false, null);
 
     verify(git).push(any(), not(contains("publish-comments")));
+  }
+
+  @Test
+  public void WHEN_create_patch_set_with_wip_THEN_it_should_push_with_option_wip() {
+    when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
+    GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
+
+    tested.createPatchSet(gerritChange, "start", "end", false, true, null);
+
+    verify(git).push(any(), contains("wip"));
+  }
+
+  @Test
+  public void WHEN_create_patch_set_without_wip_THEN_it_should_push_without_option_wip() {
+    when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
+    GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
+
+    tested.createPatchSet(gerritChange, "start", "end", false, false, null);
+
+    verify(git).push(any(), not(contains("wip")));
   }
 }

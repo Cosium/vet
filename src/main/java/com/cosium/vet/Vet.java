@@ -92,12 +92,16 @@ public class Vet {
    *
    * @param targetBranch The optional target branch
    * @param publishDraftedComments True to publish drafted comments
+   * @param workInProgress True to turn the change set to work in progress
    * @param patchSetSubject The optional patch set subject
    */
   public void push(
       BranchShortName targetBranch,
       Boolean publishDraftedComments,
+      Boolean workInProgress,
       PatchSetSubject patchSetSubject) {
-    pushCommandFactory.build(targetBranch, publishDraftedComments, patchSetSubject).execute();
+    pushCommandFactory
+        .build(targetBranch, publishDraftedComments, workInProgress, patchSetSubject)
+        .execute();
   }
 }
