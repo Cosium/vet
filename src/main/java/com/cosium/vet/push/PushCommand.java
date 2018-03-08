@@ -12,6 +12,7 @@ import com.cosium.vet.git.RemoteName;
 import com.cosium.vet.log.Logger;
 import com.cosium.vet.log.LoggerFactory;
 import com.cosium.vet.runtime.UserInput;
+import com.cosium.vet.thirdparty.apache_commons_lang3.BooleanUtils;
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 
 import static java.util.Objects.requireNonNull;
@@ -30,6 +31,7 @@ public class PushCommand implements VetCommand {
   private final GerritClient gerrit;
   private final UserInput userInput;
   private final BranchShortName targetBranch;
+  private final Boolean publishDraftedComments;
   private final PatchSetSubject patchSetSubject;
 
   private PushCommand(
@@ -38,6 +40,7 @@ public class PushCommand implements VetCommand {
       UserInput userInput,
       // Optionals
       BranchShortName targetBranch,
+      Boolean publishDraftedComments,
       PatchSetSubject patchSetSubject) {
     requireNonNull(gitClient);
     requireNonNull(gerritClient);
@@ -45,7 +48,9 @@ public class PushCommand implements VetCommand {
     this.git = gitClient;
     this.gerrit = gerritClient;
     this.userInput = userInput;
+
     this.targetBranch = targetBranch;
+    this.publishDraftedComments = publishDraftedComments;
     this.patchSetSubject = patchSetSubject;
   }
 
@@ -77,7 +82,8 @@ public class PushCommand implements VetCommand {
               .orElse(null);
     }
 
-    gerrit.createPatchSet(change, parent, git.getTree(), subject);
+    gerrit.createPatchSet(
+        change, parent, git.getTree(), BooleanUtils.toBoolean(publishDraftedComments), subject);
   }
 
   private GerritChange askTargetBranchAndSetChange() {
@@ -107,12 +113,16 @@ public class PushCommand implements VetCommand {
     }
 
     @Override
-    public PushCommand build(BranchShortName targetBranch, PatchSetSubject patchSetSubject) {
+    public PushCommand build(
+        BranchShortName targetBranch,
+        Boolean publishDraftedComments,
+        PatchSetSubject patchSetSubject) {
       return new PushCommand(
           gitClientFactory.build(),
           gerritClientFactory.build(),
           userInput,
           targetBranch,
+          publishDraftedComments,
           patchSetSubject);
     }
   }

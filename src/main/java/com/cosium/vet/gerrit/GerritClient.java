@@ -26,8 +26,13 @@ public interface GerritClient {
    * @param change The change for which the patch set must be created
    * @param startRevision The start revision
    * @param endRevision The end revision
+   * @param publishDraftComments True to publish comments in draft. False otherwise.
    * @param subject The patch set subject
    */
   void createPatchSet(
-      GerritChange change, String startRevision, String endRevision, PatchSetSubject subject);
+      GerritChange change,
+      String startRevision,
+      String endRevision,
+      boolean publishDraftComments,
+      PatchSetSubject subject);
 }

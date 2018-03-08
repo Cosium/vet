@@ -21,6 +21,7 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
 
   private static final String COMMAND_NAME = "push";
   private static final String TARGET_BRANCH = "b";
+  private static final String PUBLISH_DRAFTED_COMMENTS = "p";
   private static final String PATCH_SET_SUBJECT = "s";
 
   private final PushCommandFactory pushCommandFactory;
@@ -36,6 +37,11 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
             .longOpt("target-branch")
             .hasArg()
             .desc("The branch targeted by the changes. If not set, it will be asked if needed.")
+            .build());
+    options.addOption(
+        Option.builder(PUBLISH_DRAFTED_COMMENTS)
+            .longOpt("publish-drafted-comments")
+            .desc("Publish currently drafted comments of the change set if any.")
             .build());
     options.addOption(
         Option.builder(PATCH_SET_SUBJECT)
@@ -84,12 +90,13 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
             .filter(StringUtils::isNotBlank)
             .map(BranchShortName::of)
             .orElse(null);
+    Boolean publishDraftedComments = commandLine.hasOption(PUBLISH_DRAFTED_COMMENTS) ? true : null;
     PatchSetSubject patchSetSubject =
         ofNullable(commandLine.getOptionValue(PATCH_SET_SUBJECT))
             .filter(StringUtils::isNotBlank)
             .map(PatchSetSubject::of)
             .orElse(null);
 
-    return pushCommandFactory.build(targetBranch, patchSetSubject);
+    return pushCommandFactory.build(targetBranch, publishDraftedComments, patchSetSubject);
   }
 }

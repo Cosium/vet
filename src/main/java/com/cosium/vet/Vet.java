@@ -8,14 +8,11 @@ import com.cosium.vet.gerrit.GerritClientFactory;
 import com.cosium.vet.gerrit.PatchSetSubject;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitProvider;
-import com.cosium.vet.log.Logger;
-import com.cosium.vet.log.LoggerFactory;
 import com.cosium.vet.push.PushCommand;
 import com.cosium.vet.push.PushCommandArgParser;
 import com.cosium.vet.push.PushCommandFactory;
 import com.cosium.vet.runtime.*;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -94,9 +91,13 @@ public class Vet {
    * Executes the push command.
    *
    * @param targetBranch The optional target branch
+   * @param publishDraftedComments True to publish drafted comments
    * @param patchSetSubject The optional patch set subject
    */
-  public void push(BranchShortName targetBranch, PatchSetSubject patchSetSubject) {
-    pushCommandFactory.build(targetBranch, patchSetSubject).execute();
+  public void push(
+      BranchShortName targetBranch,
+      Boolean publishDraftedComments,
+      PatchSetSubject patchSetSubject) {
+    pushCommandFactory.build(targetBranch, publishDraftedComments, patchSetSubject).execute();
   }
 }

@@ -10,9 +10,11 @@ import com.cosium.vet.log.LoggerFactory;
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 import com.cosium.vet.utils.NonBlankString;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
@@ -90,9 +92,45 @@ class DefaultGerritClient implements GerritClient {
         });
   }
 
+  private String buildPatchSetCommitMessage(DefaultGerritChange change) {
+    String body =
+        patchSetRepository
+            .getLastestPatchSetCommitMessage(pushUrl, change.getChangeId())
+            .orElseGet(git::getLastCommitMessage)
+            .removeLinesStartingWith(
+                COMMIT_MESSAGE_SOURCE_BRANCH_PREFIX,
+                COMMIT_MESSAGE_VET_VERSION_PREFIX,
+                COMMIT_MESSAGE_CHANGE_ID_PREFIX);
+
+    String footer =
+        String.join(
+            "\n",
+            COMMIT_MESSAGE_SOURCE_BRANCH_PREFIX + change.sourceBranch,
+            COMMIT_MESSAGE_VET_VERSION_PREFIX + VetVersion.VALUE,
+            COMMIT_MESSAGE_CHANGE_ID_PREFIX + change.getChangeId());
+
+    return body + "\n\n" + footer;
+  }
+
+  private String buildPatchSetOptions(boolean publishDraftedComments, PatchSetSubject subject) {
+    List<String> options = new ArrayList<>();
+    options.add(
+        ofNullable(subject)
+            .map(NonBlankString::toString)
+            .map(GitUtils::encodeForGitRef)
+            .map(s -> String.format("m=%s", s))
+            .orElse(null));
+    options.add(publishDraftedComments ? "publish-comments" : null);
+    return options.stream().filter(StringUtils::isNotBlank).collect(Collectors.joining(","));
+  }
+
   @Override
   public void createPatchSet(
-      GerritChange change, String startRevision, String endRevision, PatchSetSubject subject) {
+      GerritChange change,
+      String startRevision,
+      String endRevision,
+      boolean publishDraftedComments,
+      PatchSetSubject subject) {
     if (!(change instanceof DefaultGerritChange)) {
       throw new RuntimeException("change must be an instance of " + DefaultGerritChange.class);
     }
@@ -103,47 +141,19 @@ class DefaultGerritClient implements GerritClient {
         change,
         startRevision,
         endRevision);
+    String commitMessage = buildPatchSetCommitMessage(theChange);
 
-    String commitMessage =
-        patchSetRepository
-            .getLastestPatchSetCommitMessage(pushUrl, theChange.getChangeId())
-            .orElseGet(git::getLastCommitMessage)
-            .removeLinesStartingWith(
-                COMMIT_MESSAGE_SOURCE_BRANCH_PREFIX,
-                COMMIT_MESSAGE_VET_VERSION_PREFIX,
-                COMMIT_MESSAGE_CHANGE_ID_PREFIX);
-
-    String metadata =
-        StringUtils.join(
-            List.of(
-                COMMIT_MESSAGE_SOURCE_BRANCH_PREFIX + theChange.sourceBranch,
-                COMMIT_MESSAGE_VET_VERSION_PREFIX + VetVersion.VALUE,
-                COMMIT_MESSAGE_CHANGE_ID_PREFIX + theChange.getChangeId()),
-            "\n");
-
-    String commitMessageWithMetadata = commitMessage + "\n\n" + metadata;
-
-    LOG.debug("Create commit tree with message '{}'", commitMessageWithMetadata);
-
-    String commitId = git.commitTree(endRevision, startRevision, commitMessageWithMetadata);
+    LOG.debug("Creating commit tree with message '{}'", commitMessage);
+    String commitId = git.commitTree(endRevision, startRevision, commitMessage);
     LOG.debug("Commit tree id is '{}'", commitId);
 
-    String messageSuffix =
-        ofNullable(subject)
-            .map(NonBlankString::toString)
-            .map(GitUtils::encodeForGitRef)
-            .map(s -> String.format("m=%s", s))
-            .orElse(StringUtils.EMPTY);
-
+    String options = buildPatchSetOptions(publishDraftedComments, subject);
     LOG.debug(
-        "Pushing '{}' to '{}', with suffix '{}'",
-        commitId,
-        theChange.getTargetBranch(),
-        messageSuffix);
+        "Pushing '{}' to '{}', with options '{}'", commitId, theChange.getTargetBranch(), options);
 
     git.push(
         pushUrl.toString(),
-        String.format("%s:refs/for/%s%%%s", commitId, theChange.getTargetBranch(), messageSuffix));
+        String.format("%s:refs/for/%s%%%s", commitId, theChange.getTargetBranch(), options));
   }
 
   /**

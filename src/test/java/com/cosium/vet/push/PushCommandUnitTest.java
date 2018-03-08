@@ -48,7 +48,7 @@ public class PushCommandUnitTest {
 
   @Test
   public void GIVEN_cached_change_WHEN_pushing_THEN_it_should_not_set_change() {
-    PushCommand pushCommand = factory.build(null, null);
+    PushCommand pushCommand = factory.build(null, null, null);
     when(gerrit.getChange()).thenReturn(Optional.of(mock(GerritChange.class)));
     pushCommand.execute();
     verify(gerrit, times(0)).setChange(BranchShortName.of("foo"));
@@ -57,7 +57,7 @@ public class PushCommandUnitTest {
   @Test
   public void
       GIVEN_cached_change_WHEN_pushin_to_target_foo_branch_THEN_it_should_set_foo_in_gerrit_client() {
-    PushCommand pushCommand = factory.build(BranchShortName.of("foo"), null);
+    PushCommand pushCommand = factory.build(BranchShortName.of("foo"), null, null);
     when(gerrit.setChange(any())).thenReturn(mock(GerritChange.class));
     pushCommand.execute();
     verify(gerrit).setChange(BranchShortName.of("foo"));

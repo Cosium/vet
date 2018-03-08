@@ -84,14 +84,16 @@ Because Vet delegates all Gerrit communication to git, your remote access protoc
 
 ```bash
 $ vet --help push
-usage: vet push [-b <branch-name>] [-s <subject>] [-h]
+usage: vet push [-b <branch-name>] [-p] [-s <subject>]
  -b,--target-branch <branch-name>   The branch targeted by the changes. If
                                     not set, it will be asked if needed.
+ -p,--publish-drafted-comments      Publish currently drafted comments of
+                                    the change set if any.
  -s,--patch-set-subject <subject>   The subject of the patch set. If not
                                     set, it will be asked if needed.
 Push the changes to Gerrit by adding a new patch set to the current change
 set.
-If no change set exists, patch set will be appended to a new one.
+If no change set exists, the patch set will be appended to a new one.
 ```
 
 ```bash

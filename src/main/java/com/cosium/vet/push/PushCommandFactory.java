@@ -10,5 +10,8 @@ import com.cosium.vet.git.BranchShortName;
  */
 public interface PushCommandFactory {
 
-  PushCommand build(BranchShortName targetBranch, PatchSetSubject patchSetSubject);
+  PushCommand build(
+      BranchShortName targetBranch,
+      Boolean publishDraftedComments,
+      PatchSetSubject patchSetSubject);
 }

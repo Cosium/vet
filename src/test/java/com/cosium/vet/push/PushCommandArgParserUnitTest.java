@@ -25,7 +25,7 @@ public class PushCommandArgParserUnitTest {
   @Before
   public void before() {
     factory = mock(PushCommandFactory.class);
-    when(factory.build(any(), any())).thenReturn(mock(PushCommand.class));
+    when(factory.build(any(), any(), any())).thenReturn(mock(PushCommand.class));
     tested = new PushCommandArgParser(factory);
   }
 
@@ -42,31 +42,49 @@ public class PushCommandArgParserUnitTest {
   @Test
   public void testTargetBranchShort() {
     tested.parse("push", "-b", "b1");
-    verify(factory).build(eq(BranchShortName.of("b1")), isNull());
+    verify(factory).build(eq(BranchShortName.of("b1")), isNull(), isNull());
   }
 
   @Test
   public void testTargetBranchLong() {
     tested.parse("push", "--target-branch", "b1");
-    verify(factory).build(eq(BranchShortName.of("b1")), isNull());
+    verify(factory).build(eq(BranchShortName.of("b1")), isNull(), isNull());
   }
 
   @Test
   public void testPatchSetSubjectShort() {
     tested.parse("push", "-s", "hello");
-    verify(factory).build(isNull(), eq(PatchSetSubject.of("hello")));
+    verify(factory).build(isNull(), isNull(), eq(PatchSetSubject.of("hello")));
   }
 
   @Test
   public void testPatchSetSubjectLong() {
     tested.parse("push", "--patch-set-subject", "hello");
-    verify(factory).build(isNull(), eq(PatchSetSubject.of("hello")));
+    verify(factory).build(isNull(), isNull(), eq(PatchSetSubject.of("hello")));
+  }
+
+  @Test
+  public void testPublishDraftedCommentsShort() {
+    tested.parse("push", "-p");
+    verify(factory).build(isNull(), eq(true), isNull());
+  }
+
+  @Test
+  public void testPublishDraftedCommentsLong() {
+    tested.parse("push", "--publish-drafted-comments");
+    verify(factory).build(isNull(), eq(true), isNull());
   }
 
   @Test
   public void testAll() {
-    tested.parse("push", "--target-branch", "b1", "--patch-set-subject", "hello");
-    verify(factory).build(eq(BranchShortName.of("b1")), eq(PatchSetSubject.of("hello")));
+    tested.parse(
+        "push",
+        "--target-branch",
+        "b1",
+        "--patch-set-subject",
+        "hello",
+        "--publish-drafted-comments");
+    verify(factory).build(eq(BranchShortName.of("b1")), eq(true), eq(PatchSetSubject.of("hello")));
   }
 
   @Test
