@@ -1,5 +1,6 @@
 package com.cosium.vet.gerrit;
 
+import com.cosium.vet.VetVersion;
 import com.cosium.vet.gerrit.config.GerritConfiguration;
 import com.cosium.vet.gerrit.config.GerritConfigurationRepository;
 import com.cosium.vet.git.BranchShortName;
@@ -137,6 +138,17 @@ public class DefaultGerritClientUnitTest {
     tested.createPatchSet(gerritChange, "start", "end", null);
 
     verify(git).commitTree(any(), any(), contains("\nSource-Branch: " + SOURCE_BRANCH));
+  }
+
+  @Test
+  public void
+      GIVEN_existing_change_WHEN_create_patch_set_THEN_commit_tree_message_should_contains_VET_VERSION() {
+    when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
+    GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
+
+    tested.createPatchSet(gerritChange, "start", "end", null);
+
+    verify(git).commitTree(any(), any(), contains("\nVet-Version: " + VetVersion.VALUE));
   }
 
   @Test
