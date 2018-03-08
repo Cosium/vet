@@ -271,6 +271,8 @@ tasks {
 
 //---------------------------- oss-sonatype#start ------------------------------------------------------------------------------
     "uploadArchives"(Upload::class) {
+        dependsOn("build")
+
         repositories {
 
             withConvention(MavenRepositoryHandlerConvention::class) {
