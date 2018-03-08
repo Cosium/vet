@@ -1,6 +1,5 @@
 package com.cosium.vet.git;
 
-
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 
 /**
@@ -11,7 +10,7 @@ import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 public class GitUtils {
 
   public static String encodeForGitRef(String text) {
-    String safe = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ";
+    String safe = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789- ";
     StringBuilder encoded = new StringBuilder();
     for (char c : text.toCharArray()) {
       if (safe.indexOf(c) != -1) {
