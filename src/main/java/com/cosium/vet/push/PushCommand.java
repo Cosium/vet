@@ -9,6 +9,8 @@ import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitClient;
 import com.cosium.vet.git.GitClientFactory;
 import com.cosium.vet.git.RemoteName;
+import com.cosium.vet.log.Logger;
+import com.cosium.vet.log.LoggerFactory;
 import com.cosium.vet.runtime.UserInput;
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 
@@ -21,6 +23,8 @@ import static java.util.Optional.ofNullable;
  * @author Reda.Housni-Alaoui
  */
 public class PushCommand implements VetCommand {
+
+  private static final Logger LOG = LoggerFactory.getLogger(PushCommand.class);
 
   private final GitClient git;
   private final GerritClient gerrit;
@@ -47,7 +51,13 @@ public class PushCommand implements VetCommand {
 
   @Override
   public void execute() {
-    GerritChange change = gerrit.getChange().orElseGet(this::setAndGetChange);
+    final GerritChange change;
+    if (targetBranch != null) {
+      LOG.debug("Target branch forced to '{}'", targetBranch);
+      change = gerrit.setChange(targetBranch);
+    } else {
+      change = gerrit.getChange().orElseGet(this::askTargetBranchAndSetChange);
+    }
 
     BranchShortName branch = change.getTargetBranch();
     RemoteName remote =
@@ -70,14 +80,11 @@ public class PushCommand implements VetCommand {
     gerrit.createPatchSet(change, parent, git.getTree(), subject);
   }
 
-  private GerritChange setAndGetChange() {
+  private GerritChange askTargetBranchAndSetChange() {
     BranchShortName targetBranch =
-        ofNullable(this.targetBranch)
-            .orElseGet(
-                () ->
-                    BranchShortName.of(
-                        userInput.askNonBlank("Target branch", BranchShortName.MASTER.toString())));
-    return gerrit.setAndGetChange(targetBranch);
+        BranchShortName.of(
+            userInput.askNonBlank("Target branch", BranchShortName.MASTER.toString()));
+    return gerrit.setChange(targetBranch);
   }
 
   public static class Factory implements PushCommandFactory {

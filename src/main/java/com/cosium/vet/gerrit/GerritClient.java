@@ -18,7 +18,7 @@ public interface GerritClient {
    * @param targetBranch The target branch
    * @return The change to set
    */
-  GerritChange setAndGetChange(BranchShortName targetBranch);
+  GerritChange setChange(BranchShortName targetBranch);
 
   /**
    * Creates a patch set for the provided change between start revision and end revision

@@ -69,7 +69,7 @@ class DefaultGerritClient implements GerritClient {
   }
 
   @Override
-  public GerritChange setAndGetChange(BranchShortName targetBranch) {
+  public GerritChange setChange(BranchShortName targetBranch) {
     LOG.debug("Enabling change for target branch '{}'", targetBranch);
     BranchShortName sourceBranch = git.getBranch();
     return configurationRepository.readAndWrite(
