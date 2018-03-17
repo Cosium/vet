@@ -43,7 +43,7 @@ echo "Buiding binaries"
 echo "Built binaries"
 
 echo "Uploading binaries to GitHub"
-GITHUB_UPLOAD_URL=$(curl -u ${GITHUB_CREDENTIALS} -X POST -H "Content-Type: application/json" -d '{"tag_name": "${NEW_VERSION}", "draft": false}' ${GITHUB_BASE_URL}/releases | jq -r '.upload_url' | cut -d'{' -f 1)
+GITHUB_UPLOAD_URL=$(curl -u ${GITHUB_CREDENTIALS} -X POST -H "Content-Type: application/json" -d "{\"tag_name\": \"${NEW_VERSION}\", \"draft\": false}" ${GITHUB_BASE_URL}/releases | jq -r '.upload_url' | cut -d'{' -f 1)
 echo "Uploading Linux binaries to GitHub"
 curl -u ${GITHUB_CREDENTIALS} -H "Content-Type: application/zip" --data-binary @build/binaries/${LINUX_BINARY} ${GITHUB_UPLOAD_URL}?name=${LINUX_BINARY}
 echo "Uploading MacOSX binaries to GitHub"
