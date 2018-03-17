@@ -22,7 +22,11 @@ plugins {
 }
 
 group = "com.cosium.vet"
-version = "1.5"
+
+version = "0.0"
+if (project.hasProperty("project-version")) {
+    version = project.property("project-version")!!
+}
 
 val mainClass = "com.cosium.vet.App"
 val ossrhUsername by project
@@ -204,7 +208,7 @@ tasks {
             }
 
             val binariesOutput = "binaries/${os.dirname}"
-            val deletePreviousBinariesOutput = "deletePreviousBinariesOutput${os.alias}"(Delete::class){
+            val deletePreviousBinariesOutput = "deletePreviousBinariesOutput${os.alias}"(Delete::class) {
                 delete("$buildDir/$binariesOutput")
             }
 
@@ -231,15 +235,15 @@ tasks {
                         "--no-man-pages")
             }
 
-            val overrideLauncher = "overrideLauncher${os.alias}"(Copy::class){
+            val overrideLauncher = "overrideLauncher${os.alias}"(Copy::class) {
                 dependsOn(jlink)
-                from("$rootDir/launcher-override.sh"){
+                from("$rootDir/launcher-override.sh") {
                     this.rename("launcher-override\\.sh", "vet")
                 }
                 into("$buildDir/$binariesOutput/bin")
             }
 
-            val zipBinaries = "zipBinaries${os.alias}"(Zip::class){
+            val zipBinaries = "zipBinaries${os.alias}"(Zip::class) {
                 this.group = binariesGroup
 
                 dependsOn(overrideLauncher)
@@ -250,7 +254,7 @@ tasks {
                 destinationDir = File("$buildDir/binaries")
             }
 
-            val cleanup = "cleanup${os.alias}"(Delete::class){
+            val cleanup = "cleanup${os.alias}"(Delete::class) {
                 this.group = binariesGroup
 
                 dependsOn(zipBinaries)
