@@ -49,14 +49,14 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
         Option.builder(WORK_IN_PROGRESS)
             .numberOfArgs(0)
             .longOpt("work-in-progress")
-            .desc("Turn the change to work in progress (or wip)")
+            .desc("Turn the change to work in progress (e.g. wip).")
             .build());
     options.addOption(
         Option.builder(PATCH_SET_SUBJECT)
             .argName("subject")
             .longOpt("patch-set-subject")
             .hasArg()
-            .desc("The subject of the patch set. If not set, it will be asked if needed.")
+            .desc("The subject of the patch set.")
             .build());
   }
 

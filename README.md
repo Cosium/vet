@@ -89,8 +89,7 @@ usage: vet push [-b <branch-name>] [-p] [-w] [-s <subject>]
                                     the change set if any.
  -w,--work-in-progress              Turn the change to work in progress
                                     (or wip)
- -s,--patch-set-subject <subject>   The subject of the patch set. If not
-                                    set, it will be asked if needed.
+ -s,--patch-set-subject <subject>   The subject of the patch set.
 Push the changes to Gerrit by adding a new patch set to the current change
 set.
 If no change set exists, the patch set will be appended to a new one.

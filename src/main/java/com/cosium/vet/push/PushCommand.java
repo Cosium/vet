@@ -13,10 +13,8 @@ import com.cosium.vet.log.Logger;
 import com.cosium.vet.log.LoggerFactory;
 import com.cosium.vet.runtime.UserInput;
 import com.cosium.vet.thirdparty.apache_commons_lang3.BooleanUtils;
-import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 
 import static java.util.Objects.requireNonNull;
-import static java.util.Optional.ofNullable;
 
 /**
  * Created on 14/02/18.
@@ -76,22 +74,13 @@ public class PushCommand implements VetCommand {
 
     String parent = git.getMostRecentCommonCommit(String.format("%s/%s", remote, branch));
 
-    PatchSetSubject subject = patchSetSubject;
-    if (subject == null) {
-      subject =
-          ofNullable(userInput.ask("Title for patch set"))
-              .filter(StringUtils::isNotBlank)
-              .map(PatchSetSubject::of)
-              .orElse(null);
-    }
-
     gerrit.createPatchSet(
         change,
         parent,
         git.getTree(),
         BooleanUtils.toBoolean(publishDraftedComments),
         BooleanUtils.toBoolean(workInProgress),
-        subject);
+        patchSetSubject);
   }
 
   private GerritChange askTargetBranchAndSetChange() {
