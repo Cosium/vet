@@ -1,11 +1,13 @@
 #! /bin/bash
 set -e
 
-ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-DEB_DIR=${ROOT_DIR}/vet_$1
+WORKDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+GITHUB_CREDENTIALS=$(cat ${WORKDIR}/../../.github-credentials)
+
+DEB_DIR=${WORKDIR}/vet_$1
 mkdir -p ${DEB_DIR}/usr/local/bin
 mkdir -p ${DEB_DIR}/usr/local/lib/vet
-cp ${ROOT_DIR}/../../build/binaries/vet-linux_x64.zip ${DEB_DIR}/usr/local/lib/vet/vet.zip
+cp ${WORKDIR}/../../build/binaries/vet-linux_x64.zip ${DEB_DIR}/usr/local/lib/vet/vet.zip
 unzip ${DEB_DIR}/usr/local/lib/vet/vet.zip -d ${DEB_DIR}/usr/local/lib/vet
 rm ${DEB_DIR}/usr/local/lib/vet/vet.zip
 cd ${DEB_DIR}/usr/local/bin
@@ -28,10 +30,10 @@ EOF
 dpkg-deb --build ${DEB_DIR}
 
 rm -rf ${DEB_DIR}
-mv ${ROOT_DIR}/vet_$1.deb ${ROOT_DIR}/vet.deb
-zip -r ${ROOT_DIR}/vet-linux_x64.deb.zip ${ROOT_DIR}/vet.deb
-rm ${ROOT_DIR}/vet.deb
+mv ${WORKDIR}/vet_$1.deb ${WORKDIR}/vet.deb
+zip -r ${WORKDIR}/vet-linux_x64.deb.zip ${WORKDIR}/vet.deb
+rm ${WORKDIR}/vet.deb
 
-curl -u $2 -H "Content-Type: application/zip" --data-binary @${ROOT_DIR}/vet-linux_x64.deb.zip $3?name=vet-linux_x64.deb.zip
+curl -u ${GITHUB_CREDENTIALS} -H "Content-Type: application/zip" --data-binary @${WORKDIR}/vet-linux_x64.deb.zip $2?name=vet-linux_x64.deb.zip
 
-rm ${ROOT_DIR}/vet-linux_x64.deb.zip
+rm ${WORKDIR}/vet-linux_x64.deb.zip

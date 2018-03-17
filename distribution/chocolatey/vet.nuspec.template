@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!-- Read this before creating packages: https://chocolatey.org/docs/create-packages -->
 <!-- It is especially important to read the above link to understand additional requirements when publishing packages to the community feed aka dot org (https://chocolatey.org/packages). -->
 
@@ -9,7 +9,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
   <metadata>
     <id>gerrit-vet</id>
-    <version>1.1</version>
+    <version>_version_</version>
     <packageSourceUrl>https://github.com/Cosium/vet</packageSourceUrl>
     <owners>Cosium</owners>
 

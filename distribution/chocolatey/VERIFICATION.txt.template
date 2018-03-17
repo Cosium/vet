@@ -1,0 +1,24 @@
+VERIFICATION
+Verification is intended to assist the Chocolatey moderators and community
+in verifying that this package's contents are trustworthy.
+
+This is for the package version _version_
+
+BACKGROUND
+The embedded software have been built from source held at <https://github.com/Cosium/vet>
+The full build script is hosted here: <https://github.com/Cosium/vet/tree/master/distribution/chocolatey>
+The build is executed on a hosted file server in Cosium
+The build process created the file vet-windows_x64.zip which is stored as a release on Github https://github.com/Cosium/vet/releases/download/_version_/vet-windows_x64.zip
+
+VERIFICATION PROCESS
+1. Download the official released file https://github.com/Cosium/vet/releases/download/_version_/vet-windows_x64.zip
+2. Check the file hash is as per this document. This zip file should have a SHA256 checksum of _sha256_
+3. Extract the bundled vet-windows_x64.zip from the chocolatey package, has with get-filehash and compare to the hash _sha256_ and the hash derived from 2 above
+4. If all three hashes match (hash from github, hash from chocolatey, hash from build process), the file is verified.
+
+EXAMPLE:
+wget https://github.com/Cosium/vet/releases/download/_version_/vet-windows_x64.zip -OutFile .\vet-windows_x64.zip
+(get-filehash .\vet-windows_x64.zip).Hash -eq "_sha256_"
+
+LICENSE:
+The file 'LICENSE.txt' has been obtained from <https://opensource.org/licenses/MIT>

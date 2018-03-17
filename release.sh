@@ -60,7 +60,11 @@ distribution/deb/publish.sh ${NEW_VERSION} ${GITHUB_CREDENTIALS} ${GITHUB_UPLOAD
 echo "Published Linux deb file"
 
 echo "Publishing Homebrew package"
-distribution/homebrew/publish.sh ${NEW_VERSION} $(sha256sum build/binaries/${MACOSX_BINARY})
+distribution/homebrew/publish.sh ${NEW_VERSION} $(sha256sum build/binaries/${MACOSX_BINARY}  | cut -d' ' -f 1)
 echo "Published Homebrew package"
+
+echo "Publishing Chocolatey package"
+distribution/chocolatey/publish.sh ${NEW_VERSION} $(sha256sum build/binaries/${WINDOW_BINARY}  | cut -d' ' -f 1)
+echo "Published Chocolatey package"
 
 echo "Released ${NEW_VERSION}"

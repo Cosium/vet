@@ -10,3 +10,9 @@ build
 out
 
 .github-credentials
+.choco-apikey
+
+distribution/chocolatey/tools/*.zip
+distribution/chocolatey/tools/VERIFICATION.txt
+*.nupkg
+*.nuspec

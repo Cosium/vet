@@ -1,3 +1,3 @@
 ```
-./publish.sh 1.6 jdoe:password https://upload.github.com/blablabla
+./publish.sh 1.6 https://upload.github.com/blablabla
 ```
