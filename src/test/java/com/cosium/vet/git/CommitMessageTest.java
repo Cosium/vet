@@ -21,7 +21,6 @@ public class CommitMessageTest {
             .removeLinesStartingWith("Change-Id: ");
 
     assertThat(message)
-        .isEqualTo(
-            "Merge remote-tracking branch 'origin/master' into feature/postgres-unsafe");
+        .isEqualTo("Merge remote-tracking branch 'origin/master' into feature/postgres-unsafe");
   }
 }

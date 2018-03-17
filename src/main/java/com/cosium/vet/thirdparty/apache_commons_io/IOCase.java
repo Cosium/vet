@@ -67,6 +67,19 @@ public enum IOCase implements Serializable {
 
   // -----------------------------------------------------------------------
   /**
+   * Private constructor.
+   *
+   * @param name the name
+   * @param sensitive the sensitivity
+   */
+  private IOCase(final String name, final boolean sensitive) {
+    this.name = name;
+    this.sensitive = sensitive;
+  }
+
+  // -----------------------------------------------------------------------
+
+  /**
    * Factory method to create an IOCase from a name.
    *
    * @param name the name to find
@@ -80,18 +93,6 @@ public enum IOCase implements Serializable {
       }
     }
     throw new IllegalArgumentException("Invalid IOCase name: " + name);
-  }
-
-  // -----------------------------------------------------------------------
-  /**
-   * Private constructor.
-   *
-   * @param name the name
-   * @param sensitive the sensitivity
-   */
-  private IOCase(final String name, final boolean sensitive) {
-    this.name = name;
-    this.sensitive = sensitive;
   }
 
   /**

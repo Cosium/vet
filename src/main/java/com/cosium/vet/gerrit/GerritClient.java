@@ -29,6 +29,7 @@ public interface GerritClient {
    * @param publishDraftComments True to publish comments in draft. False otherwise.
    * @param workInProgress True to mark change set in work in progress
    * @param subject The patch set subject
+   * @param bypassReview True to to bypass the review by directly submitting the change.
    */
   void createPatchSet(
       GerritChange change,
@@ -36,5 +37,6 @@ public interface GerritClient {
       String endRevision,
       boolean publishDraftComments,
       boolean workInProgress,
-      PatchSetSubject subject);
+      PatchSetSubject subject,
+      boolean bypassReview);
 }

@@ -17,51 +17,47 @@
 package com.cosium.vet.thirdparty.apache_commons_lang3.concurrent;
 
 /**
- * <p>
- * An exception class used for reporting runtime error conditions related to
- * circuit breakers.
- * </p>
+ * An exception class used for reporting runtime error conditions related to circuit breakers.
+ *
  * @since 3.5
  */
 public class CircuitBreakingException extends RuntimeException {
-    /**
-     * The serial version UID.
-     */
-    private static final long serialVersionUID = 1408176654686913340L;
+  /** The serial version UID. */
+  private static final long serialVersionUID = 1408176654686913340L;
 
-    /**
-     * Creates a new, uninitialized instance of {@code CircuitBreakingException}.
-     */
-    public CircuitBreakingException() {
-        super();
-    }
+  /** Creates a new, uninitialized instance of {@code CircuitBreakingException}. */
+  public CircuitBreakingException() {
+    super();
+  }
 
-    /**
-     * Creates a new instance of {@code CircuitBreakingException} and initializes it with the given message and cause.
-     *
-     * @param message the error message
-     * @param cause the cause of this exception
-     */
-    public CircuitBreakingException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+  /**
+   * Creates a new instance of {@code CircuitBreakingException} and initializes it with the given
+   * message and cause.
+   *
+   * @param message the error message
+   * @param cause the cause of this exception
+   */
+  public CircuitBreakingException(final String message, final Throwable cause) {
+    super(message, cause);
+  }
 
-    /**
-     * Creates a new instance of {@code CircuitBreakingException} and initializes it with the given message.
-     *
-     * @param message the error message
-     */
-    public CircuitBreakingException(final String message) {
-        super(message);
-    }
+  /**
+   * Creates a new instance of {@code CircuitBreakingException} and initializes it with the given
+   * message.
+   *
+   * @param message the error message
+   */
+  public CircuitBreakingException(final String message) {
+    super(message);
+  }
 
-    /**
-     * Creates a new instance of {@code CircuitBreakingException} and initializes it with the given cause.
-     *
-     * @param cause the cause of this exception
-     */
-    public CircuitBreakingException(final Throwable cause) {
-        super(cause);
-    }
-
+  /**
+   * Creates a new instance of {@code CircuitBreakingException} and initializes it with the given
+   * cause.
+   *
+   * @param cause the cause of this exception
+   */
+  public CircuitBreakingException(final Throwable cause) {
+    super(cause);
+  }
 }

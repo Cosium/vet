@@ -29,5 +29,4 @@ public class BasicCommandRunnerTest {
     String output = tested.run(directory, "docker", "run", "hello-world");
     assertThat(output).contains("Hello");
   }
-
 }

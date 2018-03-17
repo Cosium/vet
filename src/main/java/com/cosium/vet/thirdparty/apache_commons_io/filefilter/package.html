@@ -17,81 +17,81 @@ limitations under the License.
 -->
 <html>
 <body>
-<p>This package defines an interface (IOFileFilter) that combines both 
-{@link java.io.FileFilter} and {@link java.io.FilenameFilter}. Besides
-that the package offers a series of ready-to-use implementations of the
-IOFileFilter interface including implementation that allow you to combine
-other such filters.</p>
-<p>These filter can be used to list files or in {@link java.awt.FileDialog}, 
-for example.</p>
-     
+<p>This package defines an interface (IOFileFilter) that combines both
+    {@link java.io.FileFilter} and {@link java.io.FilenameFilter}. Besides
+    that the package offers a series of ready-to-use implementations of the
+    IOFileFilter interface including implementation that allow you to combine
+    other such filters.</p>
+<p>These filter can be used to list files or in {@link java.awt.FileDialog},
+    for example.</p>
+
 <p>There are a number of 'primitive' filters:</p>
-     
+
 <table>
-       <tbody>
+    <tbody>
     <tr>
-      <td><a href="DirectoryFileFilter.html">DirectoryFilter</a></td>
-      <td>Only accept directories</td>
-    </tr>
-       <tr>
-      <td><a href="PrefixFileFilter.html">PrefixFileFilter</a></td>
-      <td>Filter based on a prefix</td>
-    </tr>
-       <tr>
-      <td><a href="SuffixFileFilter.html">SuffixFileFilter</a></td>
-      <td>Filter based on a suffix</td>
+        <td><a href="DirectoryFileFilter.html">DirectoryFilter</a></td>
+        <td>Only accept directories</td>
     </tr>
     <tr>
-      <td><a href="NameFileFilter.html">NameFileFilter</a></td>
-      <td>Filter based on a filename</td>
+        <td><a href="PrefixFileFilter.html">PrefixFileFilter</a></td>
+        <td>Filter based on a prefix</td>
     </tr>
     <tr>
-      <td><a href="WildcardFileFilter.html">WildcardFileFilter</a></td>
-      <td>Filter based on wildcards</td>
+        <td><a href="SuffixFileFilter.html">SuffixFileFilter</a></td>
+        <td>Filter based on a suffix</td>
     </tr>
     <tr>
-      <td><a href="AgeFileFilter.html">AgeFileFilter</a></td>
-      <td>Filter based on last modified time of file</td>
+        <td><a href="NameFileFilter.html">NameFileFilter</a></td>
+        <td>Filter based on a filename</td>
     </tr>
     <tr>
-      <td><a href="SizeFileFilter.html">SizeFileFilter</a></td>
-      <td>Filter based on file size</td>
+        <td><a href="WildcardFileFilter.html">WildcardFileFilter</a></td>
+        <td>Filter based on wildcards</td>
     </tr>
-  </tbody>
+    <tr>
+        <td><a href="AgeFileFilter.html">AgeFileFilter</a></td>
+        <td>Filter based on last modified time of file</td>
+    </tr>
+    <tr>
+        <td><a href="SizeFileFilter.html">SizeFileFilter</a></td>
+        <td>Filter based on file size</td>
+    </tr>
+    </tbody>
 </table>
-     
+
 <p>And there are five 'boolean' filters:</p>
-     
+
 <table>
-       <tbody>
-       <tr>
-      <td><a href="TrueFileFilter.html">TrueFileFilter</a></td>
-      <td>Accept all files</td>
-    </tr>
-       <tr>
-      <td><a href="FalseFileFilter.html">FalseFileFilter</a></td>
-      <td>Accept no files</td>
-    </tr>
-       <tr>
-      <td><a href="NotFileFilter.html">NotFileFilter</a></td>
-      <td>Applies a logical NOT to an existing filter</td>
+    <tbody>
+    <tr>
+        <td><a href="TrueFileFilter.html">TrueFileFilter</a></td>
+        <td>Accept all files</td>
     </tr>
     <tr>
-      <td><a href="AndFileFilter.html">AndFileFilter</a></td>
-      <td>Combines two filters using a logical AND</td>
+        <td><a href="FalseFileFilter.html">FalseFileFilter</a></td>
+        <td>Accept no files</td>
     </tr>
-       <tr>
-      <td><a href="OrFileFilter.html">OrFileFilter</a></td>
-      <td>Combines two filter using a logical OR</td>
+    <tr>
+        <td><a href="NotFileFilter.html">NotFileFilter</a></td>
+        <td>Applies a logical NOT to an existing filter</td>
     </tr>
-     
-  </tbody>
+    <tr>
+        <td><a href="AndFileFilter.html">AndFileFilter</a></td>
+        <td>Combines two filters using a logical AND</td>
+    </tr>
+    <tr>
+        <td><a href="OrFileFilter.html">OrFileFilter</a></td>
+        <td>Combines two filter using a logical OR</td>
+    </tr>
+
+    </tbody>
 </table>
-      
+
 <p>These boolean FilenameFilters can be nested, to allow arbitrary expressions.
-For example, here is how one could print all non-directory files in the
-current directory, starting with "A", and ending in ".java" or ".class":</p>
-     
+    For example, here is how one could print all non-directory files in the
+    current directory, starting with "A", and ending in ".java" or ".class":</p>
+
 <pre>
   File dir = new File(".");
   String[] files = dir.list( 
@@ -113,10 +113,10 @@ current directory, starting with "A", and ending in ".java" or ".class":</p>
   }
 </pre>
 
-<p>This package also contains a utility class: 
-<a href="FileFilterUtils.html">FileFilterUtils</a>. It allows you to use all 
-file filters without having to put them in the import section. Here's how the 
-above example will look using FileFilterUtils:</p>
+<p>This package also contains a utility class:
+    <a href="FileFilterUtils.html">FileFilterUtils</a>. It allows you to use all
+    file filters without having to put them in the import section. Here's how the
+    above example will look using FileFilterUtils:</p>
 <pre>
   File dir = new File(".");
   String[] files = dir.list( 
@@ -137,7 +137,7 @@ above example will look using FileFilterUtils:</p>
     System.out.println(files[i]);
   }
 </pre>
-<p>There are a few other goodies in that class so please have a look at the 
-documentation in detail.</p>
-    </body>
+<p>There are a few other goodies in that class so please have a look at the
+    documentation in detail.</p>
+</body>
 </html>

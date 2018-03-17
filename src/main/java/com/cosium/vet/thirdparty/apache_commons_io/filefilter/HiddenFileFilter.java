@@ -21,9 +21,8 @@ import java.io.Serializable;
 
 /**
  * This filter accepts <code>File</code>s that are hidden.
- * <p>
- * Example, showing how to print out a list of the
- * current directory's <i>hidden</i> files:
+ *
+ * <p>Example, showing how to print out a list of the current directory's <i>hidden</i> files:
  *
  * <pre>
  * File dir = new File(".");
@@ -33,9 +32,8 @@ import java.io.Serializable;
  * }
  * </pre>
  *
- * <p>
- * Example, showing how to print out a list of the
- * current directory's <i>visible</i> (i.e. not hidden) files:
+ * <p>Example, showing how to print out a list of the current directory's <i>visible</i> (i.e. not
+ * hidden) files:
  *
  * <pre>
  * File dir = new File(".");
@@ -50,30 +48,23 @@ import java.io.Serializable;
  */
 public class HiddenFileFilter extends AbstractFileFilter implements Serializable {
 
-    private static final long serialVersionUID = 8930842316112759062L;
+  /** Singleton instance of <i>hidden</i> filter */
+  public static final IOFileFilter HIDDEN = new HiddenFileFilter();
+  /** Singleton instance of <i>visible</i> filter */
+  public static final IOFileFilter VISIBLE = new NotFileFilter(HIDDEN);
+  private static final long serialVersionUID = 8930842316112759062L;
 
-    /** Singleton instance of <i>hidden</i> filter */
-    public static final IOFileFilter HIDDEN  = new HiddenFileFilter();
+  /** Restrictive consructor. */
+  protected HiddenFileFilter() {}
 
-    /** Singleton instance of <i>visible</i> filter */
-    public static final IOFileFilter VISIBLE = new NotFileFilter(HIDDEN);
-
-    /**
-     * Restrictive consructor.
-     */
-    protected HiddenFileFilter() {
-    }
-
-    /**
-     * Checks to see if the file is hidden.
-     *
-     * @param file  the File to check
-     * @return {@code true} if the file is
-     *  <i>hidden</i>, otherwise {@code false}.
-     */
-    @Override
-    public boolean accept(final File file) {
-        return file.isHidden();
-    }
-
+  /**
+   * Checks to see if the file is hidden.
+   *
+   * @param file the File to check
+   * @return {@code true} if the file is <i>hidden</i>, otherwise {@code false}.
+   */
+  @Override
+  public boolean accept(final File file) {
+    return file.isHidden();
+  }
 }

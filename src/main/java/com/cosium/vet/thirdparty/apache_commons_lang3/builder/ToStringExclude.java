@@ -23,13 +23,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Use this annotation to exclude a field from being used by
- * the {@link ReflectionToStringBuilder}.
+ * Use this annotation to exclude a field from being used by the {@link ReflectionToStringBuilder}.
  *
  * @since 3.5
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface ToStringExclude {
-
-}
+public @interface ToStringExclude {}

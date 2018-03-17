@@ -41,10 +41,10 @@ public class VetTest extends GerritEnvironmentTest {
   @Test
   public void testPush() throws Exception {
     addAndCommitFile("bar", "The topic");
-    tested.push(null, true, true, PatchSetSubject.of("Add bar"));
+    tested.push(null, true, true, PatchSetSubject.of("Add bar"), false);
 
     addAndCommitFile("baz", "Random message");
-    tested.push(null, null, null, PatchSetSubject.of("Add baz"));
+    tested.push(null, null, null, PatchSetSubject.of("Add baz"), false);
   }
 
   // TODO Add test for fetching commit message edition patchset

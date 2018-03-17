@@ -94,14 +94,16 @@ public class Vet {
    * @param publishDraftedComments True to publish drafted comments
    * @param workInProgress True to turn the change set to work in progress
    * @param patchSetSubject The optional patch set subject
+   * @param bypassReview Submit directly the change, bypassing the review
    */
   public void push(
       BranchShortName targetBranch,
       Boolean publishDraftedComments,
       Boolean workInProgress,
-      PatchSetSubject patchSetSubject) {
+      PatchSetSubject patchSetSubject,
+      Boolean bypassReview) {
     pushCommandFactory
-        .build(targetBranch, publishDraftedComments, workInProgress, patchSetSubject)
+        .build(targetBranch, publishDraftedComments, workInProgress, patchSetSubject, bypassReview)
         .execute();
   }
 }

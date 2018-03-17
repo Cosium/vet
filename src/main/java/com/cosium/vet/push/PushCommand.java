@@ -32,6 +32,7 @@ public class PushCommand implements VetCommand {
   private final Boolean publishDraftedComments;
   private final Boolean workInProgress;
   private final PatchSetSubject patchSetSubject;
+  private final Boolean bypassReview;
 
   private PushCommand(
       GitClient gitClient,
@@ -41,7 +42,8 @@ public class PushCommand implements VetCommand {
       BranchShortName targetBranch,
       Boolean publishDraftedComments,
       Boolean workInProgress,
-      PatchSetSubject patchSetSubject) {
+      PatchSetSubject patchSetSubject,
+      Boolean bypassReview) {
     requireNonNull(gitClient);
     requireNonNull(gerritClient);
     requireNonNull(userInput);
@@ -53,6 +55,7 @@ public class PushCommand implements VetCommand {
     this.publishDraftedComments = publishDraftedComments;
     this.workInProgress = workInProgress;
     this.patchSetSubject = patchSetSubject;
+    this.bypassReview = bypassReview;
   }
 
   @Override
@@ -80,7 +83,8 @@ public class PushCommand implements VetCommand {
         git.getTree(),
         BooleanUtils.toBoolean(publishDraftedComments),
         BooleanUtils.toBoolean(workInProgress),
-        patchSetSubject);
+        patchSetSubject,
+        BooleanUtils.toBoolean(bypassReview));
   }
 
   private GerritChange askTargetBranchAndSetChange() {
@@ -114,7 +118,8 @@ public class PushCommand implements VetCommand {
         BranchShortName targetBranch,
         Boolean publishDraftedComments,
         Boolean workInProgress,
-        PatchSetSubject patchSetSubject) {
+        PatchSetSubject patchSetSubject,
+        Boolean bypassReview) {
       return new PushCommand(
           gitClientFactory.build(),
           gerritClientFactory.build(),
@@ -122,7 +127,8 @@ public class PushCommand implements VetCommand {
           targetBranch,
           publishDraftedComments,
           workInProgress,
-          patchSetSubject);
+          patchSetSubject,
+          bypassReview);
     }
   }
 }

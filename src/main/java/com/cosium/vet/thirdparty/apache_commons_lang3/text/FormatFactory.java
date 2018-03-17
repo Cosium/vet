@@ -23,23 +23,22 @@ import java.util.Locale;
  * Format factory.
  *
  * @since 2.4
- * @deprecated as of 3.6, use commons-text
- * <a href="https://commons.apache.org/proper/commons-text/javadocs/api-release/org/apache/commons/text/FormatFactory.html">
- * FormatFactory</a> instead
+ * @deprecated as of 3.6, use commons-text <a
+ *     href="https://commons.apache.org/proper/commons-text/javadocs/api-release/org/apache/commons/text/FormatFactory.html">
+ *     FormatFactory</a> instead
  */
 @Deprecated
 public interface FormatFactory {
 
-    /**
-     * Create or retrieve a format instance.
-     *
-     * @param name The format type name
-     * @param arguments Arguments used to create the format instance. This allows the
-     *                  <code>FormatFactory</code> to implement the "format style"
-     *                  concept from <code>java.text.MessageFormat</code>.
-     * @param locale The locale, may be null
-     * @return The format instance
-     */
-    Format getFormat(String name, String arguments, Locale locale);
-
+  /**
+   * Create or retrieve a format instance.
+   *
+   * @param name The format type name
+   * @param arguments Arguments used to create the format instance. This allows the <code>
+   *     FormatFactory</code> to implement the "format style" concept from <code>
+   *     java.text.MessageFormat</code>.
+   * @param locale The locale, may be null
+   * @return The format instance
+   */
+  Format getFormat(String name, String arguments, Locale locale);
 }

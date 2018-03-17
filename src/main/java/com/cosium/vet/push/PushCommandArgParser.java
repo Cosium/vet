@@ -23,6 +23,7 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
   private static final String TARGET_BRANCH = "b";
   private static final String PUBLISH_DRAFTED_COMMENTS = "p";
   private static final String WORK_IN_PROGRESS = "w";
+  private static final String BYPASS_REVIEW = "f";
   private static final String PATCH_SET_SUBJECT = "s";
 
   private final PushCommandFactory pushCommandFactory;
@@ -50,6 +51,13 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
             .numberOfArgs(0)
             .longOpt("work-in-progress")
             .desc("Turn the change to work in progress (e.g. wip).")
+            .build());
+    options.addOption(
+        Option.builder(BYPASS_REVIEW)
+            .numberOfArgs(0)
+            .longOpt("bypass-review")
+            .desc(
+                "Submit directly the change bypassing the review. Neither labels nor submit rules are checked")
             .build());
     options.addOption(
         Option.builder(PATCH_SET_SUBJECT)
@@ -100,6 +108,7 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
             .orElse(null);
     Boolean publishDraftedComments = commandLine.hasOption(PUBLISH_DRAFTED_COMMENTS) ? true : null;
     Boolean workInProgress = commandLine.hasOption(WORK_IN_PROGRESS) ? true : null;
+    Boolean bypassReview = commandLine.hasOption(BYPASS_REVIEW) ? true : null;
     PatchSetSubject patchSetSubject =
         ofNullable(commandLine.getOptionValue(PATCH_SET_SUBJECT))
             .filter(StringUtils::isNotBlank)
@@ -107,6 +116,6 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
             .orElse(null);
 
     return pushCommandFactory.build(
-        targetBranch, publishDraftedComments, workInProgress, patchSetSubject);
+        targetBranch, publishDraftedComments, workInProgress, patchSetSubject, bypassReview);
   }
 }

@@ -17,61 +17,54 @@
 package com.cosium.vet.thirdparty.apache_commons_lang3;
 
 /**
- * <p>Exception thrown when the Serialization process fails.</p>
+ * Exception thrown when the Serialization process fails.
  *
- * <p>The original error is wrapped within this one.</p>
+ * <p>The original error is wrapped within this one.
  *
- * <p>#NotThreadSafe# because Throwable is not thread-safe</p>
+ * <p>#NotThreadSafe# because Throwable is not thread-safe
+ *
  * @since 1.0
  */
 public class SerializationException extends RuntimeException {
 
-    /**
-     * Required for serialization support.
-     *
-     * @see java.io.Serializable
-     */
-    private static final long serialVersionUID = 4029025366392702726L;
+  /**
+   * Required for serialization support.
+   *
+   * @see java.io.Serializable
+   */
+  private static final long serialVersionUID = 4029025366392702726L;
 
-    /**
-     * <p>Constructs a new {@code SerializationException} without specified
-     * detail message.</p>
-     */
-    public SerializationException() {
-        super();
-    }
+  /** Constructs a new {@code SerializationException} without specified detail message. */
+  public SerializationException() {
+    super();
+  }
 
-    /**
-     * <p>Constructs a new {@code SerializationException} with specified
-     * detail message.</p>
-     *
-     * @param msg  The error message.
-     */
-    public SerializationException(final String msg) {
-        super(msg);
-    }
+  /**
+   * Constructs a new {@code SerializationException} with specified detail message.
+   *
+   * @param msg The error message.
+   */
+  public SerializationException(final String msg) {
+    super(msg);
+  }
 
-    /**
-     * <p>Constructs a new {@code SerializationException} with specified
-     * nested {@code Throwable}.</p>
-     *
-     * @param cause  The {@code Exception} or {@code Error}
-     *  that caused this exception to be thrown.
-     */
-    public SerializationException(final Throwable cause) {
-        super(cause);
-    }
+  /**
+   * Constructs a new {@code SerializationException} with specified nested {@code Throwable}.
+   *
+   * @param cause The {@code Exception} or {@code Error} that caused this exception to be thrown.
+   */
+  public SerializationException(final Throwable cause) {
+    super(cause);
+  }
 
-    /**
-     * <p>Constructs a new {@code SerializationException} with specified
-     * detail message and nested {@code Throwable}.</p>
-     *
-     * @param msg    The error message.
-     * @param cause  The {@code Exception} or {@code Error}
-     *  that caused this exception to be thrown.
-     */
-    public SerializationException(final String msg, final Throwable cause) {
-        super(msg, cause);
-    }
-
+  /**
+   * Constructs a new {@code SerializationException} with specified detail message and nested {@code
+   * Throwable}.
+   *
+   * @param msg The error message.
+   * @param cause The {@code Exception} or {@code Error} that caused this exception to be thrown.
+   */
+  public SerializationException(final String msg, final Throwable cause) {
+    super(msg, cause);
+  }
 }

@@ -17,55 +17,46 @@
 package com.cosium.vet.thirdparty.apache_commons_lang3.concurrent;
 
 /**
- * <p>
- * An exception class used for reporting runtime error conditions related to
- * accessing data of background tasks.
- * </p>
- * <p>
- * This class is an analogue of the {@link ConcurrentException} exception class.
- * However, it is a runtime exception and thus does not need explicit catch
- * clauses. Some methods of {@link ConcurrentUtils} throw {@code
- * ConcurrentRuntimeException} exceptions rather than
- * {@link ConcurrentException} exceptions. They can be used by client code that
- * does not want to be bothered with checked exceptions.
- * </p>
+ * An exception class used for reporting runtime error conditions related to accessing data of
+ * background tasks.
+ *
+ * <p>This class is an analogue of the {@link ConcurrentException} exception class. However, it is a
+ * runtime exception and thus does not need explicit catch clauses. Some methods of {@link
+ * ConcurrentUtils} throw {@code ConcurrentRuntimeException} exceptions rather than {@link
+ * ConcurrentException} exceptions. They can be used by client code that does not want to be
+ * bothered with checked exceptions.
  *
  * @since 3.0
  */
 public class ConcurrentRuntimeException extends RuntimeException {
-    /**
-     * The serial version UID.
-     */
-    private static final long serialVersionUID = -6582182735562919670L;
+  /** The serial version UID. */
+  private static final long serialVersionUID = -6582182735562919670L;
 
-    /**
-     * Creates a new, uninitialized instance of {@code
-     * ConcurrentRuntimeException}.
-     */
-    protected ConcurrentRuntimeException() {
-        super();
-    }
+  /** Creates a new, uninitialized instance of {@code ConcurrentRuntimeException}. */
+  protected ConcurrentRuntimeException() {
+    super();
+  }
 
-    /**
-     * Creates a new instance of {@code ConcurrentRuntimeException} and
-     * initializes it with the given cause.
-     *
-     * @param cause the cause of this exception
-     * @throws IllegalArgumentException if the cause is not a checked exception
-     */
-    public ConcurrentRuntimeException(final Throwable cause) {
-        super(ConcurrentUtils.checkedException(cause));
-    }
+  /**
+   * Creates a new instance of {@code ConcurrentRuntimeException} and initializes it with the given
+   * cause.
+   *
+   * @param cause the cause of this exception
+   * @throws IllegalArgumentException if the cause is not a checked exception
+   */
+  public ConcurrentRuntimeException(final Throwable cause) {
+    super(ConcurrentUtils.checkedException(cause));
+  }
 
-    /**
-     * Creates a new instance of {@code ConcurrentRuntimeException} and
-     * initializes it with the given message and cause.
-     *
-     * @param msg the error message
-     * @param cause the cause of this exception
-     * @throws IllegalArgumentException if the cause is not a checked exception
-     */
-    public ConcurrentRuntimeException(final String msg, final Throwable cause) {
-        super(msg, ConcurrentUtils.checkedException(cause));
-    }
+  /**
+   * Creates a new instance of {@code ConcurrentRuntimeException} and initializes it with the given
+   * message and cause.
+   *
+   * @param msg the error message
+   * @param cause the cause of this exception
+   * @throws IllegalArgumentException if the cause is not a checked exception
+   */
+  public ConcurrentRuntimeException(final String msg, final Throwable cause) {
+    super(msg, ConcurrentUtils.checkedException(cause));
+  }
 }

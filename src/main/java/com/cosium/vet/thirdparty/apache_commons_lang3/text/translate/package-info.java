@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 /**
- * <p> An API for creating text translation routines from a set of smaller building blocks. Initially created to make it
- * possible for the user to customize the rules in the StringEscapeUtils class.</p>
- * <p>These classes are immutable, and therefore thread-safe.</p>
+ * An API for creating text translation routines from a set of smaller building blocks. Initially
+ * created to make it possible for the user to customize the rules in the StringEscapeUtils class.
+ *
+ * <p>These classes are immutable, and therefore thread-safe.
  *
  * @since 3.0
- * @deprecated as of 3.6, use the commons-text
- * <a href="https://commons.apache.org/proper/commons-text/javadocs/api-release/org/apache/commons/text/translate/package-summary.html">
- * translate package</a> instead
+ * @deprecated as of 3.6, use the commons-text <a
+ *     href="https://commons.apache.org/proper/commons-text/javadocs/api-release/org/apache/commons/text/translate/package-summary.html">
+ *     translate package</a> instead
  */
 package com.cosium.vet.thirdparty.apache_commons_lang3.text.translate;

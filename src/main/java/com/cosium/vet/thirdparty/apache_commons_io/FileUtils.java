@@ -55,85 +55,71 @@ import java.util.zip.Checksum;
  */
 public class FileUtils {
 
-  /** Instances should NOT be constructed in standard programming. */
-  public FileUtils() {
-    super();
-  }
-
   /** The number of bytes in a kilobyte. */
   public static final long ONE_KB = 1024;
-
   /**
    * The number of bytes in a kilobyte.
    *
    * @since 2.4
    */
   public static final BigInteger ONE_KB_BI = BigInteger.valueOf(ONE_KB);
-
   /** The number of bytes in a megabyte. */
   public static final long ONE_MB = ONE_KB * ONE_KB;
-
   /**
    * The number of bytes in a megabyte.
    *
    * @since 2.4
    */
   public static final BigInteger ONE_MB_BI = ONE_KB_BI.multiply(ONE_KB_BI);
-
-  /** The file copy buffer size (30 MB) */
-  private static final long FILE_COPY_BUFFER_SIZE = ONE_MB * 30;
-
   /** The number of bytes in a gigabyte. */
   public static final long ONE_GB = ONE_KB * ONE_MB;
-
   /**
    * The number of bytes in a gigabyte.
    *
    * @since 2.4
    */
   public static final BigInteger ONE_GB_BI = ONE_KB_BI.multiply(ONE_MB_BI);
-
   /** The number of bytes in a terabyte. */
   public static final long ONE_TB = ONE_KB * ONE_GB;
-
   /**
    * The number of bytes in a terabyte.
    *
    * @since 2.4
    */
   public static final BigInteger ONE_TB_BI = ONE_KB_BI.multiply(ONE_GB_BI);
-
   /** The number of bytes in a petabyte. */
   public static final long ONE_PB = ONE_KB * ONE_TB;
-
   /**
    * The number of bytes in a petabyte.
    *
    * @since 2.4
    */
   public static final BigInteger ONE_PB_BI = ONE_KB_BI.multiply(ONE_TB_BI);
-
   /** The number of bytes in an exabyte. */
   public static final long ONE_EB = ONE_KB * ONE_PB;
-
   /**
    * The number of bytes in an exabyte.
    *
    * @since 2.4
    */
   public static final BigInteger ONE_EB_BI = ONE_KB_BI.multiply(ONE_PB_BI);
-
   /** The number of bytes in a zettabyte. */
   public static final BigInteger ONE_ZB =
       BigInteger.valueOf(ONE_KB).multiply(BigInteger.valueOf(ONE_EB));
-
   /** The number of bytes in a yottabyte. */
   public static final BigInteger ONE_YB = ONE_KB_BI.multiply(ONE_ZB);
-
   /** An empty array of type <code>File</code>. */
   public static final File[] EMPTY_FILE_ARRAY = new File[0];
+  /** The file copy buffer size (30 MB) */
+  private static final long FILE_COPY_BUFFER_SIZE = ONE_MB * 30;
+
+  /** Instances should NOT be constructed in standard programming. */
+  public FileUtils() {
+    super();
+  }
 
   // -----------------------------------------------------------------------
+
   /**
    * Construct a file from the set of name elements.
    *
@@ -1366,7 +1352,7 @@ public class FileUtils {
     final File[] srcFiles = filter == null ? srcDir.listFiles() : srcDir.listFiles(filter);
     if (srcFiles
         == null) { // null if abstract pathname does not denote a directory, or if an I/O error
-                   // occurs
+      // occurs
       throw new IOException("Failed to list contents of " + srcDir);
     }
     if (destDir.exists()) {

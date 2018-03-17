@@ -21,9 +21,8 @@ import java.io.Serializable;
 
 /**
  * This filter accepts <code>File</code>s that can be written to.
- * <p>
- * Example, showing how to print out a list of the
- * current directory's <i>writable</i> files:
+ *
+ * <p>Example, showing how to print out a list of the current directory's <i>writable</i> files:
  *
  * <pre>
  * File dir = new File(".");
@@ -33,9 +32,7 @@ import java.io.Serializable;
  * }
  * </pre>
  *
- * <p>
- * Example, showing how to print out a list of the
- * current directory's <i>un-writable</i> files:
+ * <p>Example, showing how to print out a list of the current directory's <i>un-writable</i> files:
  *
  * <pre>
  * File dir = new File(".");
@@ -45,39 +42,30 @@ import java.io.Serializable;
  * }
  * </pre>
  *
- * <p>
- * <b>N.B.</b> For read-only files, use
- *    <code>CanReadFileFilter.READ_ONLY</code>.
+ * <p><b>N.B.</b> For read-only files, use <code>CanReadFileFilter.READ_ONLY</code>.
  *
  * @since 1.3
  * @version $Id$
  */
 public class CanWriteFileFilter extends AbstractFileFilter implements Serializable {
 
-    private static final long serialVersionUID = 5132005214688990379L;
+  /** Singleton instance of <i>writable</i> filter */
+  public static final IOFileFilter CAN_WRITE = new CanWriteFileFilter();
+  /** Singleton instance of not <i>writable</i> filter */
+  public static final IOFileFilter CANNOT_WRITE = new NotFileFilter(CAN_WRITE);
+  private static final long serialVersionUID = 5132005214688990379L;
 
-    /** Singleton instance of <i>writable</i> filter */
-    public static final IOFileFilter CAN_WRITE = new CanWriteFileFilter();
+  /** Restrictive consructor. */
+  protected CanWriteFileFilter() {}
 
-    /** Singleton instance of not <i>writable</i> filter */
-    public static final IOFileFilter CANNOT_WRITE = new NotFileFilter(CAN_WRITE);
-
-    /**
-     * Restrictive consructor.
-     */
-    protected CanWriteFileFilter() {
-    }
-
-    /**
-     * Checks to see if the file can be written to.
-     *
-     * @param file  the File to check
-     * @return {@code true} if the file can be
-     *  written to, otherwise {@code false}.
-     */
-    @Override
-    public boolean accept(final File file) {
-        return file.canWrite();
-    }
-
+  /**
+   * Checks to see if the file can be written to.
+   *
+   * @param file the File to check
+   * @return {@code true} if the file can be written to, otherwise {@code false}.
+   */
+  @Override
+  public boolean accept(final File file) {
+    return file.canWrite();
+  }
 }

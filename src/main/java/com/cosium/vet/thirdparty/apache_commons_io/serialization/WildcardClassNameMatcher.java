@@ -21,27 +21,27 @@ package com.cosium.vet.thirdparty.apache_commons_io.serialization;
 import com.cosium.vet.thirdparty.apache_commons_io.FilenameUtils;
 
 /**
- * A {@link ClassNameMatcher} that uses simplified regular expressions
- *  provided by {@link com.cosium.vet.thirdparty.apache_commons_io.FilenameUtils#wildcardMatch(String, String) FilenameUtils.wildcardMatch}
- * <p>
- * This object is immutable and thread-safe.
- * </p>
- */  
+ * A {@link ClassNameMatcher} that uses simplified regular expressions provided by {@link
+ * com.cosium.vet.thirdparty.apache_commons_io.FilenameUtils#wildcardMatch(String, String)
+ * FilenameUtils.wildcardMatch}
+ *
+ * <p>This object is immutable and thread-safe.
+ */
 final class WildcardClassNameMatcher implements ClassNameMatcher {
 
-    private final String pattern;
+  private final String pattern;
 
-    /**
-     * Constructs an object based on the specified simplified regular expression.
-     * 
-     * @param pattern a {@link FilenameUtils#wildcardMatch} pattern.
-     */
-    public WildcardClassNameMatcher(String pattern) {
-        this.pattern = pattern;
-    }
-    
-    @Override
-    public boolean matches(String className) {
-        return FilenameUtils.wildcardMatch(className, pattern);
-    }
+  /**
+   * Constructs an object based on the specified simplified regular expression.
+   *
+   * @param pattern a {@link FilenameUtils#wildcardMatch} pattern.
+   */
+  public WildcardClassNameMatcher(String pattern) {
+    this.pattern = pattern;
+  }
+
+  @Override
+  public boolean matches(String className) {
+    return FilenameUtils.wildcardMatch(className, pattern);
+  }
 }

@@ -24,12 +24,9 @@ package com.cosium.vet.thirdparty.apache_commons_lang3.time;
  */
 public class TimeZones {
 
-    // do not instantiate
-    private TimeZones() {
-    }
+  /** A public version of {@link java.util.TimeZone}'s package private {@code GMT_ID} field. */
+  public static final String GMT_ID = "GMT";
 
-    /**
-     * A public version of {@link java.util.TimeZone}'s package private {@code GMT_ID} field.
-     */
-    public static final String GMT_ID = "GMT";
+  // do not instantiate
+  private TimeZones() {}
 }

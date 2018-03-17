@@ -37,14 +37,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public abstract class GerritEnvironmentTest {
 
-  private static final Logger LOG = LoggerFactory.getLogger(GerritEnvironmentTest.class);
-  private static final String RUN_YML = "run-gerrit.yml";
-  private static final String INIT_YML = "init-gerrit.yml";
-
   protected static final String USER = "fry";
   protected static final String PASSWORD = "fry";
   protected static final String PROJECT = "foo";
-
+  private static final Logger LOG = LoggerFactory.getLogger(GerritEnvironmentTest.class);
+  private static final String RUN_YML = "run-gerrit.yml";
+  private static final String INIT_YML = "init-gerrit.yml";
   protected static String gerritHost;
   protected static int gerritPort;
   private static Path gerritDir;

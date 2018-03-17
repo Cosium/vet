@@ -23,14 +23,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Use this annotation to exclude a field from being used by
- * the various <code>reflectionHashcode</code> methods defined on
- * {@link HashCodeBuilder}.
+ * Use this annotation to exclude a field from being used by the various <code>reflectionHashcode
+ * </code> methods defined on {@link HashCodeBuilder}.
  *
  * @since 3.5
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface HashCodeExclude {
-
-}
+public @interface HashCodeExclude {}

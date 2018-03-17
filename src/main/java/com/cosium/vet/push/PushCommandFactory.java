@@ -14,5 +14,6 @@ public interface PushCommandFactory {
       BranchShortName targetBranch,
       Boolean publishDraftedComments,
       Boolean workInProgress,
-      PatchSetSubject patchSetSubject);
+      PatchSetSubject patchSetSubject,
+      Boolean bypassReview);
 }

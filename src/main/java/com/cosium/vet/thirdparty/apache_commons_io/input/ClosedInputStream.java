@@ -21,31 +21,26 @@ import java.io.InputStream;
 import static com.cosium.vet.thirdparty.apache_commons_io.IOUtils.EOF;
 
 /**
- * Closed input stream. This stream returns EOF to all attempts to read
- * something from the stream.
- * <p>
- * Typically uses of this class include testing for corner cases in methods
- * that accept input streams and acting as a sentinel value instead of a
- * {@code null} input stream.
+ * Closed input stream. This stream returns EOF to all attempts to read something from the stream.
+ *
+ * <p>Typically uses of this class include testing for corner cases in methods that accept input
+ * streams and acting as a sentinel value instead of a {@code null} input stream.
  *
  * @version $Id$
  * @since 1.4
  */
 public class ClosedInputStream extends InputStream {
 
-    /**
-     * A singleton.
-     */
-    public static final ClosedInputStream CLOSED_INPUT_STREAM = new ClosedInputStream();
+  /** A singleton. */
+  public static final ClosedInputStream CLOSED_INPUT_STREAM = new ClosedInputStream();
 
-    /**
-     * Returns -1 to indicate that the stream is closed.
-     *
-     * @return always -1
-     */
-    @Override
-    public int read() {
-        return EOF;
-    }
-
+  /**
+   * Returns -1 to indicate that the stream is closed.
+   *
+   * @return always -1
+   */
+  @Override
+  public int read() {
+    return EOF;
+  }
 }

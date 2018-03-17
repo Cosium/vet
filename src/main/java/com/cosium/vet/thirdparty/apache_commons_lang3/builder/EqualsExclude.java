@@ -23,14 +23,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Use this annotation to exclude a field from being used by
- * the various <code>reflectionEquals</code> methods defined on
- * {@link EqualsBuilder}.
+ * Use this annotation to exclude a field from being used by the various <code>reflectionEquals
+ * </code> methods defined on {@link EqualsBuilder}.
  *
  * @since 3.5
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface EqualsExclude {
-
-}
+public @interface EqualsExclude {}

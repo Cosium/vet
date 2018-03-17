@@ -15,11 +15,14 @@
  * limitations under the License.
  */
 /**
- * <p>Provides functionality for Exceptions.</p>
- * <p>Contains the concept of an exception with context i.e. such an exception will contain a map with keys and values.
- * This provides an easy way to pass valuable state information at exception time in useful form to a calling process.</p>
- * <p>Lastly, {@link com.cosium.vet.thirdparty.apache_commons_lang3.exception.ExceptionUtils} also contains <code>Throwable</code> manipulation
- * and examination routines.</p>
+ * Provides functionality for Exceptions.
+ *
+ * <p>Contains the concept of an exception with context i.e. such an exception will contain a map
+ * with keys and values. This provides an easy way to pass valuable state information at exception
+ * time in useful form to a calling process.
+ *
+ * <p>Lastly, {@link com.cosium.vet.thirdparty.apache_commons_lang3.exception.ExceptionUtils} also
+ * contains <code>Throwable</code> manipulation and examination routines.
  *
  * @since 1.0
  */

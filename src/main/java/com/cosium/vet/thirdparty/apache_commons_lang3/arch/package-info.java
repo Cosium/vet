@@ -16,6 +16,7 @@
  */
 /**
  * Provides classes to work with the values of the os.arch system property.
+ *
  * @since 3.6
  */
 package com.cosium.vet.thirdparty.apache_commons_lang3.arch;

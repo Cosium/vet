@@ -25,25 +25,24 @@ import java.util.Set;
 
 /**
  * A {@link ClassNameMatcher} that matches on full class names.
- * <p>
- * This object is immutable and thread-safe.
- * </p>
+ *
+ * <p>This object is immutable and thread-safe.
  */
 final class FullClassNameMatcher implements ClassNameMatcher {
 
-    private final Set<String> classesSet;
+  private final Set<String> classesSet;
 
-    /**
-     * Constructs an object based on the specified class names.
-     * 
-     * @param classes a list of class names
-     */
-    public FullClassNameMatcher(String... classes) {
-        classesSet = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(classes)));
-    }
+  /**
+   * Constructs an object based on the specified class names.
+   *
+   * @param classes a list of class names
+   */
+  public FullClassNameMatcher(String... classes) {
+    classesSet = Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(classes)));
+  }
 
-    @Override
-    public boolean matches(String className) {
-        return classesSet.contains(className);
-    }
+  @Override
+  public boolean matches(String className) {
+    return classesSet.contains(className);
+  }
 }

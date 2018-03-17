@@ -20,75 +20,66 @@ import java.io.File;
 
 /**
  * Convenience {@link FileAlterationListener} implementation that does nothing.
- * 
+ *
  * @see FileAlterationObserver
  * @version $Id$
  * @since 2.0
  */
 public class FileAlterationListenerAdaptor implements FileAlterationListener {
 
-    /**
-     * File system observer started checking event.
-     *
-     * @param observer The file system observer (ignored)
-     */
-    public void onStart(final FileAlterationObserver observer) {
-    }
+  /**
+   * File system observer started checking event.
+   *
+   * @param observer The file system observer (ignored)
+   */
+  public void onStart(final FileAlterationObserver observer) {}
 
-    /**
-     * Directory created Event.
-     * 
-     * @param directory The directory created (ignored)
-     */
-    public void onDirectoryCreate(final File directory) {
-    }
+  /**
+   * Directory created Event.
+   *
+   * @param directory The directory created (ignored)
+   */
+  public void onDirectoryCreate(final File directory) {}
 
-    /**
-     * Directory changed Event.
-     * 
-     * @param directory The directory changed (ignored)
-     */
-    public void onDirectoryChange(final File directory) {
-    }
+  /**
+   * Directory changed Event.
+   *
+   * @param directory The directory changed (ignored)
+   */
+  public void onDirectoryChange(final File directory) {}
 
-    /**
-     * Directory deleted Event.
-     * 
-     * @param directory The directory deleted (ignored)
-     */
-    public void onDirectoryDelete(final File directory) {
-    }
+  /**
+   * Directory deleted Event.
+   *
+   * @param directory The directory deleted (ignored)
+   */
+  public void onDirectoryDelete(final File directory) {}
 
-    /**
-     * File created Event.
-     * 
-     * @param file The file created (ignored)
-     */
-    public void onFileCreate(final File file) {
-    }
+  /**
+   * File created Event.
+   *
+   * @param file The file created (ignored)
+   */
+  public void onFileCreate(final File file) {}
 
-    /**
-     * File changed Event.
-     * 
-     * @param file The file changed (ignored)
-     */
-    public void onFileChange(final File file) {
-    }
+  /**
+   * File changed Event.
+   *
+   * @param file The file changed (ignored)
+   */
+  public void onFileChange(final File file) {}
 
-    /**
-     * File deleted Event.
-     * 
-     * @param file The file deleted (ignored)
-     */
-    public void onFileDelete(final File file) {
-    }
+  /**
+   * File deleted Event.
+   *
+   * @param file The file deleted (ignored)
+   */
+  public void onFileDelete(final File file) {}
 
-    /**
-     * File system observer finished checking event.
-     *
-     * @param observer The file system observer (ignored)
-     */
-    public void onStop(final FileAlterationObserver observer) {
-    }
-
+  /**
+   * File system observer finished checking event.
+   *
+   * @param observer The file system observer (ignored)
+   */
+  public void onStop(final FileAlterationObserver observer) {}
 }

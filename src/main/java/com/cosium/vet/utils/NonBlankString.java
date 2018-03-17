@@ -1,6 +1,5 @@
 package com.cosium.vet.utils;
 
-
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 
 import java.util.Objects;
