@@ -24,8 +24,6 @@ brew tap cosium/vet && brew install vet
 
 ### Windows - [Chocolatey](https://chocolatey.org/)
 
-Waiting for chocolatey validation. Use manual installation for now.
-
 ```
 choco install gerrit-vet
 ```
