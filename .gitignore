@@ -8,3 +8,5 @@ target
 gradle-app.setting
 build
 out
+
+.github-credentials
