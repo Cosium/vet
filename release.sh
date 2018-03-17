@@ -28,19 +28,22 @@ echo "${README_CONTENT/$CURRENT_VERSION/$NEW_VERSION}" > README.md
 git add README.md
 echo "Bumped README.md"
 
-git commit -m "Release ${NEW_VERSION}" && git tag ${NEW_VERSION}
-
 echo "Cleaning"
 ./gradlew -Pproject-version=${NEW_VERSION} clean
 echo "Cleaned"
+
+echo "Buiding binaries"
+./gradlew -Pproject-version=${NEW_VERSION} binaries
+echo "Built binaries"
 
 echo "Uploading to sonatype repository"
 ./gradlew -Pproject-version=${NEW_VERSION} uploadArchives
 echo "Uploaded to sonatype repository"
 
-echo "Buiding binaries"
-./gradlew -Pproject-version=${NEW_VERSION} binaries
-echo "Built binaries"
+echo "Pushing to git"
+git commit -m "Release ${NEW_VERSION}" && git tag ${NEW_VERSION}
+git push && git push --tags
+echo "Pushed to git"
 
 echo "Uploading binaries to GitHub"
 GITHUB_UPLOAD_URL=$(curl -u ${GITHUB_CREDENTIALS} -X POST -H "Content-Type: application/json" -d "{\"tag_name\": \"${NEW_VERSION}\", \"draft\": false}" ${GITHUB_BASE_URL}/releases | jq -r '.upload_url' | cut -d'{' -f 1)
@@ -59,9 +62,5 @@ echo "Published Linux deb file"
 echo "Publishing Homebrew package"
 distribution/homebrew/publish.sh ${NEW_VERSION} $(sha256sum build/binaries/${MACOSX_BINARY})
 echo "Published Homebrew package"
-
-echo "Pushing to git"
-git push && git push --tags
-echo "Pushed to git"
 
 echo "Released ${NEW_VERSION}"
