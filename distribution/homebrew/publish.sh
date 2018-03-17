@@ -12,7 +12,7 @@ git clone https://github.com/Cosium/homebrew-vet ${HOMEBREW_DIR}
 
 cd ${HOMEBREW_DIR}
 echo ${TEMPLATE} > Formula/vet.rb
-git add formula/vet.rb && git commit -m "Release $1" && git tag $1 && git push && git push --tags
+git add Formula/vet.rb && git commit -m "Release $1" && git tag $1 && git push && git push --tags
 cd -
 
 rm -fr ${HOMEBREW_DIR}
