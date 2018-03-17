@@ -3,7 +3,7 @@ set -e
 
 LINUX_BINARY="vet-linux_x64.zip"
 MACOSX_BINARY="vet-macosx_x64.zip"
-WINDOW_BINARY="vet-windows_x64.zip"
+WINDOWS_BINARY="vet-windows_x64.zip"
 
 GITHUB_CREDENTIALS=$(cat .github-credentials)
 GITHUB_BASE_URL="https://api.github.com/repos/Cosium/vet"
@@ -52,11 +52,11 @@ curl -u ${GITHUB_CREDENTIALS} -H "Content-Type: application/zip" --data-binary @
 echo "Uploading MacOSX binaries to GitHub"
 curl -u ${GITHUB_CREDENTIALS} -H "Content-Type: application/zip" --data-binary @build/binaries/${MACOSX_BINARY} ${GITHUB_UPLOAD_URL}?name=${MACOSX_BINARY}
 echo "Uploading Windows binaries to GitHub"
-curl -u ${GITHUB_CREDENTIALS} -H "Content-Type: application/zip" --data-binary @build/binaries/${WINDOW_BINARY} ${GITHUB_UPLOAD_URL}?name=${WINDOW_BINARY}
+curl -u ${GITHUB_CREDENTIALS} -H "Content-Type: application/zip" --data-binary @build/binaries/${WINDOWS_BINARY} ${GITHUB_UPLOAD_URL}?name=${WINDOWS_BINARY}
 echo "Uploaded binaries to GitHub"
 
 echo "Publishing Linux deb package"
-distribution/deb/publish.sh ${NEW_VERSION} ${GITHUB_CREDENTIALS} ${GITHUB_UPLOAD_URL}
+distribution/deb/publish.sh ${NEW_VERSION} ${GITHUB_UPLOAD_URL}
 echo "Published Linux deb file"
 
 echo "Publishing Homebrew package"
@@ -64,7 +64,7 @@ distribution/homebrew/publish.sh ${NEW_VERSION} $(sha256sum build/binaries/${MAC
 echo "Published Homebrew package"
 
 echo "Publishing Chocolatey package"
-distribution/chocolatey/publish.sh ${NEW_VERSION} $(sha256sum build/binaries/${WINDOW_BINARY}  | cut -d' ' -f 1)
+distribution/chocolatey/publish.sh ${NEW_VERSION} $(sha256sum build/binaries/${WINDOWS_BINARY}  | cut -d' ' -f 1)
 echo "Published Chocolatey package"
 
 echo "Released ${NEW_VERSION}"
