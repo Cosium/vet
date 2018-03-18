@@ -44,6 +44,7 @@ public class DefaultGerritPatchSetRepository implements GerritPatchSetRepository
         .stream()
         .filter(Optional::isPresent)
         .map(Optional::get)
+        .sorted(Comparator.comparingInt(PatchSet::getChangeId).reversed())
         .collect(Collectors.toList());
   }
 

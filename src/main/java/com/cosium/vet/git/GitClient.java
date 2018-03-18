@@ -65,5 +65,11 @@ public interface GitClient {
    */
   List<BranchRef> listRemoteRefs(RemoteName remote);
 
+  /**
+   * Fetches the ref from remote
+   *
+   * @param remote The remote to fetch from
+   * @param branchRefName The ref name to fetch
+   */
   void fetch(RemoteName remote, BranchRefName branchRefName);
 }

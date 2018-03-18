@@ -57,7 +57,8 @@ public class GerritPatchSetRepositoryUnitTest {
   }
 
   @Test
-  public void testGetLastestPatchSetCommitMessage1() {
+  public void
+      GIVEN_refs_1048_1_with_i2222_and_1081_2_with_i1111_WHEN_retrieving_latestpatchsetcommitmessage_of_i1111_THEN_it_should_return_1081_2_commit_message() {
     when(gitClient.listRemoteRefs(any())).thenReturn(List.of(HEAD, _1048_1, META, _1081_2));
 
     when(gitClient.getCommitMessage(_1048_1.getRevisionId()))
@@ -73,7 +74,8 @@ public class GerritPatchSetRepositoryUnitTest {
   }
 
   @Test
-  public void testGetLastestPatchSetCommitMessage_1048_4_and_1081_3() {
+  public void
+      GIVEN_refs_1048_1_and_1048_4_with_i2222_comma_1081_2_and_1081_3_with_i1111_WHEN_retrieving_latestpatchsetcommitmessage_i1111_THEN_it_should_retrieve_1081_3_commitmessages() {
     when(gitClient.listRemoteRefs(any()))
         .thenReturn(List.of(HEAD, _1081_3, _1048_1, META, _1081_2, _1048_4));
 
@@ -91,5 +93,21 @@ public class GerritPatchSetRepositoryUnitTest {
 
     assertThat(tested.getLastestPatchSetCommitMessage(PUSH_URL, changeChangeId))
         .contains(CommitMessage.of("Bar man Change-Id: I1111"));
+  }
+
+  @Test
+  public void
+      GIVEN_refs_1048_1_with_i2222_and_1081_2_with_i2222_WHEN_retrieving_latestpatchsetcommitmessage_of_i2222_THEN_1081_2_will_be_returned() {
+    when(gitClient.listRemoteRefs(any())).thenReturn(List.of(_1048_1, _1081_2));
+
+    ChangeChangeId changeChangeId = mock(ChangeChangeId.class);
+    when(changeChangeId.toString()).thenReturn("I2222");
+    when(gitClient.getCommitMessage(_1081_2.getRevisionId()))
+        .thenReturn(CommitMessage.of("Foo man Change-Id: I2222"));
+    when(gitClient.getCommitMessage(_1048_1.getRevisionId()))
+        .thenReturn(CommitMessage.of("Bar man Change-Id: I2222"));
+
+    assertThat(tested.getLastestPatchSetCommitMessage(PUSH_URL, changeChangeId))
+        .contains(CommitMessage.of("Foo man Change-Id: I2222"));
   }
 }
