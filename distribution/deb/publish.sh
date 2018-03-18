@@ -31,7 +31,9 @@ dpkg-deb --build ${DEB_DIR}
 
 rm -rf ${DEB_DIR}
 mv ${WORKDIR}/vet_$1.deb ${WORKDIR}/vet.deb
-zip -r ${WORKDIR}/vet-linux_x64.deb.zip ${WORKDIR}/vet.deb
+cd ${WORKDIR}
+zip -r vet-linux_x64.deb.zip vet.deb
+cd -
 rm ${WORKDIR}/vet.deb
 
 curl -u ${GITHUB_CREDENTIALS} -H "Content-Type: application/zip" --data-binary @${WORKDIR}/vet-linux_x64.deb.zip $2?name=vet-linux_x64.deb.zip
