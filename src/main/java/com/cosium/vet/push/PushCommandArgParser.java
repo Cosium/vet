@@ -23,8 +23,8 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
   private static final String TARGET_BRANCH = "b";
   private static final String PUBLISH_DRAFTED_COMMENTS = "p";
   private static final String WORK_IN_PROGRESS = "w";
-  private static final String BYPASS_REVIEW = "f";
   private static final String PATCH_SET_SUBJECT = "s";
+  private static final String BYPASS_REVIEW = "f";
 
   private final PushCommandFactory pushCommandFactory;
   private final Options options;
@@ -53,25 +53,24 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
             .desc("Turn the change to work in progress (e.g. wip).")
             .build());
     options.addOption(
-        Option.builder(BYPASS_REVIEW)
-            .numberOfArgs(0)
-            .longOpt("bypass-review")
-            .desc(
-                "Submit directly the change bypassing the review. Neither labels nor submit rules are checked")
-            .build());
-    options.addOption(
         Option.builder(PATCH_SET_SUBJECT)
             .argName("subject")
             .longOpt("patch-set-subject")
             .hasArg()
             .desc("The subject of the patch set.")
             .build());
+    options.addOption(
+        Option.builder(BYPASS_REVIEW)
+            .numberOfArgs(0)
+            .longOpt("bypass-review")
+            .desc(
+                "Submit directly the change bypassing the review. Neither labels nor submit rules are checked.")
+            .build());
   }
 
   @Override
   public void displayHelp(String executableName) {
     HelpFormatter formatter = new HelpFormatter();
-    formatter.setOptionComparator(null);
     formatter.printHelp(
         String.format("%s %s", executableName, COMMAND_NAME),
         StringUtils.EMPTY,
@@ -108,12 +107,12 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
             .orElse(null);
     Boolean publishDraftedComments = commandLine.hasOption(PUBLISH_DRAFTED_COMMENTS) ? true : null;
     Boolean workInProgress = commandLine.hasOption(WORK_IN_PROGRESS) ? true : null;
-    Boolean bypassReview = commandLine.hasOption(BYPASS_REVIEW) ? true : null;
     PatchSetSubject patchSetSubject =
         ofNullable(commandLine.getOptionValue(PATCH_SET_SUBJECT))
             .filter(StringUtils::isNotBlank)
             .map(PatchSetSubject::of)
             .orElse(null);
+    Boolean bypassReview = commandLine.hasOption(BYPASS_REVIEW) ? true : null;
 
     return pushCommandFactory.build(
         targetBranch, publishDraftedComments, workInProgress, patchSetSubject, bypassReview);
