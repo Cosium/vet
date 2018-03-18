@@ -52,7 +52,7 @@ public class DefaultGerritPatchSetRepository implements GerritPatchSetRepository
   public Optional<CommitMessage> getLastestPatchSetCommitMessage(
       GerritPushUrl pushUrl, ChangeChangeId changeChangeId) {
     return getLatestRevisions(pushUrl)
-        .stream()
+        .parallelStream()
         .peek(patchSet -> git.fetch(RemoteName.of(pushUrl.toString()), patchSet.getBranchRefName()))
         .map(PatchSet::getRevisionId)
         .map(git::getCommitMessage)
