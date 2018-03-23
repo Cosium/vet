@@ -111,4 +111,10 @@ class DefaultGitClient implements GitClient {
     commandRunner.run(
         repositoryDirectory, GIT, "fetch", remote.toString(), branchRefName.toString());
   }
+
+  @Override
+  public void fetch(RemoteName remote, BranchShortName branchShortName) {
+    commandRunner.run(
+        repositoryDirectory, GIT, "fetch", remote.toString(), branchShortName.toString());
+  }
 }

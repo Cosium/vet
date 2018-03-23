@@ -72,4 +72,12 @@ public interface GitClient {
    * @param branchRefName The ref name to fetch
    */
   void fetch(RemoteName remote, BranchRefName branchRefName);
+
+  /**
+   * Fetches the branch form remote
+   *
+   * @param remote The remote to fetch from
+   * @param branchShortName The branch to fetch
+   */
+  void fetch(RemoteName remote, BranchShortName branchShortName);
 }

@@ -74,7 +74,7 @@ public class PushCommand implements VetCommand {
             .orElseThrow(
                 () ->
                     new RuntimeException(String.format("No remote found for branch '%s'", branch)));
-
+    git.fetch(remote, branch);
     String parent = git.getMostRecentCommonCommit(String.format("%s/%s", remote, branch));
 
     gerrit.createPatchSet(

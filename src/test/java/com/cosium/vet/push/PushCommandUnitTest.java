@@ -10,6 +10,7 @@ import com.cosium.vet.git.RemoteName;
 import com.cosium.vet.runtime.UserInput;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 
 import java.util.Optional;
 
@@ -56,10 +57,25 @@ public class PushCommandUnitTest {
 
   @Test
   public void
-      GIVEN_cached_change_WHEN_pushin_to_target_foo_branch_THEN_it_should_set_foo_in_gerrit_client() {
+      GIVEN_cached_change_WHEN_pushing_to_target_foo_branch_THEN_it_should_set_foo_in_gerrit_client() {
     PushCommand pushCommand = factory.build(BranchShortName.of("foo"), null, null, null, null);
     when(gerrit.setChange(any())).thenReturn(mock(GerritChange.class));
     pushCommand.execute();
     verify(gerrit).setChange(BranchShortName.of("foo"));
+  }
+
+  @Test
+  public void
+      WHEN_pushing_to_target_foo_branch_THEN_it_should_fetch_it_before_computing_mostrecentcommoncommit() {
+    PushCommand pushCommand = factory.build(null, null, null, null, null);
+    GerritChange gerritChange = mock(GerritChange.class);
+    when(gerritChange.getTargetBranch()).thenReturn(BranchShortName.of("foo"));
+    when(gerrit.getChange()).thenReturn(Optional.of(gerritChange));
+
+    pushCommand.execute();
+
+    InOrder inOrder = inOrder(git);
+    inOrder.verify(git).fetch(REMOTE, BranchShortName.of("foo"));
+    inOrder.verify(git).getMostRecentCommonCommit("origin/foo");
   }
 }
