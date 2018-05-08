@@ -1,6 +1,7 @@
 package com.cosium.vet.runtime;
 
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
+import com.cosium.vet.thirdparty.apache_commons_lang3.math.NumberUtils;
 
 import static java.util.Objects.requireNonNull;
 
@@ -14,8 +15,8 @@ public class InteractiveUserInput implements UserInput {
   private final InputScanner inputScanner;
   private final UserOutput userOutput;
 
-  public InteractiveUserInput() {
-    this(new DefaultInputScanner(), new DefaultUserOutput());
+  public InteractiveUserInput(UserOutput userOutput) {
+    this(new DefaultInputScanner(), userOutput);
   }
 
   InteractiveUserInput(InputScanner inputScanner, UserOutput userOutput) {
@@ -43,6 +44,16 @@ public class InteractiveUserInput implements UserInput {
       value = inputScanner.nextLine();
     }
     return value;
+  }
+
+  @Override
+  public long askLong(String question) {
+    String value = null;
+    while (StringUtils.isBlank(value) || !NumberUtils.isDigits(value)) {
+      userOutput.display(String.format("%s:", question));
+      value = inputScanner.nextLine();
+    }
+    return Long.parseLong(value);
   }
 
   @Override

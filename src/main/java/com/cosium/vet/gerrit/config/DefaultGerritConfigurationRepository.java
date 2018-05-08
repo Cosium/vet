@@ -1,9 +1,12 @@
 package com.cosium.vet.gerrit.config;
 
+import com.cosium.vet.gerrit.ChangeNumericId;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitConfigRepository;
 import com.cosium.vet.log.Logger;
 import com.cosium.vet.log.LoggerFactory;
+import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
+import com.cosium.vet.thirdparty.apache_commons_lang3.math.NumberUtils;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -22,7 +25,8 @@ class DefaultGerritConfigurationRepository implements GerritConfigurationReposit
   private static final Logger LOG =
       LoggerFactory.getLogger(DefaultGerritConfigurationRepository.class);
 
-  private static final String VET_CHANGE_TARGET_BRANCH = "vet-change-target-branch";
+  private static final String VET_TRACKED_CHANGE_NUMERIC_ID = "vet-tracked-change-numeric-id";
+  private static final String VET_TRACKED_CHANGE_TARGET_BRANCH = "vet-tracked-change-target-branch";
 
   private final GitConfigRepository gitConfigRepository;
 
@@ -37,7 +41,9 @@ class DefaultGerritConfigurationRepository implements GerritConfigurationReposit
   }
 
   private GitStoredConfig doRead() {
-    return new GitStoredConfig(gitConfigRepository.getCurrentBranchValue(VET_CHANGE_TARGET_BRANCH));
+    return new GitStoredConfig(
+        gitConfigRepository.getCurrentBranchValue(VET_TRACKED_CHANGE_NUMERIC_ID),
+        gitConfigRepository.getCurrentBranchValue(VET_TRACKED_CHANGE_TARGET_BRANCH));
   }
 
   @Override
@@ -51,7 +57,9 @@ class DefaultGerritConfigurationRepository implements GerritConfigurationReposit
   private void doWrite(GitStoredConfig config) {
     LOG.debug("Writing {}", config);
     gitConfigRepository.setCurrentBranchValue(
-        VET_CHANGE_TARGET_BRANCH, config.changeTargetBranch.get());
+        VET_TRACKED_CHANGE_NUMERIC_ID, config.trackedChangeNumericId.get());
+    gitConfigRepository.setCurrentBranchValue(
+        VET_TRACKED_CHANGE_TARGET_BRANCH, config.trackedChangeTargetBranch.get());
   }
 
   /**
@@ -61,26 +69,43 @@ class DefaultGerritConfigurationRepository implements GerritConfigurationReposit
    */
   private class GitStoredConfig implements GerritConfiguration {
 
-    private AtomicReference<String> changeTargetBranch;
+    private final AtomicReference<String> trackedChangeNumericId;
+    private final AtomicReference<String> trackedChangeTargetBranch;
 
-    private GitStoredConfig(String changeTargetBranch) {
-      this.changeTargetBranch = new AtomicReference<>(changeTargetBranch);
+    private GitStoredConfig(String trackedChangeNumericId, String trackedChangeTargetBranch) {
+      this.trackedChangeNumericId = new AtomicReference<>(trackedChangeNumericId);
+      this.trackedChangeTargetBranch = new AtomicReference<>(trackedChangeTargetBranch);
     }
 
     @Override
-    public Optional<BranchShortName> getChangeTargetBranch() {
-      return ofNullable(changeTargetBranch.get()).map(BranchShortName::of);
+    public Optional<ChangeNumericId> getTrackedChangeNumericId() {
+      return ofNullable(trackedChangeNumericId.get())
+          .filter(NumberUtils::isDigits)
+          .map(Long::parseLong)
+          .map(ChangeNumericId::of);
     }
 
     @Override
-    public void setChangeTargetBranch(BranchShortName targetBranch) {
-      changeTargetBranch.set(ofNullable(targetBranch).map(BranchShortName::toString).orElse(null));
+    public void setTrackedChangeNumericId(ChangeNumericId numericId) {
+      trackedChangeNumericId.set(ofNullable(numericId).map(ChangeNumericId::toString).orElse(null));
+    }
+
+    @Override
+    public Optional<BranchShortName> getTrackedChangeTargetBranch() {
+      return ofNullable(trackedChangeTargetBranch.get())
+          .filter(StringUtils::isNotBlank)
+          .map(BranchShortName::of);
+    }
+
+    @Override
+    public void setTrackedChangeTargetBranch(BranchShortName targetBranch) {
+      trackedChangeTargetBranch.set(targetBranch.toString());
     }
 
     @Override
     public String toString() {
       final StringBuilder sb = new StringBuilder("GitStoredConfig{");
-      sb.append("changeTargetBranch=").append(changeTargetBranch);
+      sb.append("changeNumericId=").append(trackedChangeNumericId.get());
       sb.append('}');
       return sb.toString();
     }

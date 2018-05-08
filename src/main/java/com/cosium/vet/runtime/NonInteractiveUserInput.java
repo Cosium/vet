@@ -25,6 +25,12 @@ public class NonInteractiveUserInput implements UserInput {
   }
 
   @Override
+  public long askLong(String question) {
+    throw new RuntimeException(
+        String.format("Non interactive mode. Unable to answer to '%s'", question));
+  }
+
+  @Override
   public String ask(String question) {
     LOG.debug("Non interactive mode. Returning null.");
     return null;

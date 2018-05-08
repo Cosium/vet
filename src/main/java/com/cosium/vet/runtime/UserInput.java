@@ -22,6 +22,12 @@ public interface UserInput {
 
   /**
    * @param question The question to ask
+   * @return The user answer that must be a long
+   */
+  long askLong(String question);
+
+  /**
+   * @param question The question to ask
    * @return The user answer that can be blank
    */
   String ask(String question);

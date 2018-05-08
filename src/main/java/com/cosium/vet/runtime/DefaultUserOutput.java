@@ -7,7 +7,7 @@ import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
  *
  * @author Reda.Housni-Alaoui
  */
-class DefaultUserOutput implements UserOutput {
+public class DefaultUserOutput implements UserOutput {
   @Override
   public void display(String message) {
     System.out.print(message + StringUtils.SPACE);

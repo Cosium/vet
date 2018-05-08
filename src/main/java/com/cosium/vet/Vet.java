@@ -3,10 +3,9 @@ package com.cosium.vet;
 import com.cosium.vet.command.CompositeCommandArgParser;
 import com.cosium.vet.command.DebugOptions;
 import com.cosium.vet.command.VetCommandArgParser;
-import com.cosium.vet.gerrit.DefaultGerritClientFactory;
-import com.cosium.vet.gerrit.GerritClientFactory;
+import com.cosium.vet.gerrit.DefaultGerritChangeRepositoryFactory;
+import com.cosium.vet.gerrit.GerritChangeRepositoryFactory;
 import com.cosium.vet.gerrit.PatchSetSubject;
-import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitProvider;
 import com.cosium.vet.push.PushCommand;
 import com.cosium.vet.push.PushCommandArgParser;
@@ -67,17 +66,20 @@ public class Vet {
     requireNonNull(commandRunner);
     requireNonNull(debugOptions);
 
+    UserOutput userOutput = new DefaultUserOutput();
+
     UserInput userInput;
     if (interactive) {
-      userInput = new InteractiveUserInput();
+      userInput = new InteractiveUserInput(userOutput);
     } else {
       userInput = new NonInteractiveUserInput();
     }
 
     GitProvider gitProvider = new GitProvider(workingDir, commandRunner);
-    GerritClientFactory gerritClientFactory =
-        new DefaultGerritClientFactory(gitProvider, gitProvider);
-    this.pushCommandFactory = new PushCommand.Factory(gitProvider, gerritClientFactory, userInput);
+    GerritChangeRepositoryFactory gerritChangeRepositoryFactory =
+        new DefaultGerritChangeRepositoryFactory(gitProvider, gitProvider);
+    this.pushCommandFactory =
+        new PushCommand.Factory(gitProvider, gerritChangeRepositoryFactory, userOutput);
     this.commandParser =
         new CompositeCommandArgParser(
             APP_NAME, List.of(new PushCommandArgParser(pushCommandFactory)), debugOptions);
@@ -90,20 +92,18 @@ public class Vet {
   /**
    * Executes the push command.
    *
-   * @param targetBranch The optional target branch
    * @param publishDraftedComments True to publish drafted comments
    * @param workInProgress True to turn the change set to work in progress
    * @param patchSetSubject The optional patch set subject
    * @param bypassReview Submit directly the change, bypassing the review
    */
   public void push(
-      BranchShortName targetBranch,
       Boolean publishDraftedComments,
       Boolean workInProgress,
       PatchSetSubject patchSetSubject,
       Boolean bypassReview) {
     pushCommandFactory
-        .build(targetBranch, publishDraftedComments, workInProgress, patchSetSubject, bypassReview)
+        .build(publishDraftedComments, workInProgress, patchSetSubject, bypassReview)
         .execute();
   }
 }

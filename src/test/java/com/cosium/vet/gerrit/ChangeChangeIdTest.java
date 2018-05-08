@@ -14,7 +14,7 @@ public class ChangeChangeIdTest {
 
   @Test
   public void test() {
-    ChangeChangeIdFactory factory = new ChangeChangeId.Factory(GerritProjectName.of("foo"));
+    PatchSetCommitMessageFactory factory = new ChangeChangeId.Provider(GerritProjectName.of("foo"));
 
     String value =
         factory.build(BranchShortName.of("feature"), BranchShortName.of("target")).toString();

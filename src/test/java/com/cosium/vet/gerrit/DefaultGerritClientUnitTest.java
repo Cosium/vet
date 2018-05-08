@@ -43,7 +43,7 @@ public class DefaultGerritClientUnitTest {
   private GitClient git;
   private GerritPushUrl pushUrl;
 
-  private GerritClient tested;
+  private GerritChangeRepository tested;
 
   @Before
   public void before() {
@@ -61,7 +61,7 @@ public class DefaultGerritClientUnitTest {
               lastSavedConfiguration.set(gerritConfiguration);
               return res;
             });
-    ChangeChangeIdFactory changeChangeIdFactory = mock(ChangeChangeIdFactory.class);
+    PatchSetCommitMessageFactory changeChangeIdFactory = mock(PatchSetCommitMessageFactory.class);
     changeChangeId = mock(ChangeChangeId.class);
     when(changeChangeIdFactory.build(any(), any())).thenReturn(changeChangeId);
 
@@ -72,46 +72,46 @@ public class DefaultGerritClientUnitTest {
 
     patchSetRepository = mock(DefaultGerritPatchSetRepository.class);
     tested =
-        new DefaultGerritClient(
+        new DefaultGerritChangeRepository(
             configurationRepository, changeChangeIdFactory, patchSetRepository, git, pushUrl);
   }
 
   @Test
   public void GIVEN_no_current_change_WHEN_get_change_THEN_it_should_return_empty() {
-    assertThat(tested.getChange()).isEmpty();
+    assertThat(tested.getTrackedChange()).isEmpty();
   }
 
   @Test
   public void
       GIVEN_current_change_targeting_feature_branch_WHEN_get_change_THEN_it_should_return_change_for_feature() {
     BranchShortName feature = BranchShortName.of("feature");
-    when(gerritConfiguration.getChangeTargetBranch()).thenReturn(Optional.of(feature));
+    when(gerritConfiguration.getTrackedChangeNumericId()).thenReturn(Optional.of(feature));
 
     tested
-        .getChange()
+        .getTrackedChange()
         .ifPresentOrElse(
             change -> assertThat(change.getTargetBranch()).isEqualTo(feature), Assert::fail);
   }
 
   @Test
   public void WHEN_set_get_change_to_master_THEN_it_should_return_change_for_master() {
-    assertThat(tested.setChange(BranchShortName.MASTER).getTargetBranch())
+    assertThat(tested.trackChange(BranchShortName.MASTER).getTargetBranch())
         .isEqualTo(BranchShortName.MASTER);
   }
 
   @Test
   public void WHEN_set_get_change_to_master_THEN_it_should_store_master_in_configuration() {
-    tested.setChange(BranchShortName.MASTER);
+    tested.trackChange(BranchShortName.MASTER);
 
     assertThat(lastSavedConfiguration.get()).isNotNull();
-    verify(lastSavedConfiguration.get()).setChangeTargetBranch(BranchShortName.MASTER);
+    verify(lastSavedConfiguration.get()).setTrackedChangeNumericId(BranchShortName.MASTER);
   }
 
   @Test
   public void
       GIVEN_last_commit_message_hello_world_WHEN_create_patch_set_THEN_commit_tree_message_should_contain_hello_world() {
     when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
-    GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
+    GerritChange gerritChange = tested.trackChange(BranchShortName.MASTER);
 
     tested.createPatchSet(gerritChange, "start", "end", false, false, null, false);
 
@@ -122,7 +122,7 @@ public class DefaultGerritClientUnitTest {
   public void
       GIVEN_changeid_I1234_WHEN_create_patch_set_THEN_commit_tree_message_should_end_with_I1234() {
     when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
-    GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
+    GerritChange gerritChange = tested.trackChange(BranchShortName.MASTER);
 
     when(changeChangeId.toString()).thenReturn("I1234");
     tested.createPatchSet(gerritChange, "start", "end", false, false, null, false);
@@ -134,7 +134,7 @@ public class DefaultGerritClientUnitTest {
   public void
       GIVEN_existing_change_WHEN_create_patch_set_THEN_commit_tree_message_should_contains_SOURCE_BRANCH() {
     when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
-    GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
+    GerritChange gerritChange = tested.trackChange(BranchShortName.MASTER);
 
     tested.createPatchSet(gerritChange, "start", "end", false, false, null, false);
 
@@ -145,7 +145,7 @@ public class DefaultGerritClientUnitTest {
   public void
       GIVEN_existing_change_WHEN_create_patch_set_THEN_commit_tree_message_should_contains_VET_VERSION() {
     when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
-    GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
+    GerritChange gerritChange = tested.trackChange(BranchShortName.MASTER);
 
     tested.createPatchSet(gerritChange, "start", "end", false, false, null, false);
 
@@ -156,7 +156,7 @@ public class DefaultGerritClientUnitTest {
   public void
       GIVEN_existing_change_WHEN_create_patch_set_THEN_commit_tree_message_should_contains_exactly_one_SOURCE_BRANCH() {
     when(git.getLastCommitMessage()).thenReturn(CommitMessage.of("Source-Branch: foo"));
-    GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
+    GerritChange gerritChange = tested.trackChange(BranchShortName.MASTER);
 
     tested.createPatchSet(gerritChange, "start", "end", false, false, null, false);
 
@@ -172,7 +172,7 @@ public class DefaultGerritClientUnitTest {
   public void
       WHEN_create_patch_set_between_start_and_stop_THEN_commit_tree_between_start_and_end() {
     when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
-    GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
+    GerritChange gerritChange = tested.trackChange(BranchShortName.MASTER);
     tested.createPatchSet(gerritChange, "start", "end", false, false, null, false);
 
     verify(git).commitTree(eq("end"), eq("start"), any());
@@ -182,7 +182,7 @@ public class DefaultGerritClientUnitTest {
   public void
       GIVEN_commit_tree_id_foo_and_target_master_WHEN_create_patch_set_THEN_it_should_push_foo_to_ref_for_master() {
     when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
-    GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
+    GerritChange gerritChange = tested.trackChange(BranchShortName.MASTER);
     when(git.commitTree(any(), any(), any())).thenReturn(FOO);
 
     tested.createPatchSet(gerritChange, "start", "end", false, false, null, false);
@@ -193,7 +193,7 @@ public class DefaultGerritClientUnitTest {
   @Test
   public void WHEN_create_patch_set_THEN_it_should_push_to_pushurl() {
     when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
-    GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
+    GerritChange gerritChange = tested.trackChange(BranchShortName.MASTER);
 
     tested.createPatchSet(gerritChange, "start", "end", false, false, null, false);
 
@@ -204,7 +204,7 @@ public class DefaultGerritClientUnitTest {
   public void
       WHEN_create_patch_set_with_subject_WHERE_IS_MY_MIND_THEN_it_suffix_push_with_WHERE_IS_MY_MIND() {
     when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
-    GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
+    GerritChange gerritChange = tested.trackChange(BranchShortName.MASTER);
 
     tested.createPatchSet(
         gerritChange, "start", "end", false, false, PatchSetSubject.of(WHERE_IS_MY_MIND), false);
@@ -214,7 +214,7 @@ public class DefaultGerritClientUnitTest {
 
   @Test
   public void WHEN_setChange_to_SOURCE_BRANCH_THEN_it_should_fail() {
-    assertThatThrownBy(() -> tested.setChange(BranchShortName.of(SOURCE_BRANCH)))
+    assertThatThrownBy(() -> tested.trackChange(BranchShortName.of(SOURCE_BRANCH)))
         .hasMessage("Target branch can't be the same as the current branch");
   }
 
@@ -222,7 +222,7 @@ public class DefaultGerritClientUnitTest {
   public void
       WHEN_create_patch_set_with_publish_drafted_comments_THEN_it_should_push_with_option_publish_comment() {
     when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
-    GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
+    GerritChange gerritChange = tested.trackChange(BranchShortName.MASTER);
 
     tested.createPatchSet(gerritChange, "start", "end", true, false, null, false);
 
@@ -233,7 +233,7 @@ public class DefaultGerritClientUnitTest {
   public void
       WHEN_create_patch_set_without_publish_drafted_comments_THEN_it_should_push_without_option_publish_comment() {
     when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
-    GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
+    GerritChange gerritChange = tested.trackChange(BranchShortName.MASTER);
 
     tested.createPatchSet(gerritChange, "start", "end", false, false, null, false);
 
@@ -243,7 +243,7 @@ public class DefaultGerritClientUnitTest {
   @Test
   public void WHEN_create_patch_set_with_wip_THEN_it_should_push_with_option_wip() {
     when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
-    GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
+    GerritChange gerritChange = tested.trackChange(BranchShortName.MASTER);
 
     tested.createPatchSet(gerritChange, "start", "end", false, true, null, false);
 
@@ -253,7 +253,7 @@ public class DefaultGerritClientUnitTest {
   @Test
   public void WHEN_create_patch_set_without_wip_THEN_it_should_push_without_option_wip() {
     when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
-    GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
+    GerritChange gerritChange = tested.trackChange(BranchShortName.MASTER);
 
     tested.createPatchSet(gerritChange, "start", "end", false, false, null, false);
 
@@ -263,7 +263,7 @@ public class DefaultGerritClientUnitTest {
   @Test
   public void WHEN_create_patch_set_with_bypassreview_THEN_it_should_push_with_option_submit() {
     when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
-    GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
+    GerritChange gerritChange = tested.trackChange(BranchShortName.MASTER);
 
     tested.createPatchSet(gerritChange, "start", "end", false, false, null, true);
 
@@ -274,7 +274,7 @@ public class DefaultGerritClientUnitTest {
   public void
       WHEN_create_patch_set_without_bypassreview_THEN_it_should_push_without_option_submit() {
     when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
-    GerritChange gerritChange = tested.setChange(BranchShortName.MASTER);
+    GerritChange gerritChange = tested.trackChange(BranchShortName.MASTER);
 
     tested.createPatchSet(gerritChange, "start", "end", false, false, null, false);
 

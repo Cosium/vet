@@ -13,9 +13,9 @@ public interface GerritPatchSetRepository {
 
   /**
    * @param pushUrl The Gerrit push url
-   * @param changeChangeId The change change id
-   * @return The latest patch set commit message of the provided change change id.
+   * @param changeNumericId The change numeric id
+   * @return The latest patch set commit message of the provided change numeric id.
    */
   Optional<CommitMessage> getLastestPatchSetCommitMessage(
-      GerritPushUrl pushUrl, ChangeChangeId changeChangeId);
+      GerritPushUrl pushUrl, ChangeNumericId changeNumericId);
 }

@@ -16,31 +16,30 @@ import static java.util.Objects.requireNonNull;
  *
  * @author Reda.Housni-Alaoui
  */
-public class DefaultGerritClientFactory implements GerritClientFactory {
+public class DefaultGerritChangeRepositoryFactory implements GerritChangeRepositoryFactory {
 
-  private static final Logger LOG = LoggerFactory.getLogger(DefaultGerritClientFactory.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(DefaultGerritChangeRepositoryFactory.class);
 
   private final GerritConfigurationRepositoryFactory configurationRepositoryFactory;
   private final GitClientFactory gitClientFactory;
 
-  public DefaultGerritClientFactory(
+  public DefaultGerritChangeRepositoryFactory(
       GitConfigRepositoryFactory gitConfigRepositoryfactory, GitClientFactory gitClientFactory) {
     this(
         new DefaultGerritConfigurationRepositoryFactory(gitConfigRepositoryfactory),
         gitClientFactory);
   }
 
-  public DefaultGerritClientFactory(
+  public DefaultGerritChangeRepositoryFactory(
       GerritConfigurationRepositoryFactory configurationRepositoryFactory,
       GitClientFactory gitClientFactory) {
-    requireNonNull(configurationRepositoryFactory);
-    requireNonNull(gitClientFactory);
-    this.configurationRepositoryFactory = configurationRepositoryFactory;
-    this.gitClientFactory = gitClientFactory;
+    this.configurationRepositoryFactory = requireNonNull(configurationRepositoryFactory);
+    this.gitClientFactory = requireNonNull(gitClientFactory);
   }
 
   @Override
-  public GerritClient build() {
+  public GerritChangeRepository build() {
     GitClient gitClient = gitClientFactory.build();
     GerritConfigurationRepository configurationRepository = configurationRepositoryFactory.build();
 
@@ -58,12 +57,15 @@ public class DefaultGerritClientFactory implements GerritClientFactory {
 
     GerritPushUrl pushUrl = GerritPushUrl.of(remoteUrl.toString());
     LOG.debug("Gerrit push url is {}", pushUrl);
-    GerritProjectName project = pushUrl.parseProjectName();
-    LOG.debug("Gerrit project is '{}'", project);
+    GerritProjectName projectName = pushUrl.parseProjectName();
+    LOG.debug("Gerrit project is '{}'", projectName);
 
-    ChangeChangeIdFactory changeChangeIdFactory = new ChangeChangeId.Factory(project);
     GerritPatchSetRepository patchSetRepository = new DefaultGerritPatchSetRepository(gitClient);
-    return new DefaultGerritClient(
-        configurationRepository, changeChangeIdFactory, patchSetRepository, gitClient, pushUrl);
+    PatchSetCommitMessageFactory patchSetCommitMessageFactory =
+        new DefaultPatchSetCommitMessageFactory(gitClient, patchSetRepository);
+    GerritChangeFactory gerritChangeFactory =
+        new DefaultGerritChange.Factory(gitClient, patchSetCommitMessageFactory, pushUrl);
+
+    return new DefaultGerritChangeRepository(configurationRepository, gerritChangeFactory);
   }
 }

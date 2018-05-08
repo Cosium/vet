@@ -36,4 +36,8 @@ public class CommitMessage extends NonBlankString {
             })
         .collect(Collectors.joining("\n"));
   }
+
+  public CommitMessage appendLine(String line) {
+    return CommitMessage.of(toString() + "\n" + line);
+  }
 }

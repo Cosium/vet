@@ -1,5 +1,6 @@
 package com.cosium.vet.gerrit.config;
 
+import com.cosium.vet.gerrit.ChangeNumericId;
 import com.cosium.vet.git.BranchShortName;
 
 import java.util.Optional;
@@ -11,9 +12,15 @@ import java.util.Optional;
  */
 public interface GerritConfiguration {
 
-  /** @return The current Gerrit change target branch */
-  Optional<BranchShortName> getChangeTargetBranch();
+  /** @return The current Gerrit change numeric ID */
+  Optional<ChangeNumericId> getTrackedChangeNumericId();
 
-  /** Sets the current Gerrit target branch */
-  void setChangeTargetBranch(BranchShortName targetBranch);
+  /** Sets the current Gerrit change numeric ID */
+  void setTrackedChangeNumericId(ChangeNumericId changeNumericId);
+
+  /** @return The current Gerrit tracked change target branch */
+  Optional<BranchShortName> getTrackedChangeTargetBranch();
+
+  /** Sets the current Gerrit change target branch */
+  void setTrackedChangeTargetBranch(BranchShortName targetBranch);
 }

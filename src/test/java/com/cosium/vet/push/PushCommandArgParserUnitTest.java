@@ -1,8 +1,8 @@
 package com.cosium.vet.push;
 
 import com.cosium.vet.command.VetAdvancedCommandArgParser;
+import com.cosium.vet.gerrit.ChangeNumericId;
 import com.cosium.vet.gerrit.PatchSetSubject;
-import com.cosium.vet.git.BranchShortName;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -41,14 +41,14 @@ public class PushCommandArgParserUnitTest {
 
   @Test
   public void testTargetBranchShort() {
-    tested.parse("push", "-b", "b1");
-    verify(factory).build(eq(BranchShortName.of("b1")), isNull(), isNull(), isNull(), isNull());
+    tested.parse("push", "-c", "1234");
+    verify(factory).build(eq(ChangeNumericId.of(1234)), isNull(), isNull(), isNull(), isNull());
   }
 
   @Test
   public void testTargetBranchLong() {
-    tested.parse("push", "--target-branch", "b1");
-    verify(factory).build(eq(BranchShortName.of("b1")), isNull(), isNull(), isNull(), isNull());
+    tested.parse("push", "--change-numeric-id", "1234");
+    verify(factory).build(eq(ChangeNumericId.of(1234)), isNull(), isNull(), isNull(), isNull());
   }
 
   @Test
@@ -103,8 +103,8 @@ public class PushCommandArgParserUnitTest {
   public void testAll() {
     tested.parse(
         "push",
-        "--target-branch",
-        "b1",
+        "--change-numeric-id",
+        "1234",
         "--patch-set-subject",
         "hello",
         "--publish-drafted-comments",
@@ -112,7 +112,7 @@ public class PushCommandArgParserUnitTest {
         "--bypass-review");
     verify(factory)
         .build(
-            eq(BranchShortName.of("b1")),
+            eq(ChangeNumericId.of(1234)),
             eq(true),
             eq(true),
             eq(PatchSetSubject.of("hello")),

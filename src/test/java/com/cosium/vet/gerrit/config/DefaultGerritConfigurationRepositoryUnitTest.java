@@ -40,6 +40,6 @@ public class DefaultGerritConfigurationRepositoryUnitTest {
 
     GerritConfiguration gerritConfiguration = tested.read();
     assertThat(gerritConfiguration).isNotNull();
-    assertThat(gerritConfiguration.getChangeTargetBranch()).contains(CHANGE_TARGET_BRANCH);
+    assertThat(gerritConfiguration.getTrackedChangeNumericId()).contains(CHANGE_TARGET_BRANCH);
   }
 }

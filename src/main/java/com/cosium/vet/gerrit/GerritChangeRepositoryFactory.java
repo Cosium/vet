@@ -5,8 +5,8 @@ package com.cosium.vet.gerrit;
  *
  * @author Reda.Housni-Alaoui
  */
-public interface GerritClientFactory {
+public interface GerritChangeRepositoryFactory {
 
   /** @return A new ready to use gerrit client */
-  GerritClient build();
+  GerritChangeRepository build();
 }
