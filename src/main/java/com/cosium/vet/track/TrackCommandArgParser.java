@@ -62,7 +62,7 @@ public class TrackCommandArgParser implements VetAdvancedCommandArgParser {
         String.format("%s %s", executableName, COMMAND_NAME),
         StringUtils.EMPTY,
         options,
-        "Starts tracking an existing change.",
+        "Starts tracking an existing change set.",
         true);
   }
 
