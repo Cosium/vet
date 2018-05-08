@@ -18,6 +18,8 @@ import static org.mockito.Mockito.when;
  */
 public class GerritPatchSetRepositoryUnitTest {
 
+  private static final ChangeNumericId _1081 = ChangeNumericId.of(1081);
+
   private static final BranchRef HEAD =
       new BranchRef(
           RevisionId.of("3cc707ca7a7720684bada790b5011573bee78a13"), BranchRefName.of("HEAD"));
@@ -64,12 +66,10 @@ public class GerritPatchSetRepositoryUnitTest {
     when(gitClient.getCommitMessage(_1048_1.getRevisionId()))
         .thenReturn(CommitMessage.of("Bar man Change-Id: I2222"));
 
-    ChangeChangeId changeChangeId = mock(ChangeChangeId.class);
-    when(changeChangeId.toString()).thenReturn("I1111");
     when(gitClient.getCommitMessage(_1081_2.getRevisionId()))
         .thenReturn(CommitMessage.of("Foo man Change-Id: I1111"));
 
-    assertThat(tested.getLastestPatchSetCommitMessage(PUSH_URL, changeChangeId))
+    assertThat(tested.getLastestPatchSetCommitMessage(PUSH_URL, _1081))
         .contains(CommitMessage.of("Foo man Change-Id: I1111"));
   }
 
@@ -84,14 +84,12 @@ public class GerritPatchSetRepositoryUnitTest {
     when(gitClient.getCommitMessage(_1048_4.getRevisionId()))
         .thenReturn(CommitMessage.of("Bar man Change-Id: I2222"));
 
-    ChangeChangeId changeChangeId = mock(ChangeChangeId.class);
-    when(changeChangeId.toString()).thenReturn("I1111");
     when(gitClient.getCommitMessage(_1081_2.getRevisionId()))
         .thenReturn(CommitMessage.of("Foo man Change-Id: I1111"));
     when(gitClient.getCommitMessage(_1081_3.getRevisionId()))
         .thenReturn(CommitMessage.of("Bar man Change-Id: I1111"));
 
-    assertThat(tested.getLastestPatchSetCommitMessage(PUSH_URL, changeChangeId))
+    assertThat(tested.getLastestPatchSetCommitMessage(PUSH_URL, _1081))
         .contains(CommitMessage.of("Bar man Change-Id: I1111"));
   }
 
@@ -100,14 +98,12 @@ public class GerritPatchSetRepositoryUnitTest {
       GIVEN_refs_1048_1_with_i2222_and_1081_2_with_i2222_WHEN_retrieving_latestpatchsetcommitmessage_of_i2222_THEN_1081_2_will_be_returned() {
     when(gitClient.listRemoteRefs(any())).thenReturn(List.of(_1048_1, _1081_2));
 
-    ChangeChangeId changeChangeId = mock(ChangeChangeId.class);
-    when(changeChangeId.toString()).thenReturn("I2222");
     when(gitClient.getCommitMessage(_1081_2.getRevisionId()))
         .thenReturn(CommitMessage.of("Foo man Change-Id: I2222"));
     when(gitClient.getCommitMessage(_1048_1.getRevisionId()))
         .thenReturn(CommitMessage.of("Bar man Change-Id: I2222"));
 
-    assertThat(tested.getLastestPatchSetCommitMessage(PUSH_URL, changeChangeId))
+    assertThat(tested.getLastestPatchSetCommitMessage(PUSH_URL, _1081))
         .contains(CommitMessage.of("Foo man Change-Id: I2222"));
   }
 }

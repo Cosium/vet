@@ -3,6 +3,11 @@ package com.cosium.vet.gerrit;
 import com.cosium.vet.VetVersion;
 import com.cosium.vet.git.CommitMessage;
 import com.cosium.vet.git.GitClient;
+import com.cosium.vet.thirdparty.apache_commons_codec.DigestUtils;
+
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.util.Objects.requireNonNull;
 
@@ -45,7 +50,13 @@ class DefaultPatchSetCommitMessageFactory implements PatchSetCommitMessageFactor
   }
 
   private String parseOrBuildChangeChangeId(CommitMessage commitMessage) {
-    // TODO
-    return null;
+    Pattern pattern = Pattern.compile(Pattern.quote(COMMIT_MESSAGE_CHANGE_ID_PREFIX) + "(.*)");
+    Matcher matcher = pattern.matcher(commitMessage.toString());
+    if (matcher.find()) {
+      return matcher.group(1);
+    }
+
+    return "I"
+        + DigestUtils.shaHex(String.format("%s|%s", UUID.randomUUID(), commitMessage.toString()));
   }
 }

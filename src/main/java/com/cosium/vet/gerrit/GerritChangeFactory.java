@@ -7,7 +7,7 @@ import com.cosium.vet.git.BranchShortName;
  *
  * @author Reda.Housni-Alaoui
  */
-interface GerritChangeFactory {
+public interface GerritChangeFactory {
 
   GerritChange build(ChangeNumericId changeNumericId, BranchShortName targetBranch);
 }
