@@ -42,7 +42,7 @@ public class DefaultGerritChangeTest {
         new DefaultGerritChange.Factory(git, patchSetCommitMessageFactory, PUSH_URL);
 
     when(git.getRemote(BAR_BRANCH)).thenReturn(Optional.of(RemoteName.ORIGIN));
-    when(patchSetCommitMessageFactory.build(PUSH_URL, NUMERIC_ID))
+    when(patchSetCommitMessageFactory.build(NUMERIC_ID))
         .thenReturn(CommitMessage.of("Hello world"));
     tested = gerritChangeFactory.build(NUMERIC_ID, BAR_BRANCH);
   }

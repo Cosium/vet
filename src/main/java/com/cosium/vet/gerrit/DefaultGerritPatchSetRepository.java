@@ -24,10 +24,11 @@ public class DefaultGerritPatchSetRepository implements GerritPatchSetRepository
       Pattern.compile("refs/changes/\\d{2}/(\\d+)/(\\d+)");
 
   private final GitClient git;
+  private final GerritPushUrl pushUrl;
 
-  public DefaultGerritPatchSetRepository(GitClient gitClient) {
-    requireNonNull(gitClient);
-    this.git = gitClient;
+  public DefaultGerritPatchSetRepository(GitClient gitClient, GerritPushUrl pushUrl) {
+    this.git = requireNonNull(gitClient);
+    this.pushUrl = requireNonNull(pushUrl);
   }
 
   /**
@@ -48,8 +49,7 @@ public class DefaultGerritPatchSetRepository implements GerritPatchSetRepository
   }
 
   @Override
-  public Optional<CommitMessage> getLastestPatchSetCommitMessage(
-      GerritPushUrl pushUrl, ChangeNumericId changeNumericId) {
+  public Optional<CommitMessage> getLastestPatchSetCommitMessage(ChangeNumericId changeNumericId) {
     PatchSet latestRevision = getLatestRevision(pushUrl, changeNumericId).orElse(null);
     if (latestRevision == null) {
       LOG.debug("No revision found for change {}", changeNumericId);

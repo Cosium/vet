@@ -30,10 +30,10 @@ class DefaultPatchSetCommitMessageFactory implements PatchSetCommitMessageFactor
   }
 
   @Override
-  public CommitMessage build(GerritPushUrl pushUrl, ChangeNumericId numericId) {
+  public CommitMessage build(ChangeNumericId numericId) {
     CommitMessage commitMessage =
         patchSetRepository
-            .getLastestPatchSetCommitMessage(pushUrl, numericId)
+            .getLastestPatchSetCommitMessage(numericId)
             .orElseGet(git::getLastCommitMessage);
 
     String body =

@@ -27,6 +27,19 @@ public class InteractiveUserInput implements UserInput {
   }
 
   @Override
+  public boolean askYesNo(String question, boolean defaultAnswer) {
+    String value = null;
+    String messageToDisplay =
+        String.format(
+            "%s [%s/%s]:", question, defaultAnswer ? "Y" : "y", defaultAnswer ? "n" : "N");
+    while (StringUtils.isBlank(value)) {
+      userOutput.display(messageToDisplay);
+      value = StringUtils.defaultIfBlank(inputScanner.nextLine(), defaultAnswer ? "y" : "n");
+    }
+    return "y".equalsIgnoreCase(value);
+  }
+
+  @Override
   public String askNonBlank(String question, String defaultValue) {
     String value = null;
     while (StringUtils.isBlank(value)) {

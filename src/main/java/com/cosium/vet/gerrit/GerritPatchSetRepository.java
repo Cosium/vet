@@ -12,10 +12,8 @@ import java.util.Optional;
 public interface GerritPatchSetRepository {
 
   /**
-   * @param pushUrl The Gerrit push url
    * @param changeNumericId The change numeric id
    * @return The latest patch set commit message of the provided change numeric id.
    */
-  Optional<CommitMessage> getLastestPatchSetCommitMessage(
-      GerritPushUrl pushUrl, ChangeNumericId changeNumericId);
+  Optional<CommitMessage> getLastestPatchSetCommitMessage(ChangeNumericId changeNumericId);
 }

@@ -9,5 +9,5 @@ import com.cosium.vet.git.CommitMessage;
  */
 public interface PatchSetCommitMessageFactory {
 
-  CommitMessage build(GerritPushUrl pushUrl, ChangeNumericId numericId);
+  CommitMessage build(ChangeNumericId numericId);
 }

@@ -24,7 +24,6 @@ public class DefaultPatchSetCommitMessageFactoryTest {
 
   private static final String HELLO_WORLD = "Hello World";
 
-  private static final GerritPushUrl PUSH_URL = GerritPushUrl.of("https://foo.com/bar");
   private static final ChangeNumericId NUMERIC_ID = ChangeNumericId.of(1234);
 
   private GitClient git;
@@ -36,8 +35,7 @@ public class DefaultPatchSetCommitMessageFactoryTest {
   public void before() {
     git = mock(GitClient.class);
     patchSetRepository = mock(GerritPatchSetRepository.class);
-    when(patchSetRepository.getLastestPatchSetCommitMessage(any(), any()))
-        .thenReturn(Optional.empty());
+    when(patchSetRepository.getLastestPatchSetCommitMessage(any())).thenReturn(Optional.empty());
     tested = new DefaultPatchSetCommitMessageFactory(git, patchSetRepository);
   }
 
@@ -46,7 +44,7 @@ public class DefaultPatchSetCommitMessageFactoryTest {
       GIVEN_no_existing_changeid_WHEN_build_commitmessage_THEN_the_change_id_is_part_of_the_message() {
     when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
 
-    CommitMessage commitMessage = tested.build(PUSH_URL, NUMERIC_ID);
+    CommitMessage commitMessage = tested.build(NUMERIC_ID);
     String rawMessage = commitMessage.toString();
 
     Pattern pattern = Pattern.compile(Pattern.compile("Change-Id: ") + "I(.*)");
@@ -60,7 +58,7 @@ public class DefaultPatchSetCommitMessageFactoryTest {
       WHEN_last_commit_message_hello_world_THEN_commit_message_should_contain_hello_world() {
     when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
 
-    CommitMessage commitMessage = tested.build(PUSH_URL, NUMERIC_ID);
+    CommitMessage commitMessage = tested.build(NUMERIC_ID);
     assertThat(commitMessage.toString()).contains(HELLO_WORLD);
   }
 
@@ -69,7 +67,7 @@ public class DefaultPatchSetCommitMessageFactoryTest {
     when(git.getLastCommitMessage())
         .thenReturn(CommitMessage.of(HELLO_WORLD + "\n" + "Change-Id: I1234"));
 
-    CommitMessage commitMessage = tested.build(PUSH_URL, NUMERIC_ID);
+    CommitMessage commitMessage = tested.build(NUMERIC_ID);
     assertThat(commitMessage.toString()).endsWith("\nChange-Id: I1234");
   }
 
@@ -77,7 +75,7 @@ public class DefaultPatchSetCommitMessageFactoryTest {
   public void WHEN_existing_change_THEN_commit_message_contains_VET_VERSION() {
     when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
 
-    CommitMessage commitMessage = tested.build(PUSH_URL, NUMERIC_ID);
+    CommitMessage commitMessage = tested.build(NUMERIC_ID);
     assertThat(commitMessage.toString()).contains("\nVet-Version: " + VetVersion.VALUE);
   }
 }

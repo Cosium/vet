@@ -44,11 +44,6 @@ class DefaultGerritChange implements GerritChange {
   }
 
   @Override
-  public String toString() {
-    return "DefaultGerritChange{" + "numericId=" + numericId + '}';
-  }
-
-  @Override
   public void createPatchSet(
       String endRevision,
       boolean publishDraftComments,
@@ -71,7 +66,7 @@ class DefaultGerritChange implements GerritChange {
         this,
         startRevision,
         endRevision);
-    CommitMessage commitMessage = patchSetCommitMessageFactory.build(pushUrl, numericId);
+    CommitMessage commitMessage = patchSetCommitMessageFactory.build(numericId);
 
     LOG.debug("Creating commit tree with message '{}'", commitMessage);
     String commitId = git.commitTree(endRevision, startRevision, commitMessage.toString());
@@ -128,5 +123,10 @@ class DefaultGerritChange implements GerritChange {
       return new DefaultGerritChange(
           git, patchSetCommitMessageFactory, pushUrl, changeNumericId, targetBranch);
     }
+  }
+
+  @Override
+  public String toString() {
+    return "{\"numericId\": " + numericId + ", \"targetBranch\": \"" + targetBranch + "\"}";
   }
 }

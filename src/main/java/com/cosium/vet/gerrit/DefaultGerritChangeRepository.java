@@ -20,13 +20,26 @@ class DefaultGerritChangeRepository implements GerritChangeRepository {
   private static final Logger LOG = LoggerFactory.getLogger(DefaultGerritChangeRepository.class);
 
   private final GerritConfigurationRepository configurationRepository;
-  private final GerritChangeFactory gerritChangeFactory;
+  private final GerritChangeFactory changeFactory;
+  private final GerritPatchSetRepository patchSetRepository;
 
   DefaultGerritChangeRepository(
       GerritConfigurationRepository configurationRepository,
-      GerritChangeFactory gerritChangeFactory) {
+      GerritChangeFactory changeFactory,
+      GerritPatchSetRepository patchSetRepository) {
     this.configurationRepository = requireNonNull(configurationRepository);
-    this.gerritChangeFactory = requireNonNull(gerritChangeFactory);
+    this.changeFactory = requireNonNull(changeFactory);
+    this.patchSetRepository = requireNonNull(patchSetRepository);
+  }
+
+  @Override
+  public void untrack() {
+    configurationRepository.readAndWrite(
+        gerritConfiguration -> {
+          gerritConfiguration.setTrackedChangeTargetBranch(null);
+          gerritConfiguration.setTrackedChangeNumericId(null);
+          return null;
+        });
   }
 
   /** @return The current change */
@@ -45,7 +58,7 @@ class DefaultGerritChangeRepository implements GerritChangeRepository {
       return Optional.empty();
     }
 
-    return Optional.of(gerritChangeFactory.build(changeNumericId, changeTargetBranch));
+    return Optional.of(changeFactory.build(changeNumericId, changeTargetBranch));
   }
 
   @Override
@@ -55,7 +68,12 @@ class DefaultGerritChangeRepository implements GerritChangeRepository {
         conf -> {
           conf.setTrackedChangeNumericId(numericId);
           conf.setTrackedChangeTargetBranch(targetBranch);
-          return gerritChangeFactory.build(numericId, targetBranch);
+          return changeFactory.build(numericId, targetBranch);
         });
+  }
+
+  @Override
+  public boolean exists(ChangeNumericId numericId) {
+    return patchSetRepository.getLastestPatchSetCommitMessage(numericId).isPresent();
   }
 }

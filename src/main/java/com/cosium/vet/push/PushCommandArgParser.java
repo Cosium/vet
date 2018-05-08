@@ -19,6 +19,7 @@ import static java.util.Optional.ofNullable;
 public class PushCommandArgParser implements VetAdvancedCommandArgParser {
 
   private static final String COMMAND_NAME = "push";
+
   private static final String PUBLISH_DRAFTED_COMMENTS = "p";
   private static final String WORK_IN_PROGRESS = "w";
   private static final String PATCH_SET_SUBJECT = "s";
@@ -66,8 +67,7 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
         String.format("%s %s", executableName, COMMAND_NAME),
         StringUtils.EMPTY,
         options,
-        "Push the changes to Gerrit by adding a new patch set to the current change set.\n"
-            + "If no change set exists, the patch set will be appended to a new one.",
+        "Push the changes to Gerrit by adding a new patch set to the current tracked change set.",
         true);
   }
 

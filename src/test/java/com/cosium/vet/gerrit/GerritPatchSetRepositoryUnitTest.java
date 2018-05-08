@@ -55,7 +55,7 @@ public class GerritPatchSetRepositoryUnitTest {
   @Before
   public void before() {
     gitClient = mock(GitClient.class);
-    tested = new DefaultGerritPatchSetRepository(gitClient);
+    tested = new DefaultGerritPatchSetRepository(gitClient, PUSH_URL);
   }
 
   @Test
@@ -69,7 +69,7 @@ public class GerritPatchSetRepositoryUnitTest {
     when(gitClient.getCommitMessage(_1081_2.getRevisionId()))
         .thenReturn(CommitMessage.of("Foo man Change-Id: I1111"));
 
-    assertThat(tested.getLastestPatchSetCommitMessage(PUSH_URL, _1081))
+    assertThat(tested.getLastestPatchSetCommitMessage(_1081))
         .contains(CommitMessage.of("Foo man Change-Id: I1111"));
   }
 
@@ -89,7 +89,7 @@ public class GerritPatchSetRepositoryUnitTest {
     when(gitClient.getCommitMessage(_1081_3.getRevisionId()))
         .thenReturn(CommitMessage.of("Bar man Change-Id: I1111"));
 
-    assertThat(tested.getLastestPatchSetCommitMessage(PUSH_URL, _1081))
+    assertThat(tested.getLastestPatchSetCommitMessage(_1081))
         .contains(CommitMessage.of("Bar man Change-Id: I1111"));
   }
 
@@ -103,7 +103,7 @@ public class GerritPatchSetRepositoryUnitTest {
     when(gitClient.getCommitMessage(_1048_1.getRevisionId()))
         .thenReturn(CommitMessage.of("Bar man Change-Id: I2222"));
 
-    assertThat(tested.getLastestPatchSetCommitMessage(PUSH_URL, _1081))
+    assertThat(tested.getLastestPatchSetCommitMessage(_1081))
         .contains(CommitMessage.of("Foo man Change-Id: I2222"));
   }
 }

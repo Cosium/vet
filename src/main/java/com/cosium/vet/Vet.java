@@ -3,14 +3,19 @@ package com.cosium.vet;
 import com.cosium.vet.command.CompositeCommandArgParser;
 import com.cosium.vet.command.DebugOptions;
 import com.cosium.vet.command.VetCommandArgParser;
+import com.cosium.vet.gerrit.ChangeNumericId;
 import com.cosium.vet.gerrit.DefaultGerritChangeRepositoryFactory;
 import com.cosium.vet.gerrit.GerritChangeRepositoryFactory;
 import com.cosium.vet.gerrit.PatchSetSubject;
+import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitProvider;
 import com.cosium.vet.push.PushCommand;
 import com.cosium.vet.push.PushCommandArgParser;
 import com.cosium.vet.push.PushCommandFactory;
 import com.cosium.vet.runtime.*;
+import com.cosium.vet.track.TrackCommand;
+import com.cosium.vet.track.TrackCommandArgParser;
+import com.cosium.vet.track.TrackCommandFactory;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,6 +33,7 @@ public class Vet {
   private static final String APP_NAME = "vet";
 
   private final PushCommandFactory pushCommandFactory;
+  private final TrackCommandFactory trackCommandFactory;
   private final VetCommandArgParser commandParser;
 
   /**
@@ -76,17 +82,28 @@ public class Vet {
     }
 
     GitProvider gitProvider = new GitProvider(workingDir, commandRunner);
-    GerritChangeRepositoryFactory gerritChangeRepositoryFactory =
+    GerritChangeRepositoryFactory changeRepositoryFactory =
         new DefaultGerritChangeRepositoryFactory(gitProvider, gitProvider);
+    this.trackCommandFactory =
+        new TrackCommand.Factory(changeRepositoryFactory, userInput, userOutput);
     this.pushCommandFactory =
-        new PushCommand.Factory(gitProvider, gerritChangeRepositoryFactory, userOutput);
+        new PushCommand.Factory(gitProvider, changeRepositoryFactory, userOutput);
+
     this.commandParser =
         new CompositeCommandArgParser(
-            APP_NAME, List.of(new PushCommandArgParser(pushCommandFactory)), debugOptions);
+            APP_NAME,
+            List.of(
+                new TrackCommandArgParser(trackCommandFactory),
+                new PushCommandArgParser(pushCommandFactory)),
+            debugOptions);
   }
 
   public void run(String args[]) {
     commandParser.parse(args).execute();
+  }
+
+  public void track(Boolean force, ChangeNumericId numericId, BranchShortName targetBranch) {
+    trackCommandFactory.build(force, numericId, targetBranch).execute();
   }
 
   /**

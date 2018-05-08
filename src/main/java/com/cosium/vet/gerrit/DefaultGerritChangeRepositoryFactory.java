@@ -60,12 +60,14 @@ public class DefaultGerritChangeRepositoryFactory implements GerritChangeReposit
     GerritProjectName projectName = pushUrl.parseProjectName();
     LOG.debug("Gerrit project is '{}'", projectName);
 
-    GerritPatchSetRepository patchSetRepository = new DefaultGerritPatchSetRepository(gitClient);
+    GerritPatchSetRepository patchSetRepository =
+        new DefaultGerritPatchSetRepository(gitClient, pushUrl);
     PatchSetCommitMessageFactory patchSetCommitMessageFactory =
         new DefaultPatchSetCommitMessageFactory(gitClient, patchSetRepository);
-    GerritChangeFactory gerritChangeFactory =
+    GerritChangeFactory changeFactory =
         new DefaultGerritChange.Factory(gitClient, patchSetCommitMessageFactory, pushUrl);
 
-    return new DefaultGerritChangeRepository(configurationRepository, gerritChangeFactory);
+    return new DefaultGerritChangeRepository(
+        configurationRepository, changeFactory, patchSetRepository);
   }
 }

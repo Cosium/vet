@@ -25,6 +25,7 @@ public class DefaultGerritChangeRepositoryUnitTest {
 
   private GerritConfiguration gerritConfiguration;
   private GerritChangeFactory gerritChangeFactory;
+  private GerritPatchSetRepository patchSetRepository;
 
   private GerritChangeRepository tested;
 
@@ -46,7 +47,10 @@ public class DefaultGerritChangeRepositoryUnitTest {
             });
 
     gerritChangeFactory = mock(GerritChangeFactory.class);
-    tested = new DefaultGerritChangeRepository(configurationRepository, gerritChangeFactory);
+    patchSetRepository = mock(GerritPatchSetRepository.class);
+    tested =
+        new DefaultGerritChangeRepository(
+            configurationRepository, gerritChangeFactory, patchSetRepository);
   }
 
   @Test

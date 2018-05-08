@@ -13,6 +13,12 @@ public class NonInteractiveUserInput implements UserInput {
   private static final Logger LOG = LoggerFactory.getLogger(NonInteractiveUserInput.class);
 
   @Override
+  public boolean askYesNo(String question, boolean defaultAnswer) {
+    LOG.debug("Non interactive mode. Returning '{}'.", defaultAnswer);
+    return defaultAnswer;
+  }
+
+  @Override
   public String askNonBlank(String question, String defaultValue) {
     LOG.debug("Non interactive mode. Returning '{}'.", defaultValue);
     return defaultValue;

@@ -9,6 +9,13 @@ public interface UserInput {
 
   /**
    * @param question The question to ask
+   * @param defaultAnswer The default value
+   * @return True if the user answered yes
+   */
+  boolean askYesNo(String question, boolean defaultAnswer);
+
+  /**
+   * @param question The question to ask
    * @param defaultValue The default value
    * @return The user answer that cannot be blank
    */
