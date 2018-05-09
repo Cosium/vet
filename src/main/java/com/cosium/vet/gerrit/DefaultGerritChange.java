@@ -26,26 +26,26 @@ class DefaultGerritChange implements GerritChange {
   private final PatchSetCommitMessageFactory patchSetCommitMessageFactory;
 
   private final GerritPushUrl pushUrl;
-  private final ChangeNumericId numericId;
   private final BranchShortName targetBranch;
+
+  private final ChangeNumericId numericId;
 
   private DefaultGerritChange(
       GitClient git,
       PatchSetCommitMessageFactory patchSetCommitMessageFactory,
       GerritPushUrl pushUrl,
-      ChangeNumericId numericId,
-      BranchShortName targetBranch) {
+      BranchShortName targetBranch,
+      ChangeNumericId numericId) {
     this.git = requireNonNull(git);
     this.patchSetCommitMessageFactory = requireNonNull(patchSetCommitMessageFactory);
 
     this.pushUrl = requireNonNull(pushUrl);
-    this.numericId = requireNonNull(numericId);
     this.targetBranch = requireNonNull(targetBranch);
+    this.numericId = requireNonNull(numericId);
   }
 
   @Override
   public void createPatchSet(
-      String endRevision,
       boolean publishDraftComments,
       boolean workInProgress,
       PatchSetSubject subject,
@@ -61,6 +61,7 @@ class DefaultGerritChange implements GerritChange {
     String startRevision =
         git.getMostRecentCommonCommit(String.format("%s/%s", remote, targetBranch));
 
+    String endRevision = git.getTree();
     LOG.debug(
         "Creating patch set for change '{}' between start revision '{}' and end revision '{}'",
         this,
@@ -119,9 +120,9 @@ class DefaultGerritChange implements GerritChange {
     }
 
     @Override
-    public GerritChange build(ChangeNumericId changeNumericId, BranchShortName targetBranch) {
+    public GerritChange build(BranchShortName targetBranch, ChangeNumericId changeNumericId) {
       return new DefaultGerritChange(
-          git, patchSetCommitMessageFactory, pushUrl, changeNumericId, targetBranch);
+          git, patchSetCommitMessageFactory, pushUrl, targetBranch, changeNumericId);
     }
   }
 

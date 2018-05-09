@@ -5,8 +5,6 @@ import com.cosium.vet.gerrit.GerritChange;
 import com.cosium.vet.gerrit.GerritChangeRepository;
 import com.cosium.vet.gerrit.GerritChangeRepositoryFactory;
 import com.cosium.vet.gerrit.PatchSetSubject;
-import com.cosium.vet.git.GitClient;
-import com.cosium.vet.git.GitClientFactory;
 import com.cosium.vet.log.Logger;
 import com.cosium.vet.log.LoggerFactory;
 import com.cosium.vet.runtime.UserOutput;
@@ -23,7 +21,6 @@ public class PushCommand implements VetCommand {
 
   private static final Logger LOG = LoggerFactory.getLogger(PushCommand.class);
 
-  private final GitClient git;
   private final GerritChangeRepository gerritChangeRepository;
   private final UserOutput userOutput;
 
@@ -33,7 +30,6 @@ public class PushCommand implements VetCommand {
   private final Boolean bypassReview;
 
   private PushCommand(
-      GitClient gitClient,
       GerritChangeRepository gerritChangeRepository,
       UserOutput userOutput,
       // Optionals
@@ -41,7 +37,6 @@ public class PushCommand implements VetCommand {
       Boolean workInProgress,
       PatchSetSubject patchSetSubject,
       Boolean bypassReview) {
-    this.git = requireNonNull(gitClient);
     this.gerritChangeRepository = requireNonNull(gerritChangeRepository);
     this.userOutput = requireNonNull(userOutput);
 
@@ -64,7 +59,6 @@ public class PushCommand implements VetCommand {
     LOG.debug("Found tracked change {}", change);
 
     change.createPatchSet(
-        git.getTree(),
         BooleanUtils.toBoolean(publishDraftedComments),
         BooleanUtils.toBoolean(workInProgress),
         patchSetSubject,
@@ -73,15 +67,11 @@ public class PushCommand implements VetCommand {
 
   public static class Factory implements PushCommandFactory {
 
-    private final GitClientFactory gitClientFactory;
     private final GerritChangeRepositoryFactory gerritChangeRepositoryFactory;
     private final UserOutput userOutput;
 
     public Factory(
-        GitClientFactory gitClientFactory,
-        GerritChangeRepositoryFactory gerritChangeRepositoryFactory,
-        UserOutput userOutput) {
-      this.gitClientFactory = requireNonNull(gitClientFactory);
+        GerritChangeRepositoryFactory gerritChangeRepositoryFactory, UserOutput userOutput) {
       this.gerritChangeRepositoryFactory = requireNonNull(gerritChangeRepositoryFactory);
       this.userOutput = requireNonNull(userOutput);
     }
@@ -93,7 +83,6 @@ public class PushCommand implements VetCommand {
         PatchSetSubject patchSetSubject,
         Boolean bypassReview) {
       return new PushCommand(
-          gitClientFactory.build(),
           gerritChangeRepositoryFactory.build(),
           userOutput,
           publishDraftedComments,

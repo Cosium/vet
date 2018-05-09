@@ -2,14 +2,10 @@ package com.cosium.vet.command.push;
 
 import com.cosium.vet.gerrit.GerritChangeRepository;
 import com.cosium.vet.gerrit.GerritChangeRepositoryFactory;
-import com.cosium.vet.git.GitClient;
-import com.cosium.vet.git.GitClientFactory;
 import com.cosium.vet.git.RemoteName;
 import com.cosium.vet.runtime.UserOutput;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
@@ -22,7 +18,6 @@ public class PushCommandUnitTest {
 
   private static final RemoteName REMOTE = RemoteName.ORIGIN;
 
-  private GitClient git;
   private GerritChangeRepository gerrit;
   private UserOutput userOutput;
 
@@ -30,18 +25,13 @@ public class PushCommandUnitTest {
 
   @Before
   public void before() {
-    git = mock(GitClient.class);
     gerrit = mock(GerritChangeRepository.class);
     userOutput = mock(UserOutput.class);
 
-    GitClientFactory gitClientFactory = mock(GitClientFactory.class);
-    when(gitClientFactory.build()).thenReturn(git);
     GerritChangeRepositoryFactory gerritClientFactory = mock(GerritChangeRepositoryFactory.class);
     when(gerritClientFactory.build()).thenReturn(gerrit);
 
-    factory = new PushCommand.Factory(gitClientFactory, gerritClientFactory, userOutput);
-
-    when(git.getRemote(any())).thenReturn(Optional.of(REMOTE));
+    factory = new PushCommand.Factory(gerritClientFactory, userOutput);
   }
 
   @Test

@@ -67,7 +67,7 @@ public class DefaultGerritChangeRepositoryUnitTest {
     when(gerritConfiguration.getTrackedChangeTargetBranch()).thenReturn(Optional.of(feature));
 
     GerritChange gerritChange = mock(GerritChange.class);
-    when(gerritChangeFactory.build(_1234, feature)).thenReturn(gerritChange);
+    when(gerritChangeFactory.build(feature, _1234)).thenReturn(gerritChange);
 
     assertThat(tested.getTrackedChange()).contains(gerritChange);
   }

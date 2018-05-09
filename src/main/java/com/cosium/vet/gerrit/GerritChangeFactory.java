@@ -9,5 +9,10 @@ import com.cosium.vet.git.BranchShortName;
  */
 public interface GerritChangeFactory {
 
-  GerritChange build(ChangeNumericId changeNumericId, BranchShortName targetBranch);
+  /**
+   * @param targetBranch The target branch of the change
+   * @param changeNumericId The numeric id of the change
+   * @return An object describing an existing Gerrit Change
+   */
+  GerritChange build(BranchShortName targetBranch, ChangeNumericId changeNumericId);
 }

@@ -44,12 +44,13 @@ public class DefaultGerritChangeTest {
     when(git.getRemote(BAR_BRANCH)).thenReturn(Optional.of(RemoteName.ORIGIN));
     when(patchSetCommitMessageFactory.build(NUMERIC_ID))
         .thenReturn(CommitMessage.of("Hello world"));
-    tested = gerritChangeFactory.build(NUMERIC_ID, BAR_BRANCH);
+    tested = gerritChangeFactory.build(BAR_BRANCH, NUMERIC_ID);
   }
 
   @Test
   public void WHEN_create_patch_set_until_end_THEN_commit_tree_be_until_end() {
-    tested.createPatchSet("end", false, false, null, false);
+    when(git.getTree()).thenReturn("end");
+    tested.createPatchSet(false, false, null, false);
     verify(git).commitTree(eq("end"), any(), any());
   }
 
@@ -57,59 +58,59 @@ public class DefaultGerritChangeTest {
   public void
       GIVEN_commit_tree_id_foo_and_target_bar_WHEN_create_patch_set_THEN_it_should_push_foo_to_ref_for_bar() {
     when(git.commitTree(any(), any(), any())).thenReturn(FOO);
-    tested.createPatchSet("end", false, false, null, false);
+    tested.createPatchSet(false, false, null, false);
     verify(git).push(any(), startsWith(FOO + ":refs/for/" + BAR_BRANCH));
   }
 
   @Test
   public void WHEN_create_patch_set_THEN_it_should_push_to_pushurl() {
-    tested.createPatchSet("end", false, false, null, false);
+    tested.createPatchSet(false, false, null, false);
     verify(git).push(eq(PUSH_URL.toString()), any());
   }
 
   @Test
   public void
       WHEN_create_patch_set_with_subject_WHERE_IS_MY_MIND_THEN_it_suffix_push_with_WHERE_IS_MY_MIND() {
-    tested.createPatchSet("end", false, false, PatchSetSubject.of(WHERE_IS_MY_MIND), false);
+    tested.createPatchSet(false, false, PatchSetSubject.of(WHERE_IS_MY_MIND), false);
     verify(git).push(any(), contains("m=" + GitUtils.encodeForGitRef(WHERE_IS_MY_MIND)));
   }
 
   @Test
   public void
       WHEN_create_patch_set_with_publish_drafted_comments_THEN_it_should_push_with_option_publish_comment() {
-    tested.createPatchSet("end", true, false, null, false);
+    tested.createPatchSet(true, false, null, false);
     verify(git).push(any(), contains("publish-comments"));
   }
 
   @Test
   public void
       WHEN_create_patch_set_without_publish_drafted_comments_THEN_it_should_push_without_option_publish_comment() {
-    tested.createPatchSet("end", false, false, null, false);
+    tested.createPatchSet(false, false, null, false);
     verify(git).push(any(), not(contains("publish-comments")));
   }
 
   @Test
   public void WHEN_create_patch_set_with_wip_THEN_it_should_push_with_option_wip() {
-    tested.createPatchSet("end", false, true, null, false);
+    tested.createPatchSet(false, true, null, false);
     verify(git).push(any(), contains("wip"));
   }
 
   @Test
   public void WHEN_create_patch_set_without_wip_THEN_it_should_push_without_option_wip() {
-    tested.createPatchSet("end", false, false, null, false);
+    tested.createPatchSet(false, false, null, false);
     verify(git).push(any(), not(contains("wip")));
   }
 
   @Test
   public void WHEN_create_patch_set_with_bypassreview_THEN_it_should_push_with_option_submit() {
-    tested.createPatchSet("end", false, false, null, true);
+    tested.createPatchSet(false, false, null, true);
     verify(git).push(any(), contains("submit"));
   }
 
   @Test
   public void
       WHEN_create_patch_set_without_bypassreview_THEN_it_should_push_without_option_submit() {
-    tested.createPatchSet("end", false, false, null, false);
+    tested.createPatchSet(false, false, null, false);
     verify(git).push(any(), not(contains("submit")));
   }
 }

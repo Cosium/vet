@@ -58,7 +58,7 @@ class DefaultGerritChangeRepository implements GerritChangeRepository {
       return Optional.empty();
     }
 
-    return Optional.of(changeFactory.build(changeNumericId, changeTargetBranch));
+    return Optional.of(changeFactory.build(changeTargetBranch, changeNumericId));
   }
 
   @Override
@@ -68,8 +68,14 @@ class DefaultGerritChangeRepository implements GerritChangeRepository {
         conf -> {
           conf.setTrackedChangeNumericId(numericId);
           conf.setTrackedChangeTargetBranch(targetBranch);
-          return changeFactory.build(numericId, targetBranch);
+          return changeFactory.build(targetBranch, numericId);
         });
+  }
+
+  @Override
+  public GerritChange trackNewChange(BranchShortName targetBranch) {
+    // TODO
+    return null;
   }
 
   @Override

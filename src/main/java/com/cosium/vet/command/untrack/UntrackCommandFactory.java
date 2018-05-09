@@ -9,7 +9,7 @@ public interface UntrackCommandFactory {
 
   /**
    * @param force True to force the command execution without prompt
-   * @return A new track command
+   * @return A new command
    */
   UntrackCommand build(Boolean force);
 }

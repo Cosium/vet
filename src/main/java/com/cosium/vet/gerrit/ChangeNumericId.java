@@ -9,6 +9,8 @@ import java.util.Objects;
  */
 public class ChangeNumericId {
 
+  public static final ChangeNumericId NONE = ChangeNumericId.of(-1);
+
   private final long value;
 
   private ChangeNumericId(long value) {

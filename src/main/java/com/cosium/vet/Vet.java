@@ -3,6 +3,9 @@ package com.cosium.vet;
 import com.cosium.vet.command.CompositeCommandArgParser;
 import com.cosium.vet.command.DebugOptions;
 import com.cosium.vet.command.VetCommandArgParser;
+import com.cosium.vet.command.create.CreateCommand;
+import com.cosium.vet.command.create.CreateCommandArgParser;
+import com.cosium.vet.command.create.CreateCommandFactory;
 import com.cosium.vet.command.push.PushCommand;
 import com.cosium.vet.command.push.PushCommandArgParser;
 import com.cosium.vet.command.push.PushCommandFactory;
@@ -35,8 +38,9 @@ public class Vet {
 
   private static final String APP_NAME = "vet";
 
-  private final PushCommandFactory pushCommandFactory;
+  private final CreateCommandFactory createCommandFactory;
   private final TrackCommandFactory trackCommandFactory;
+  private final PushCommandFactory pushCommandFactory;
   private final UntrackCommandFactory untrackCommandFactory;
   private final VetCommandArgParser commandParser;
 
@@ -88,16 +92,18 @@ public class Vet {
     GitProvider gitProvider = new GitProvider(workingDir, commandRunner);
     GerritChangeRepositoryFactory changeRepositoryFactory =
         new DefaultGerritChangeRepositoryFactory(gitProvider, gitProvider);
+
+    this.createCommandFactory = new CreateCommand.Factory(changeRepositoryFactory, userInput);
     this.trackCommandFactory =
         new TrackCommand.Factory(changeRepositoryFactory, userInput, userOutput);
-    this.pushCommandFactory =
-        new PushCommand.Factory(gitProvider, changeRepositoryFactory, userOutput);
+    this.pushCommandFactory = new PushCommand.Factory(changeRepositoryFactory, userOutput);
     this.untrackCommandFactory = new UntrackCommand.Factory(changeRepositoryFactory, userInput);
 
     this.commandParser =
         new CompositeCommandArgParser(
             APP_NAME,
             List.of(
+                new CreateCommandArgParser(createCommandFactory),
                 new TrackCommandArgParser(trackCommandFactory),
                 new PushCommandArgParser(pushCommandFactory),
                 new UntrackCommandArgParser(untrackCommandFactory)),
@@ -108,12 +114,12 @@ public class Vet {
     commandParser.parse(args).execute();
   }
 
-  public void track(Boolean force, ChangeNumericId numericId, BranchShortName targetBranch) {
-    trackCommandFactory.build(force, numericId, targetBranch).execute();
+  public void create(Boolean force, BranchShortName targetBranch) {
+    createCommandFactory.build(force, targetBranch).execute();
   }
 
-  public void untrack(Boolean force) {
-    untrackCommandFactory.build(force).execute();
+  public void track(Boolean force, ChangeNumericId numericId, BranchShortName targetBranch) {
+    trackCommandFactory.build(force, numericId, targetBranch).execute();
   }
 
   /**
@@ -132,5 +138,9 @@ public class Vet {
     pushCommandFactory
         .build(publishDraftedComments, workInProgress, patchSetSubject, bypassReview)
         .execute();
+  }
+
+  public void untrack(Boolean force) {
+    untrackCommandFactory.build(force).execute();
   }
 }
