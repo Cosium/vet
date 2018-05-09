@@ -5,7 +5,7 @@ module com.cosium.vet {
   opens com.cosium.vet.gerrit.config;
   opens com.cosium.vet.log;
   opens com.cosium.vet.git;
-  opens com.cosium.vet.push;
+  opens com.cosium.vet.command.push;
   opens com.cosium.vet.runtime;
   opens com.cosium.vet.utils;
   opens com.cosium.vet.command;

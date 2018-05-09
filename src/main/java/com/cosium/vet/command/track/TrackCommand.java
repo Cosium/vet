@@ -1,4 +1,4 @@
-package com.cosium.vet.track;
+package com.cosium.vet.command.track;
 
 import com.cosium.vet.command.VetCommand;
 import com.cosium.vet.gerrit.ChangeNumericId;

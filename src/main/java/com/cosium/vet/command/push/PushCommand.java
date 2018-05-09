@@ -1,4 +1,4 @@
-package com.cosium.vet.push;
+package com.cosium.vet.command.push;
 
 import com.cosium.vet.command.VetCommand;
 import com.cosium.vet.gerrit.GerritChange;

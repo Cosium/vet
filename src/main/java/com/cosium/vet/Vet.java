@@ -3,19 +3,22 @@ package com.cosium.vet;
 import com.cosium.vet.command.CompositeCommandArgParser;
 import com.cosium.vet.command.DebugOptions;
 import com.cosium.vet.command.VetCommandArgParser;
+import com.cosium.vet.command.push.PushCommand;
+import com.cosium.vet.command.push.PushCommandArgParser;
+import com.cosium.vet.command.push.PushCommandFactory;
+import com.cosium.vet.command.track.TrackCommand;
+import com.cosium.vet.command.track.TrackCommandArgParser;
+import com.cosium.vet.command.track.TrackCommandFactory;
+import com.cosium.vet.command.untrack.UntrackCommand;
+import com.cosium.vet.command.untrack.UntrackCommandArgParser;
+import com.cosium.vet.command.untrack.UntrackCommandFactory;
 import com.cosium.vet.gerrit.ChangeNumericId;
 import com.cosium.vet.gerrit.DefaultGerritChangeRepositoryFactory;
 import com.cosium.vet.gerrit.GerritChangeRepositoryFactory;
 import com.cosium.vet.gerrit.PatchSetSubject;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitProvider;
-import com.cosium.vet.push.PushCommand;
-import com.cosium.vet.push.PushCommandArgParser;
-import com.cosium.vet.push.PushCommandFactory;
 import com.cosium.vet.runtime.*;
-import com.cosium.vet.track.TrackCommand;
-import com.cosium.vet.track.TrackCommandArgParser;
-import com.cosium.vet.track.TrackCommandFactory;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,6 +37,7 @@ public class Vet {
 
   private final PushCommandFactory pushCommandFactory;
   private final TrackCommandFactory trackCommandFactory;
+  private final UntrackCommandFactory untrackCommandFactory;
   private final VetCommandArgParser commandParser;
 
   /**
@@ -88,13 +92,15 @@ public class Vet {
         new TrackCommand.Factory(changeRepositoryFactory, userInput, userOutput);
     this.pushCommandFactory =
         new PushCommand.Factory(gitProvider, changeRepositoryFactory, userOutput);
+    this.untrackCommandFactory = new UntrackCommand.Factory(changeRepositoryFactory, userInput);
 
     this.commandParser =
         new CompositeCommandArgParser(
             APP_NAME,
             List.of(
                 new TrackCommandArgParser(trackCommandFactory),
-                new PushCommandArgParser(pushCommandFactory)),
+                new PushCommandArgParser(pushCommandFactory),
+                new UntrackCommandArgParser(untrackCommandFactory)),
             debugOptions);
   }
 
@@ -104,6 +110,10 @@ public class Vet {
 
   public void track(Boolean force, ChangeNumericId numericId, BranchShortName targetBranch) {
     trackCommandFactory.build(force, numericId, targetBranch).execute();
+  }
+
+  public void untrack(Boolean force) {
+    untrackCommandFactory.build(force).execute();
   }
 
   /**
