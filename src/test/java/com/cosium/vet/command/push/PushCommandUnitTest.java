@@ -1,7 +1,7 @@
 package com.cosium.vet.command.push;
 
-import com.cosium.vet.gerrit.GerritChangeRepository;
-import com.cosium.vet.gerrit.GerritChangeRepositoryFactory;
+import com.cosium.vet.gerrit.ChangeRepository;
+import com.cosium.vet.gerrit.ChangeRepositoryFactory;
 import com.cosium.vet.git.RemoteName;
 import com.cosium.vet.runtime.UserOutput;
 import org.junit.Before;
@@ -18,17 +18,17 @@ public class PushCommandUnitTest {
 
   private static final RemoteName REMOTE = RemoteName.ORIGIN;
 
-  private GerritChangeRepository gerrit;
+  private ChangeRepository gerrit;
   private UserOutput userOutput;
 
   private PushCommandFactory factory;
 
   @Before
   public void before() {
-    gerrit = mock(GerritChangeRepository.class);
+    gerrit = mock(ChangeRepository.class);
     userOutput = mock(UserOutput.class);
 
-    GerritChangeRepositoryFactory gerritClientFactory = mock(GerritChangeRepositoryFactory.class);
+    ChangeRepositoryFactory gerritClientFactory = mock(ChangeRepositoryFactory.class);
     when(gerritClientFactory.build()).thenReturn(gerrit);
 
     factory = new PushCommand.Factory(gerritClientFactory, userOutput);

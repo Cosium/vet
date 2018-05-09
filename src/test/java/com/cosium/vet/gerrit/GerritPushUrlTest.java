@@ -28,7 +28,7 @@ public class GerritPushUrlTest {
   }
 
   private void testParseProjectName(String projectName, String withoutSlash, String withSlash) {
-    assertThat(GerritPushUrl.of(withoutSlash).parseProjectName().toString()).isEqualTo(projectName);
-    assertThat(GerritPushUrl.of(withSlash).parseProjectName().toString()).isEqualTo(projectName);
+    assertThat(PushUrl.of(withoutSlash).parseProjectName().toString()).isEqualTo(projectName);
+    assertThat(PushUrl.of(withSlash).parseProjectName().toString()).isEqualTo(projectName);
   }
 }

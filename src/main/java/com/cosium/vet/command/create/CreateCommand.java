@@ -1,9 +1,9 @@
 package com.cosium.vet.command.create;
 
 import com.cosium.vet.command.VetCommand;
-import com.cosium.vet.gerrit.GerritChange;
-import com.cosium.vet.gerrit.GerritChangeRepository;
-import com.cosium.vet.gerrit.GerritChangeRepositoryFactory;
+import com.cosium.vet.gerrit.Change;
+import com.cosium.vet.gerrit.ChangeRepository;
+import com.cosium.vet.gerrit.ChangeRepositoryFactory;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.log.Logger;
 import com.cosium.vet.log.LoggerFactory;
@@ -22,14 +22,14 @@ public class CreateCommand implements VetCommand {
 
   private static final Logger LOG = LoggerFactory.getLogger(CreateCommand.class);
 
-  private final GerritChangeRepository changeRepository;
+  private final ChangeRepository changeRepository;
   private final UserInput userInput;
 
   private final boolean force;
   private final BranchShortName targetBranch;
 
   private CreateCommand(
-      GerritChangeRepository changeRepository,
+      ChangeRepository changeRepository,
       UserInput userInput,
       // Optionals
       Boolean force,
@@ -56,7 +56,7 @@ public class CreateCommand implements VetCommand {
     if (force) {
       return false;
     }
-    GerritChange gerritChange = changeRepository.getTrackedChange().orElse(null);
+    Change gerritChange = changeRepository.getTrackedChange().orElse(null);
     if (gerritChange == null) {
       return false;
     }
@@ -78,10 +78,10 @@ public class CreateCommand implements VetCommand {
 
   public static class Factory implements CreateCommandFactory {
 
-    private final GerritChangeRepositoryFactory changeRepositoryFactory;
+    private final ChangeRepositoryFactory changeRepositoryFactory;
     private final UserInput userInput;
 
-    public Factory(GerritChangeRepositoryFactory changeRepositoryFactory, UserInput userInput) {
+    public Factory(ChangeRepositoryFactory changeRepositoryFactory, UserInput userInput) {
       this.changeRepositoryFactory = requireNonNull(changeRepositoryFactory);
       this.userInput = requireNonNull(userInput);
     }

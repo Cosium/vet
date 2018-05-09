@@ -2,9 +2,9 @@ package com.cosium.vet.command.track;
 
 import com.cosium.vet.command.VetCommand;
 import com.cosium.vet.gerrit.ChangeNumericId;
-import com.cosium.vet.gerrit.GerritChange;
-import com.cosium.vet.gerrit.GerritChangeRepository;
-import com.cosium.vet.gerrit.GerritChangeRepositoryFactory;
+import com.cosium.vet.gerrit.Change;
+import com.cosium.vet.gerrit.ChangeRepository;
+import com.cosium.vet.gerrit.ChangeRepositoryFactory;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.log.Logger;
 import com.cosium.vet.log.LoggerFactory;
@@ -24,7 +24,7 @@ public class TrackCommand implements VetCommand {
 
   private static final Logger LOG = LoggerFactory.getLogger(TrackCommand.class);
 
-  private final GerritChangeRepository changeRepository;
+  private final ChangeRepository changeRepository;
   private final UserInput userInput;
   private final UserOutput userOutput;
 
@@ -33,7 +33,7 @@ public class TrackCommand implements VetCommand {
   private final BranchShortName targetBranch;
 
   private TrackCommand(
-      GerritChangeRepository changeRepository,
+      ChangeRepository changeRepository,
       UserInput userInput,
       UserOutput userOutput,
       // Optionals
@@ -69,7 +69,7 @@ public class TrackCommand implements VetCommand {
     if (force) {
       return false;
     }
-    GerritChange gerritChange = changeRepository.getTrackedChange().orElse(null);
+    Change gerritChange = changeRepository.getTrackedChange().orElse(null);
     if (gerritChange == null) {
       return false;
     }
@@ -96,12 +96,12 @@ public class TrackCommand implements VetCommand {
 
   public static class Factory implements TrackCommandFactory {
 
-    private final GerritChangeRepositoryFactory changeRepositoryFactory;
+    private final ChangeRepositoryFactory changeRepositoryFactory;
     private final UserInput userInput;
     private final UserOutput userOutput;
 
     public Factory(
-        GerritChangeRepositoryFactory changeRepositoryFactory,
+        ChangeRepositoryFactory changeRepositoryFactory,
         UserInput userInput,
         UserOutput userOutput) {
       this.changeRepositoryFactory = requireNonNull(changeRepositoryFactory);

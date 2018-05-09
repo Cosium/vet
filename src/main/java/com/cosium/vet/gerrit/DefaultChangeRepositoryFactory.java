@@ -16,22 +16,22 @@ import static java.util.Objects.requireNonNull;
  *
  * @author Reda.Housni-Alaoui
  */
-public class DefaultGerritChangeRepositoryFactory implements GerritChangeRepositoryFactory {
+public class DefaultChangeRepositoryFactory implements ChangeRepositoryFactory {
 
   private static final Logger LOG =
-      LoggerFactory.getLogger(DefaultGerritChangeRepositoryFactory.class);
+      LoggerFactory.getLogger(DefaultChangeRepositoryFactory.class);
 
   private final GerritConfigurationRepositoryFactory configurationRepositoryFactory;
   private final GitClientFactory gitClientFactory;
 
-  public DefaultGerritChangeRepositoryFactory(
+  public DefaultChangeRepositoryFactory(
       GitConfigRepositoryFactory gitConfigRepositoryfactory, GitClientFactory gitClientFactory) {
     this(
         new DefaultGerritConfigurationRepositoryFactory(gitConfigRepositoryfactory),
         gitClientFactory);
   }
 
-  public DefaultGerritChangeRepositoryFactory(
+  public DefaultChangeRepositoryFactory(
       GerritConfigurationRepositoryFactory configurationRepositoryFactory,
       GitClientFactory gitClientFactory) {
     this.configurationRepositoryFactory = requireNonNull(configurationRepositoryFactory);
@@ -39,7 +39,7 @@ public class DefaultGerritChangeRepositoryFactory implements GerritChangeReposit
   }
 
   @Override
-  public GerritChangeRepository build() {
+  public ChangeRepository build() {
     GitClient gitClient = gitClientFactory.build();
     GerritConfigurationRepository configurationRepository = configurationRepositoryFactory.build();
 
@@ -55,19 +55,18 @@ public class DefaultGerritChangeRepositoryFactory implements GerritChangeReposit
                             "Could not find url of remote '%s'. Please verify that you are in a valid git repository.",
                             remote)));
 
-    GerritPushUrl pushUrl = GerritPushUrl.of(remoteUrl.toString());
+    PushUrl pushUrl = PushUrl.of(remoteUrl.toString());
     LOG.debug("Gerrit push url is {}", pushUrl);
-    GerritProjectName projectName = pushUrl.parseProjectName();
+    ProjectName projectName = pushUrl.parseProjectName();
     LOG.debug("Gerrit project is '{}'", projectName);
 
-    GerritPatchSetRepository patchSetRepository =
-        new DefaultGerritPatchSetRepository(gitClient, pushUrl);
-    PatchSetCommitMessageFactory patchSetCommitMessageFactory =
-        new DefaultPatchSetCommitMessageFactory(gitClient, patchSetRepository);
-    GerritChangeFactory changeFactory =
-        new DefaultGerritChange.Factory(gitClient, patchSetCommitMessageFactory, pushUrl);
+    PatchSetCommitMessageFactory commitMessageFactory =
+        new DefaultPatchSetCommitMessageFactory(gitClient);
+    PatchSetRepository patchSetRepository =
+        new DefaultPatchSetRepository(gitClient, pushUrl, commitMessageFactory);
+    ChangeFactory changeFactory = new DefaultChange.Factory(patchSetRepository);
 
-    return new DefaultGerritChangeRepository(
+    return new DefaultChangeRepository(
         configurationRepository, changeFactory, patchSetRepository);
   }
 }

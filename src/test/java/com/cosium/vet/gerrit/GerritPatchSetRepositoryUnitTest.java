@@ -5,11 +5,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.startsWith;
+import static org.mockito.Mockito.*;
 
 /**
  * Created on 27/02/18.
@@ -19,6 +21,8 @@ import static org.mockito.Mockito.when;
 public class GerritPatchSetRepositoryUnitTest {
 
   private static final ChangeNumericId _1081 = ChangeNumericId.of(1081);
+
+  private static final BranchShortName BAR_BRANCH = BranchShortName.of("bar");
 
   private static final BranchRef HEAD =
       new BranchRef(
@@ -47,26 +51,31 @@ public class GerritPatchSetRepositoryUnitTest {
           RevisionId.of("e88c2aa1f60b5c97606fbadea531eb37dd4aff99"),
           BranchRefName.of("refs/changes/81/1081/meta"));
 
-  private static final GerritPushUrl PUSH_URL = GerritPushUrl.of("https://foo.bar");
+  private static final PushUrl PUSH_URL = PushUrl.of("https://foo.bar");
 
-  private GitClient gitClient;
-  private DefaultGerritPatchSetRepository tested;
+  private GitClient git;
+  private PatchSetCommitMessageFactory patchSetCommitMessageFactory;
+  private DefaultPatchSetRepository tested;
 
   @Before
   public void before() {
-    gitClient = mock(GitClient.class);
-    tested = new DefaultGerritPatchSetRepository(gitClient, PUSH_URL);
+    git = mock(GitClient.class);
+    when(git.getRemote(BAR_BRANCH)).thenReturn(Optional.of(RemoteName.ORIGIN));
+    when(git.commitTree(any(), any(), any())).thenReturn("commit");
+    patchSetCommitMessageFactory = mock(PatchSetCommitMessageFactory.class);
+    when(patchSetCommitMessageFactory.build(any())).thenReturn(CommitMessage.of("Hello world"));
+    tested = new DefaultPatchSetRepository(git, PUSH_URL, patchSetCommitMessageFactory);
   }
 
   @Test
   public void
       GIVEN_refs_1048_1_with_i2222_and_1081_2_with_i1111_WHEN_retrieving_latestpatchsetcommitmessage_of_i1111_THEN_it_should_return_1081_2_commit_message() {
-    when(gitClient.listRemoteRefs(any())).thenReturn(List.of(HEAD, _1048_1, META, _1081_2));
+    when(git.listRemoteRefs(any())).thenReturn(List.of(HEAD, _1048_1, META, _1081_2));
 
-    when(gitClient.getCommitMessage(_1048_1.getRevisionId()))
+    when(git.getCommitMessage(_1048_1.getRevisionId()))
         .thenReturn(CommitMessage.of("Bar man Change-Id: I2222"));
 
-    when(gitClient.getCommitMessage(_1081_2.getRevisionId()))
+    when(git.getCommitMessage(_1081_2.getRevisionId()))
         .thenReturn(CommitMessage.of("Foo man Change-Id: I1111"));
 
     assertThat(tested.getLastestPatchSetCommitMessage(_1081))
@@ -76,17 +85,17 @@ public class GerritPatchSetRepositoryUnitTest {
   @Test
   public void
       GIVEN_refs_1048_1_and_1048_4_with_i2222_comma_1081_2_and_1081_3_with_i1111_WHEN_retrieving_latestpatchsetcommitmessage_i1111_THEN_it_should_retrieve_1081_3_commitmessages() {
-    when(gitClient.listRemoteRefs(any()))
+    when(git.listRemoteRefs(any()))
         .thenReturn(List.of(HEAD, _1081_3, _1048_1, META, _1081_2, _1048_4));
 
-    when(gitClient.getCommitMessage(_1048_1.getRevisionId()))
+    when(git.getCommitMessage(_1048_1.getRevisionId()))
         .thenReturn(CommitMessage.of("Foo man Change-Id: I2222"));
-    when(gitClient.getCommitMessage(_1048_4.getRevisionId()))
+    when(git.getCommitMessage(_1048_4.getRevisionId()))
         .thenReturn(CommitMessage.of("Bar man Change-Id: I2222"));
 
-    when(gitClient.getCommitMessage(_1081_2.getRevisionId()))
+    when(git.getCommitMessage(_1081_2.getRevisionId()))
         .thenReturn(CommitMessage.of("Foo man Change-Id: I1111"));
-    when(gitClient.getCommitMessage(_1081_3.getRevisionId()))
+    when(git.getCommitMessage(_1081_3.getRevisionId()))
         .thenReturn(CommitMessage.of("Bar man Change-Id: I1111"));
 
     assertThat(tested.getLastestPatchSetCommitMessage(_1081))
@@ -96,14 +105,35 @@ public class GerritPatchSetRepositoryUnitTest {
   @Test
   public void
       GIVEN_refs_1048_1_with_i2222_and_1081_2_with_i2222_WHEN_retrieving_latestpatchsetcommitmessage_of_i2222_THEN_1081_2_will_be_returned() {
-    when(gitClient.listRemoteRefs(any())).thenReturn(List.of(_1048_1, _1081_2));
+    when(git.listRemoteRefs(any())).thenReturn(List.of(_1048_1, _1081_2));
 
-    when(gitClient.getCommitMessage(_1081_2.getRevisionId()))
+    when(git.getCommitMessage(_1081_2.getRevisionId()))
         .thenReturn(CommitMessage.of("Foo man Change-Id: I2222"));
-    when(gitClient.getCommitMessage(_1048_1.getRevisionId()))
+    when(git.getCommitMessage(_1048_1.getRevisionId()))
         .thenReturn(CommitMessage.of("Bar man Change-Id: I2222"));
 
     assertThat(tested.getLastestPatchSetCommitMessage(_1081))
         .contains(CommitMessage.of("Foo man Change-Id: I2222"));
+  }
+
+  @Test
+  public void WHEN_create_patch_set_until_end_THEN_commit_tree_be_until_end() {
+    when(git.getTree()).thenReturn("end");
+    tested.createPatch(BAR_BRANCH, _1081, null);
+    verify(git).commitTree(eq("end"), any(), any());
+  }
+
+  @Test
+  public void
+      GIVEN_commit_tree_id_foo_and_target_bar_WHEN_create_patch_set_THEN_it_should_push_foo_to_ref_for_bar() {
+    when(git.commitTree(any(), any(), any())).thenReturn("foo");
+    tested.createPatch(BAR_BRANCH, _1081, null);
+    verify(git).push(any(), startsWith("foo:refs/for/" + BAR_BRANCH));
+  }
+
+  @Test
+  public void WHEN_create_patch_set_THEN_it_should_push_to_pushurl() {
+    tested.createPatch(BAR_BRANCH, _1081, null);
+    verify(git).push(eq(PUSH_URL.toString()), any());
   }
 }

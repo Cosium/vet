@@ -56,8 +56,9 @@ public interface GitClient {
    *
    * @param remote The remote to push to
    * @param refspec The refspec to push
+   * @return The command output
    */
-  void push(String remote, String refspec);
+  String push(String remote, String refspec);
 
   /**
    * @param remote The remote to look for

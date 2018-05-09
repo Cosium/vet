@@ -1,9 +1,9 @@
 package com.cosium.vet.command.push;
 
 import com.cosium.vet.command.VetCommand;
-import com.cosium.vet.gerrit.GerritChange;
-import com.cosium.vet.gerrit.GerritChangeRepository;
-import com.cosium.vet.gerrit.GerritChangeRepositoryFactory;
+import com.cosium.vet.gerrit.Change;
+import com.cosium.vet.gerrit.ChangeRepository;
+import com.cosium.vet.gerrit.ChangeRepositoryFactory;
 import com.cosium.vet.gerrit.PatchSetSubject;
 import com.cosium.vet.log.Logger;
 import com.cosium.vet.log.LoggerFactory;
@@ -21,7 +21,7 @@ public class PushCommand implements VetCommand {
 
   private static final Logger LOG = LoggerFactory.getLogger(PushCommand.class);
 
-  private final GerritChangeRepository gerritChangeRepository;
+  private final ChangeRepository gerritChangeRepository;
   private final UserOutput userOutput;
 
   private final Boolean publishDraftedComments;
@@ -30,7 +30,7 @@ public class PushCommand implements VetCommand {
   private final Boolean bypassReview;
 
   private PushCommand(
-      GerritChangeRepository gerritChangeRepository,
+      ChangeRepository gerritChangeRepository,
       UserOutput userOutput,
       // Optionals
       Boolean publishDraftedComments,
@@ -48,7 +48,7 @@ public class PushCommand implements VetCommand {
 
   @Override
   public void execute() {
-    GerritChange change = gerritChangeRepository.getTrackedChange().orElse(null);
+    Change change = gerritChangeRepository.getTrackedChange().orElse(null);
     if (change == null) {
       LOG.debug("No tracked change found");
       userOutput.display(
@@ -67,11 +67,11 @@ public class PushCommand implements VetCommand {
 
   public static class Factory implements PushCommandFactory {
 
-    private final GerritChangeRepositoryFactory gerritChangeRepositoryFactory;
+    private final ChangeRepositoryFactory gerritChangeRepositoryFactory;
     private final UserOutput userOutput;
 
     public Factory(
-        GerritChangeRepositoryFactory gerritChangeRepositoryFactory, UserOutput userOutput) {
+            ChangeRepositoryFactory gerritChangeRepositoryFactory, UserOutput userOutput) {
       this.gerritChangeRepositoryFactory = requireNonNull(gerritChangeRepositoryFactory);
       this.userOutput = requireNonNull(userOutput);
     }

@@ -10,22 +10,22 @@ import java.util.regex.Pattern;
  *
  * @author Reda.Housni-Alaoui
  */
-public class GerritPushUrl extends NonBlankString {
+public class PushUrl extends NonBlankString {
 
-  private GerritPushUrl(String value) {
+  private PushUrl(String value) {
     super(value);
   }
 
-  public static GerritPushUrl of(String value) {
-    return new GerritPushUrl(value);
+  public static PushUrl of(String value) {
+    return new PushUrl(value);
   }
 
-  public GerritProjectName parseProjectName() {
+  public ProjectName parseProjectName() {
     Pattern pattern = Pattern.compile("[^/]+(?=/$|$)");
     Matcher matcher = pattern.matcher(toString());
     if (!matcher.find()) {
       throw new RuntimeException("WTF?");
     }
-    return GerritProjectName.of(matcher.group(0));
+    return ProjectName.of(matcher.group(0));
   }
 }

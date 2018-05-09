@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
 
 /**
  * Created on 08/05/18.
@@ -22,19 +23,15 @@ class DefaultPatchSetCommitMessageFactory implements PatchSetCommitMessageFactor
   private static final String COMMIT_MESSAGE_CHANGE_ID_PREFIX = "Change-Id: ";
 
   private final GitClient git;
-  private final GerritPatchSetRepository patchSetRepository;
 
-  DefaultPatchSetCommitMessageFactory(GitClient git, GerritPatchSetRepository patchSetRepository) {
+  DefaultPatchSetCommitMessageFactory(GitClient git) {
     this.git = requireNonNull(git);
-    this.patchSetRepository = requireNonNull(patchSetRepository);
   }
 
   @Override
-  public CommitMessage build(ChangeNumericId numericId) {
+  public CommitMessage build(CommitMessage latestPatchSetCommitMessage) {
     CommitMessage commitMessage =
-        patchSetRepository
-            .getLastestPatchSetCommitMessage(numericId)
-            .orElseGet(git::getLastCommitMessage);
+        ofNullable(latestPatchSetCommitMessage).orElseGet(git::getLastCommitMessage);
 
     String body =
         commitMessage.removeLinesStartingWith(

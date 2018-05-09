@@ -9,20 +9,20 @@ import java.util.Optional;
  *
  * @author Reda.Housni-Alaoui
  */
-public interface GerritChangeRepository {
+public interface ChangeRepository {
 
   /** If a change is currently tracked, untrack it. Otherwise, does nothing */
   void untrack();
 
   /** @return The tracked change if any */
-  Optional<GerritChange> getTrackedChange();
+  Optional<Change> getTrackedChange();
 
   /**
    * @param numericId The change numeric ID
    * @param branchShortName The target branch short name
    * @return The tracked change
    */
-  GerritChange trackChange(ChangeNumericId numericId, BranchShortName branchShortName);
+  Change trackChange(ChangeNumericId numericId, BranchShortName branchShortName);
 
   /**
    * Creates a new change on Gerrit and track it
@@ -30,7 +30,7 @@ public interface GerritChangeRepository {
    * @param targetBranch The target branch
    * @return The new tracked change
    */
-  GerritChange trackNewChange(BranchShortName targetBranch);
+  Change trackNewChange(BranchShortName targetBranch);
 
   /**
    * @param numericId The change numeric id

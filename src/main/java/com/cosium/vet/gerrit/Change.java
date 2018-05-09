@@ -5,7 +5,7 @@ package com.cosium.vet.gerrit;
  *
  * @author Reda.Housni-Alaoui
  */
-public interface GerritChange {
+public interface Change {
 
   /**
    * Creates a patch set between start revision and end revision

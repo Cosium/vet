@@ -24,10 +24,10 @@ public class DefaultGerritChangeRepositoryUnitTest {
   private AtomicReference<GerritConfiguration> lastSavedConfiguration;
 
   private GerritConfiguration gerritConfiguration;
-  private GerritChangeFactory gerritChangeFactory;
-  private GerritPatchSetRepository patchSetRepository;
+  private ChangeFactory gerritChangeFactory;
+  private PatchSetRepository patchSetRepository;
 
-  private GerritChangeRepository tested;
+  private ChangeRepository tested;
 
   @Before
   public void before() {
@@ -46,10 +46,10 @@ public class DefaultGerritChangeRepositoryUnitTest {
               return res;
             });
 
-    gerritChangeFactory = mock(GerritChangeFactory.class);
-    patchSetRepository = mock(GerritPatchSetRepository.class);
+    gerritChangeFactory = mock(ChangeFactory.class);
+    patchSetRepository = mock(PatchSetRepository.class);
     tested =
-        new DefaultGerritChangeRepository(
+        new DefaultChangeRepository(
             configurationRepository, gerritChangeFactory, patchSetRepository);
   }
 
@@ -66,7 +66,7 @@ public class DefaultGerritChangeRepositoryUnitTest {
     when(gerritConfiguration.getTrackedChangeNumericId()).thenReturn(Optional.of(_1234));
     when(gerritConfiguration.getTrackedChangeTargetBranch()).thenReturn(Optional.of(feature));
 
-    GerritChange gerritChange = mock(GerritChange.class);
+    Change gerritChange = mock(Change.class);
     when(gerritChangeFactory.build(feature, _1234)).thenReturn(gerritChange);
 
     assertThat(tested.getTrackedChange()).contains(gerritChange);

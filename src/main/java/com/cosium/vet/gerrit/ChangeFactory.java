@@ -7,12 +7,12 @@ import com.cosium.vet.git.BranchShortName;
  *
  * @author Reda.Housni-Alaoui
  */
-public interface GerritChangeFactory {
+public interface ChangeFactory {
 
   /**
    * @param targetBranch The target branch of the change
    * @param changeNumericId The numeric id of the change
    * @return An object describing an existing Gerrit Change
    */
-  GerritChange build(BranchShortName targetBranch, ChangeNumericId changeNumericId);
+  Change build(BranchShortName targetBranch, ChangeNumericId changeNumericId);
 }

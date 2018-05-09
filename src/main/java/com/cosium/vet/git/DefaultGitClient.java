@@ -89,8 +89,8 @@ class DefaultGitClient implements GitClient {
   }
 
   @Override
-  public void push(String remote, String refspec) {
-    commandRunner.run(repositoryDirectory, GIT, "push", remote, refspec);
+  public String push(String remote, String refspec) {
+    return commandRunner.run(repositoryDirectory, GIT, "push", remote, refspec);
   }
 
   @Override

@@ -9,5 +9,5 @@ import com.cosium.vet.git.CommitMessage;
  */
 public interface PatchSetCommitMessageFactory {
 
-  CommitMessage build(ChangeNumericId numericId);
+  CommitMessage build(CommitMessage latestPatchSetCommitMessage);
 }

@@ -1,6 +1,8 @@
 package com.cosium.vet.gerrit;
 
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created on 06/05/18.
@@ -8,8 +10,6 @@ import java.util.Objects;
  * @author Reda.Housni-Alaoui
  */
 public class ChangeNumericId {
-
-  public static final ChangeNumericId NONE = ChangeNumericId.of(-1);
 
   private final long value;
 
@@ -19,6 +19,18 @@ public class ChangeNumericId {
 
   public static ChangeNumericId of(long value) {
     return new ChangeNumericId(value);
+  }
+
+  public static ChangeNumericId parseFromPushToRefForOutput(
+          PushUrl pushUrl, String pushToRefForOutput) {
+    ProjectName projectName = pushUrl.parseProjectName();
+    Pattern pattern = Pattern.compile(Pattern.quote(projectName.toString()) + ".\\S*?(\\d+)");
+    Matcher matcher = pattern.matcher(pushToRefForOutput);
+    if (!matcher.find()) {
+      throw new RuntimeException(
+          "Could not parse change numeric id from output '" + pushToRefForOutput + "'");
+    }
+    return ChangeNumericId.of(Long.parseLong(matcher.group(1)));
   }
 
   @Override

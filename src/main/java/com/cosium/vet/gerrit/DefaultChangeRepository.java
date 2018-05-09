@@ -15,18 +15,18 @@ import static java.util.Objects.requireNonNull;
  *
  * @author Reda.Housni-Alaoui
  */
-class DefaultGerritChangeRepository implements GerritChangeRepository {
+class DefaultChangeRepository implements ChangeRepository {
 
-  private static final Logger LOG = LoggerFactory.getLogger(DefaultGerritChangeRepository.class);
+  private static final Logger LOG = LoggerFactory.getLogger(DefaultChangeRepository.class);
 
   private final GerritConfigurationRepository configurationRepository;
-  private final GerritChangeFactory changeFactory;
-  private final GerritPatchSetRepository patchSetRepository;
+  private final ChangeFactory changeFactory;
+  private final PatchSetRepository patchSetRepository;
 
-  DefaultGerritChangeRepository(
+  DefaultChangeRepository(
       GerritConfigurationRepository configurationRepository,
-      GerritChangeFactory changeFactory,
-      GerritPatchSetRepository patchSetRepository) {
+      ChangeFactory changeFactory,
+      PatchSetRepository patchSetRepository) {
     this.configurationRepository = requireNonNull(configurationRepository);
     this.changeFactory = requireNonNull(changeFactory);
     this.patchSetRepository = requireNonNull(patchSetRepository);
@@ -44,7 +44,7 @@ class DefaultGerritChangeRepository implements GerritChangeRepository {
 
   /** @return The current change */
   @Override
-  public Optional<GerritChange> getTrackedChange() {
+  public Optional<Change> getTrackedChange() {
     GerritConfiguration gerritConfiguration = configurationRepository.read();
 
     ChangeNumericId changeNumericId = gerritConfiguration.getTrackedChangeNumericId().orElse(null);
@@ -62,7 +62,7 @@ class DefaultGerritChangeRepository implements GerritChangeRepository {
   }
 
   @Override
-  public GerritChange trackChange(ChangeNumericId numericId, BranchShortName targetBranch) {
+  public Change trackChange(ChangeNumericId numericId, BranchShortName targetBranch) {
     LOG.debug("Enabling change for numeric id {}", numericId);
     return configurationRepository.readAndWrite(
         conf -> {
@@ -73,9 +73,9 @@ class DefaultGerritChangeRepository implements GerritChangeRepository {
   }
 
   @Override
-  public GerritChange trackNewChange(BranchShortName targetBranch) {
-    // TODO
-    return null;
+  public Change trackNewChange(BranchShortName targetBranch) {
+    Patch patch = patchSetRepository.createPatch(targetBranch, null, null);
+    return trackChange(patch.getChangeNumericId(), targetBranch);
   }
 
   @Override
