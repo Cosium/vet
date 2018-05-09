@@ -68,7 +68,7 @@ class DefaultLogger implements Logger {
           .append("- ");
     }
 
-    Matcher matcher = MUSTACHE.matcher(message);
+    Matcher matcher = MUSTACHE.matcher(StringUtils.defaultString(message));
     int consumedParamIndex = -1;
     while (matcher.find()) {
       consumedParamIndex++;

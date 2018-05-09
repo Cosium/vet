@@ -1,8 +1,8 @@
 package com.cosium.vet.command.track;
 
 import com.cosium.vet.command.VetCommand;
-import com.cosium.vet.gerrit.ChangeNumericId;
 import com.cosium.vet.gerrit.Change;
+import com.cosium.vet.gerrit.ChangeNumericId;
 import com.cosium.vet.gerrit.ChangeRepository;
 import com.cosium.vet.gerrit.ChangeRepositoryFactory;
 import com.cosium.vet.git.BranchShortName;
@@ -56,13 +56,14 @@ public class TrackCommand implements VetCommand {
     }
     LOG.debug("Untrack any tracked change");
     changeRepository.untrack();
+    ChangeNumericId numericId = getNumericId();
     if (!changeRepository.exists(numericId)) {
       LOG.debug("Could not find any change having numeric id {} on Gerrit", numericId);
       userOutput.display(
           "Could not find any change identified by " + numericId + " on Gerrit. Aborting.");
       return;
     }
-    changeRepository.trackChange(getNumericId(), getTargetBranch());
+    changeRepository.trackChange(numericId, getTargetBranch());
   }
 
   private boolean preserveCurrentChange() {

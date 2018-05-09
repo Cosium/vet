@@ -99,7 +99,8 @@ class DefaultGerritConfigurationRepository implements GerritConfigurationReposit
 
     @Override
     public void setTrackedChangeTargetBranch(BranchShortName targetBranch) {
-      trackedChangeTargetBranch.set(targetBranch.toString());
+      trackedChangeTargetBranch.set(
+          ofNullable(targetBranch).map(BranchShortName::toString).orElse(null));
     }
 
     @Override

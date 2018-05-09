@@ -33,7 +33,7 @@ public class InteractiveUserInput implements UserInput {
         String.format(
             "%s [%s/%s]:", question, defaultAnswer ? "Y" : "y", defaultAnswer ? "n" : "N");
     while (StringUtils.isBlank(value)) {
-      userOutput.display(messageToDisplay);
+      userOutput.display(messageToDisplay, true);
       value = StringUtils.defaultIfBlank(inputScanner.nextLine(), defaultAnswer ? "y" : "n");
     }
     return "y".equalsIgnoreCase(value);
@@ -43,7 +43,7 @@ public class InteractiveUserInput implements UserInput {
   public String askNonBlank(String question, String defaultValue) {
     String value = null;
     while (StringUtils.isBlank(value)) {
-      userOutput.display(String.format("%s [%s]:", question, defaultValue));
+      userOutput.display(String.format("%s [%s]:", question, defaultValue), true);
       value = StringUtils.defaultIfBlank(inputScanner.nextLine(), defaultValue);
     }
     return value;
@@ -53,7 +53,7 @@ public class InteractiveUserInput implements UserInput {
   public String askNonBlank(String question) {
     String value = null;
     while (StringUtils.isBlank(value)) {
-      userOutput.display(String.format("%s:", question));
+      userOutput.display(String.format("%s:", question), true);
       value = inputScanner.nextLine();
     }
     return value;
@@ -63,7 +63,7 @@ public class InteractiveUserInput implements UserInput {
   public long askLong(String question) {
     String value = null;
     while (StringUtils.isBlank(value) || !NumberUtils.isDigits(value)) {
-      userOutput.display(String.format("%s:", question));
+      userOutput.display(String.format("%s:", question), true);
       value = inputScanner.nextLine();
     }
     return Long.parseLong(value);
@@ -71,7 +71,7 @@ public class InteractiveUserInput implements UserInput {
 
   @Override
   public String ask(String question) {
-    userOutput.display(String.format("%s:", question));
+    userOutput.display(String.format("%s:", question), true);
     return inputScanner.nextLine();
   }
 }
