@@ -3,6 +3,8 @@ package com.cosium.vet.gerrit;
 import com.cosium.vet.VetVersion;
 import com.cosium.vet.git.CommitMessage;
 import com.cosium.vet.git.GitClient;
+import com.cosium.vet.log.Logger;
+import com.cosium.vet.log.LoggerFactory;
 import com.cosium.vet.thirdparty.apache_commons_codec.DigestUtils;
 
 import java.util.UUID;
@@ -10,7 +12,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.util.Objects.requireNonNull;
-import static java.util.Optional.ofNullable;
 
 /**
  * Created on 08/05/18.
@@ -18,6 +19,9 @@ import static java.util.Optional.ofNullable;
  * @author Reda.Housni-Alaoui
  */
 class DefaultPatchSetCommitMessageFactory implements PatchSetCommitMessageFactory {
+
+  private static final Logger LOG =
+      LoggerFactory.getLogger(DefaultPatchSetCommitMessageFactory.class);
 
   private static final String COMMIT_MESSAGE_VET_VERSION_PREFIX = "Vet-Version: ";
   private static final String COMMIT_MESSAGE_CHANGE_ID_PREFIX = "Change-Id: ";
@@ -30,8 +34,15 @@ class DefaultPatchSetCommitMessageFactory implements PatchSetCommitMessageFactor
 
   @Override
   public CommitMessage build(CommitMessage latestPatchSetCommitMessage) {
-    CommitMessage commitMessage =
-        ofNullable(latestPatchSetCommitMessage).orElseGet(git::getLastCommitMessage);
+    String changeChangeId;
+    CommitMessage commitMessage;
+    if (latestPatchSetCommitMessage == null) {
+      commitMessage = git.getLastCommitMessage();
+      changeChangeId = generateChangeChangeId(commitMessage);
+    } else {
+      commitMessage = latestPatchSetCommitMessage;
+      changeChangeId = parseChangeChangeId(commitMessage);
+    }
 
     String body =
         commitMessage.removeLinesStartingWith(
@@ -41,19 +52,29 @@ class DefaultPatchSetCommitMessageFactory implements PatchSetCommitMessageFactor
         String.join(
             "\n",
             COMMIT_MESSAGE_VET_VERSION_PREFIX + VetVersion.VALUE,
-            COMMIT_MESSAGE_CHANGE_ID_PREFIX + parseOrBuildChangeChangeId(commitMessage));
+            COMMIT_MESSAGE_CHANGE_ID_PREFIX + changeChangeId);
 
     return CommitMessage.of(body + "\n\n" + footer);
   }
 
-  private String parseOrBuildChangeChangeId(CommitMessage commitMessage) {
+  private String generateChangeChangeId(CommitMessage commitMessage) {
+    String changeId =
+        "I"
+            + DigestUtils.shaHex(
+                String.format("%s|%s", UUID.randomUUID(), commitMessage.toString()));
+    LOG.debug("Generated change change id '{}'", changeId);
+    return changeId;
+  }
+
+  private String parseChangeChangeId(CommitMessage commitMessage) {
     Pattern pattern = Pattern.compile(Pattern.quote(COMMIT_MESSAGE_CHANGE_ID_PREFIX) + "(.*)");
     Matcher matcher = pattern.matcher(commitMessage.toString());
-    if (matcher.find()) {
-      return matcher.group(1);
+    if (!matcher.find()) {
+      throw new RuntimeException(
+          "Could not parse any change id from commit message '" + commitMessage + "'");
     }
-
-    return "I"
-        + DigestUtils.shaHex(String.format("%s|%s", UUID.randomUUID(), commitMessage.toString()));
+    String changeId = matcher.group(1);
+    LOG.debug("Found change change id '{}'", changeId);
+    return changeId;
   }
 }
