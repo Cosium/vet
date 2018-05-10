@@ -17,6 +17,10 @@ echo "Checking jq presence"
 jq --version > /dev/null
 echo "Checked jq presence"
 
+echo "Checking curl presence"
+curl --version > /dev/null
+echo "Checked curl presence"
+
 echo "Bumping version.txt"
 echo ${NEW_VERSION} > version.txt
 git add version.txt
