@@ -16,25 +16,25 @@ import static org.mockito.Mockito.*;
 public class CompositeCommandArgParserUnitTest {
 
   private static final String EXECUTABLE_NAME = "vet";
-  private static final String STD_COMMAND_NAME = "run";
+  private static final String RUN_COMMAND_NAME = "run";
 
   private VetCommand vetCommand;
-  private VetAdvancedCommandArgParser stdParser;
+  private VetAdvancedCommandArgParser runParser;
   private CompositeCommandArgParser tested;
 
   @Before
   public void before() {
-    stdParser = mock(VetAdvancedCommandArgParser.class);
-    when(stdParser.getCommandArgName()).thenReturn(STD_COMMAND_NAME);
-    when(stdParser.canParse(STD_COMMAND_NAME)).thenReturn(true);
-    when(stdParser.canParse(eq(STD_COMMAND_NAME), any())).thenReturn(true);
-    when(stdParser.canParse(eq(STD_COMMAND_NAME), any(), any())).thenReturn(true);
+    runParser = mock(VetAdvancedCommandArgParser.class);
+    when(runParser.getCommandArgName()).thenReturn(RUN_COMMAND_NAME);
+    when(runParser.canParse(RUN_COMMAND_NAME)).thenReturn(true);
+    when(runParser.canParse(eq(RUN_COMMAND_NAME), any())).thenReturn(true);
+    when(runParser.canParse(eq(RUN_COMMAND_NAME), any(), any())).thenReturn(true);
     vetCommand = mock(VetCommand.class);
-    when(stdParser.parse(any())).thenReturn(vetCommand);
+    when(runParser.parse(any())).thenReturn(vetCommand);
     tested =
         new CompositeCommandArgParser(
             "vet",
-            List.of(stdParser),
+            List.of(runParser),
             new DebugOptions(List.of("--stacktrace"), List.of("--verbose")));
   }
 
@@ -45,17 +45,22 @@ public class CompositeCommandArgParserUnitTest {
 
   @Test
   public void testCommandParse() {
-    assertThat(tested.parse(STD_COMMAND_NAME)).isSameAs(vetCommand);
+    assertThat(tested.parse(RUN_COMMAND_NAME)).isSameAs(vetCommand);
   }
 
   @Test
   public void testCommandHelp() {
-    tested.parse(STD_COMMAND_NAME, "--help").execute();
-    verify(stdParser).displayHelp(EXECUTABLE_NAME);
+    tested.parse(RUN_COMMAND_NAME, "--help").execute();
+    verify(runParser).displayHelp(EXECUTABLE_NAME);
   }
 
   @Test
   public void testVersion() {
     tested.parse("--version").execute();
+  }
+
+  @Test
+  public void testList() {
+    tested.parse("--command-list").execute();
   }
 }

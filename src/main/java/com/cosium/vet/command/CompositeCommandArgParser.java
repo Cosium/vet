@@ -20,8 +20,10 @@ import static java.util.Objects.requireNonNull;
 public class CompositeCommandArgParser implements VetCommandArgParser {
 
   private static final Logger LOG = LoggerFactory.getLogger(CompositeCommandArgParser.class);
-  private static final String HELP_OPT = "--help";
+
   private static final String VERSION_OPT = "--version";
+  private static final String COMMAND_LIST = "--command-list";
+  private static final String HELP_OPT = "--help";
 
   private final String executableName;
   private final List<VetAdvancedCommandArgParser> availableParsers;
@@ -46,6 +48,9 @@ public class CompositeCommandArgParser implements VetCommandArgParser {
     if (Arrays.stream(args).anyMatch(VERSION_OPT::equals)) {
       return () -> System.out.println(VetVersion.VALUE);
     }
+    if (Arrays.stream(args).anyMatch(COMMAND_LIST::equals)) {
+      return new ListCommandCommand(computeAvailableCommandNames());
+    }
 
     boolean isHelp = Arrays.stream(args).anyMatch(HELP_OPT::equals);
 
@@ -62,13 +67,29 @@ public class CompositeCommandArgParser implements VetCommandArgParser {
     }
 
     LOG.debug("Building global help command");
-    return new GlobalHelpCommand(
-        executableName,
-        availableParsers
-            .stream()
-            .map(VetAdvancedCommandArgParser::getCommandArgName)
-            .collect(Collectors.toList()),
-        debugOptions);
+    return new GlobalHelpCommand(executableName, computeAvailableCommandNames(), debugOptions);
+  }
+
+  private List<String> computeAvailableCommandNames() {
+    return availableParsers
+        .stream()
+        .map(VetAdvancedCommandArgParser::getCommandArgName)
+        .collect(Collectors.toList());
+  }
+
+  private static class ListCommandCommand implements VetCommand {
+
+    private final List<String> availableCommands;
+
+    private ListCommandCommand(List<String> availableCommands) {
+      this.availableCommands = requireNonNull(availableCommands);
+    }
+
+    @Override
+    public void execute() {
+      String list = availableCommands.stream().collect(Collectors.joining(StringUtils.SPACE));
+      System.out.println(list);
+    }
   }
 
   /**
