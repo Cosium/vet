@@ -4,8 +4,6 @@ import com.cosium.vet.command.VetCommand;
 import com.cosium.vet.gerrit.Change;
 import com.cosium.vet.gerrit.ChangeRepository;
 import com.cosium.vet.gerrit.ChangeRepositoryFactory;
-import com.cosium.vet.log.Logger;
-import com.cosium.vet.log.LoggerFactory;
 import com.cosium.vet.runtime.UserOutput;
 
 import java.util.Optional;
@@ -18,8 +16,6 @@ import static java.util.Objects.requireNonNull;
  * @author Reda.Housni-Alaoui
  */
 public class StatusCommand implements VetCommand {
-
-  private static final Logger LOG = LoggerFactory.getLogger(StatusCommand.class);
 
   private final ChangeRepository changeRepository;
   private final UserOutput userOutput;
