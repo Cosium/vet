@@ -45,20 +45,20 @@ public class InteractiveUserInputUnitTest {
   public void
       WHEN_askNonBlank_HOW_ARE_YOU_with_default_FINE_THEN_displayHOW_ARE_YOU_default_FINE() {
     tested.askNonBlank(HOW_ARE_YOU, FINE);
-    verify(userOutput).display(eq(HOW_ARE_YOU + " [" + FINE + "]:"));
+    verify(userOutput).display(eq(HOW_ARE_YOU + " [" + FINE + "]:"), eq(false));
   }
 
   @Test
   public void WHEN_askNonBlank_HOW_ARE_YOU_THEN_display_HOW_ARE_YOU() {
     when(inputScanner.nextLine()).thenReturn(ILL);
     tested.askNonBlank(HOW_ARE_YOU);
-    verify(userOutput).display(eq(HOW_ARE_YOU + ":"));
+    verify(userOutput).display(eq(HOW_ARE_YOU + ":"), eq(false));
   }
 
   @Test
   public void WHEN_ask_HOW_ARE_YOU_THEN_display_HOW_ARE_YOU() {
     tested.ask(HOW_ARE_YOU);
-    verify(userOutput).display(eq(HOW_ARE_YOU + ":"));
+    verify(userOutput).display(eq(HOW_ARE_YOU + ":"), eq(false));
   }
 
   @Test

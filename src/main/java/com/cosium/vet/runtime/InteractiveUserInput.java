@@ -1,6 +1,7 @@
 package com.cosium.vet.runtime;
 
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
+import com.cosium.vet.thirdparty.apache_commons_lang3.math.NumberUtils;
 
 import static java.util.Objects.requireNonNull;
 
@@ -14,8 +15,8 @@ public class InteractiveUserInput implements UserInput {
   private final InputScanner inputScanner;
   private final UserOutput userOutput;
 
-  public InteractiveUserInput() {
-    this(new DefaultInputScanner(), new DefaultUserOutput());
+  public InteractiveUserInput(UserOutput userOutput) {
+    this(new DefaultInputScanner(), userOutput);
   }
 
   InteractiveUserInput(InputScanner inputScanner, UserOutput userOutput) {
@@ -26,10 +27,23 @@ public class InteractiveUserInput implements UserInput {
   }
 
   @Override
+  public boolean askYesNo(String question, boolean defaultAnswer) {
+    String value = null;
+    String messageToDisplay =
+        String.format(
+            "%s [%s/%s]:", question, defaultAnswer ? "Y" : "y", defaultAnswer ? "n" : "N");
+    while (StringUtils.isBlank(value)) {
+      userOutput.display(messageToDisplay, false);
+      value = StringUtils.defaultIfBlank(inputScanner.nextLine(), defaultAnswer ? "y" : "n");
+    }
+    return "y".equalsIgnoreCase(value);
+  }
+
+  @Override
   public String askNonBlank(String question, String defaultValue) {
     String value = null;
     while (StringUtils.isBlank(value)) {
-      userOutput.display(String.format("%s [%s]:", question, defaultValue));
+      userOutput.display(String.format("%s [%s]:", question, defaultValue), false);
       value = StringUtils.defaultIfBlank(inputScanner.nextLine(), defaultValue);
     }
     return value;
@@ -39,15 +53,25 @@ public class InteractiveUserInput implements UserInput {
   public String askNonBlank(String question) {
     String value = null;
     while (StringUtils.isBlank(value)) {
-      userOutput.display(String.format("%s:", question));
+      userOutput.display(String.format("%s:", question), false);
       value = inputScanner.nextLine();
     }
     return value;
   }
 
   @Override
+  public long askLong(String question) {
+    String value = null;
+    while (StringUtils.isBlank(value) || !NumberUtils.isDigits(value)) {
+      userOutput.display(String.format("%s:", question), false);
+      value = inputScanner.nextLine();
+    }
+    return Long.parseLong(value);
+  }
+
+  @Override
   public String ask(String question) {
-    userOutput.display(String.format("%s:", question));
+    userOutput.display(String.format("%s:", question), false);
     return inputScanner.nextLine();
   }
 }

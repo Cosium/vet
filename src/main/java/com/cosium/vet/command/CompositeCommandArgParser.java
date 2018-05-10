@@ -52,7 +52,7 @@ public class CompositeCommandArgParser implements VetCommandArgParser {
     Optional<VetAdvancedCommandArgParser> parser =
         availableParsers.stream().filter(p -> p.canParse(args)).findFirst();
     if (!isHelp && parser.isPresent()) {
-      LOG.debug("Parsing using command using {}", parser.get());
+      LOG.debug("Parsing command using {}", parser.get());
       return parser.get().parse(args);
     }
 

@@ -36,4 +36,5 @@ public class CommitMessage extends NonBlankString {
             })
         .collect(Collectors.joining("\n"));
   }
+
 }

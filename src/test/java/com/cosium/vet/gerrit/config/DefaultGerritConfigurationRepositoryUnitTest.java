@@ -1,5 +1,6 @@
 package com.cosium.vet.gerrit.config;
 
+import com.cosium.vet.gerrit.ChangeNumericId;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitConfigRepository;
 import org.junit.Before;
@@ -35,11 +36,31 @@ public class DefaultGerritConfigurationRepositoryUnitTest {
 
   @Test
   public void GIVEN_conf_containing_targetbranch_master_WHEN_read_THEN_it_should_return_master() {
-    when(gitConfigProvider.getCurrentBranchValue("vet-change-target-branch"))
+    when(gitConfigProvider.getCurrentBranchValue("vet-tracked-change-target-branch"))
         .thenReturn(CHANGE_TARGET_BRANCH.toString());
 
     GerritConfiguration gerritConfiguration = tested.read();
     assertThat(gerritConfiguration).isNotNull();
-    assertThat(gerritConfiguration.getChangeTargetBranch()).contains(CHANGE_TARGET_BRANCH);
+    assertThat(gerritConfiguration.getTrackedChangeTargetBranch()).contains(CHANGE_TARGET_BRANCH);
+  }
+
+  @Test
+  public void GIVEN_conf_containing_numeric_id_1234_WHEN_read_THEN_it_should_return_1234() {
+    when(gitConfigProvider.getCurrentBranchValue("vet-tracked-change-numeric-id"))
+        .thenReturn("1234");
+
+    GerritConfiguration gerritConfiguration = tested.read();
+    assertThat(gerritConfiguration).isNotNull();
+    assertThat(gerritConfiguration.getTrackedChangeNumericId()).contains(ChangeNumericId.of(1234));
+  }
+
+  @Test
+  public void GIVEN_conf_containing_non_numeric_id_foo_WHEN_read_THEN_it_should_return_empty() {
+    when(gitConfigProvider.getCurrentBranchValue("vet-tracked-change-numeric-id"))
+        .thenReturn("foo");
+
+    GerritConfiguration gerritConfiguration = tested.read();
+    assertThat(gerritConfiguration).isNotNull();
+    assertThat(gerritConfiguration.getTrackedChangeNumericId()).isEmpty();
   }
 }

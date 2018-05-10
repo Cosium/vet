@@ -7,6 +7,12 @@ package com.cosium.vet.runtime;
  */
 public interface UserOutput {
 
+  /**
+   * @param message The message to display to the user
+   * @param appendLineBreak Don't append a line break
+   */
+  void display(String message, boolean appendLineBreak);
+
   /** @param message The message to display to the user */
   void display(String message);
 }

@@ -56,8 +56,9 @@ public interface GitClient {
    *
    * @param remote The remote to push to
    * @param refspec The refspec to push
+   * @return The command output
    */
-  void push(String remote, String refspec);
+  String push(String remote, String refspec);
 
   /**
    * @param remote The remote to look for
@@ -80,4 +81,21 @@ public interface GitClient {
    * @param branchShortName The branch to fetch
    */
   void fetch(RemoteName remote, BranchShortName branchShortName);
+
+  /**
+   * Pull the ref from remote
+   *
+   * @param remote The remote to fetch from
+   * @param branchRefName The ref name to fetch
+   * @return The command output
+   */
+  String pull(RemoteName remote, BranchRefName branchRefName);
+
+  String status();
+
+  String checkoutFetchHead();
+
+  String checkoutNewBranch(BranchShortName branchShortName);
+
+  String resetHard(BranchShortName branchShortName);
 }

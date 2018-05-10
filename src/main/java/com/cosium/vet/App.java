@@ -13,7 +13,7 @@ public class App {
 
   private static final Logger LOG = LoggerFactory.getLogger(App.class);
 
-  private static final List<String> STACKTRACE_ARG_NAMES = List.of("--stackstrace");
+  private static final List<String> STACKTRACE_ARG_NAMES = List.of("--stacktrace");
   private static final List<String> VERBOSE_ARG_NAMES = List.of("--verbose");
 
   public static void main(String[] args) {

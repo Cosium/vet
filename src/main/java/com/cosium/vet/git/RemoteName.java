@@ -18,4 +18,8 @@ public class RemoteName extends NonBlankString {
   public static RemoteName of(String value) {
     return new RemoteName(value);
   }
+
+  public BranchShortName branch(BranchShortName localBranchName) {
+    return BranchShortName.of(toString() + "/" + localBranchName.toString());
+  }
 }

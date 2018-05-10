@@ -89,8 +89,8 @@ class DefaultGitClient implements GitClient {
   }
 
   @Override
-  public void push(String remote, String refspec) {
-    commandRunner.run(repositoryDirectory, GIT, "push", remote, refspec);
+  public String push(String remote, String refspec) {
+    return commandRunner.run(repositoryDirectory, GIT, "push", remote, refspec);
   }
 
   @Override
@@ -116,5 +116,33 @@ class DefaultGitClient implements GitClient {
   public void fetch(RemoteName remote, BranchShortName branchShortName) {
     commandRunner.run(
         repositoryDirectory, GIT, "fetch", remote.toString(), branchShortName.toString());
+  }
+
+  @Override
+  public String pull(RemoteName remote, BranchRefName branchRefName) {
+    return commandRunner.run(
+        repositoryDirectory, GIT, "pull", remote.toString(), branchRefName.toString());
+  }
+
+  @Override
+  public String status() {
+    return commandRunner.run(repositoryDirectory, GIT, "status");
+  }
+
+  @Override
+  public String checkoutFetchHead() {
+    return commandRunner.run(repositoryDirectory, GIT, "checkout", "FETCH_HEAD");
+  }
+
+  @Override
+  public String checkoutNewBranch(BranchShortName branchShortName) {
+    return commandRunner.run(
+        repositoryDirectory, GIT, "checkout", "-b", branchShortName.toString());
+  }
+
+  @Override
+  public String resetHard(BranchShortName branchShortName) {
+    return commandRunner.run(
+        repositoryDirectory, GIT, "reset", "--hard", branchShortName.toString());
   }
 }

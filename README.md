@@ -10,7 +10,7 @@ Vet allows to review code on Gerrit using a pull-request workflow similar to Git
 ### Linux - Debian based distributions
 
 ```
-wget https://github.com/Cosium/vet/releases/download/1.13/vet-linux_x64.deb.zip -O vet.deb.zip \
+wget https://github.com/Cosium/vet/releases/download/2.2/vet-linux_x64.deb.zip -O vet.deb.zip \
 && unzip vet.deb.zip \
 && sudo dpkg -i vet.deb \
 && rm vet.deb.zip vet.deb
@@ -43,20 +43,6 @@ want to update the changeset.
 Using Vet, Gerrit keeps seeing one commit per change set while you don't have to rewrite your history anymore.    
 Each time you will ask to push to Gerrit, Vet will forge and push a single commit based on your source branch commit sequence.
 
-##### Now you can have feature branches
-
-With Vet, you can have feature branches.  
-If you set the correct Gerrit authorizations, you can push them as standard branches.  
-Vet is able to manage git remote pushed or local only source branches the same way.
-
-##### Checkout the feature branch to test or hack the changeset
-
-As a reviewer you want to test the change set locally? 
-Just checkout the feature branch.  
-
-Now maybe you want to contribute to the change set?  
-Run Vet push and your changes are added to the correct change set.
-
 ##### No pre commit hook needed
 
 Vet computes the Gerrit change id on the fly before pushing to Gerrit.  
@@ -78,7 +64,50 @@ Because Vet delegates all Gerrit communication to git, your remote access protoc
 
 ## Usage
 
-### Push
+### help
+
+```bash
+$ vet --help
+usage: vet [--version] [--help] <command> [<args>]
+
+<command> can be one of:
+ new, checkout-new, checkout, push, untrack, status, pull, fire-and-forget
+
+Debug options:
+ --stacktrace      Print stacktraces
+ --verbose         Enable verbose mode
+
+Vet: The Gerrit client using pull request review workflow
+```
+
+### checkout-new
+
+```bash
+$ vet --help checkout-new
+usage: vet checkout-new [-b <branch>] [-f] [-t <branch>]
+ -b,--checkout-branch <branch>   The branch that will be created to track
+                                 the change.
+ -f,--force                      Forces the execution of the command,
+                                 bypassing any confirmation prompt.
+ -t,--target-branch <branch>     The target branch of the change.
+Creates a new change and tracks it from a new branch
+```
+
+### checkout
+
+```bash
+$ vet --help checkout
+usage: vet checkout [-b <branch>] [-f] [-i <id>] [-t <branch>]
+ -b,--checkout-branch <branch>   The branch that will be created to track
+                                 the change.
+ -f,--force                      Forces the execution of the command,
+                                 bypassing any confirmation prompt.
+ -i,--numeric-id <id>            The numeric id of the change.
+ -t,--target-branch <branch>     The target branch of the change.
+Tracks an existing change from a new branch
+```
+
+### push
 
 ```bash
 $ vet --help push
@@ -98,17 +127,55 @@ set.
 If no change set exists, the patch set will be appended to a new one.
 ```
 
+### fire-and-forget
+
 ```bash
-$ vet push --patch-set-subject "Add bar"
-remote: Processing changes: new: 1, done            
-remote: 
-remote: New Changes:        
-remote:   http://localhost:38391/#/c/foo/+/1001 The topic        
-remote: 
-To http://localhost:38391/foo
- * [new branch]      ab1e39bc82d81d5ed80e2357e67f57e47d4a4cd0 -> refs/for/master%m=Add_bar
-From http://localhost:38391/foo
- * branch            refs/changes/01/1001/1 -> FETCH_HEAD
+$ vet --help fire-and-forget
+usage: vet fire-and-forget [-f] [-t <branch>]
+ -f,--force                    Forces the execution of the command,
+                               bypassing any confirmation prompt.
+ -t,--target-branch <branch>   The id of the change.
+Creates a new untracked change with +2 then resets the current branch to
+the target branch. Ideal for self voted quick fixes.
+```
+
+### new
+
+```bash
+$ vet --help new
+usage: vet new [-f] [-t <branch>]
+ -f,--force                    Forces the execution of the command,
+                               bypassing any confirmation prompt.
+ -t,--target-branch <branch>   The id of the change.
+Creates a new change and tracks it from the current branch.
+```
+
+### pull
+
+```bash
+$ vet --help pull
+usage: vet pull
+
+Pulls modifications of the currently tracked change
+```
+
+### status
+
+```bash
+$ vet --help status
+usage: vet status
+
+Displays the current status
+```
+
+### untrack
+
+```bash
+$ vet --help untrack
+usage: vet untrack [-f]
+ -f,--force   Forces the execution of the command, bypassing any
+              confirmation prompt.
+Untracks any tracked change
 ```
 
 ## Library
@@ -122,10 +189,6 @@ You will need JDK 9+.
    <version>${vet.version}</version>
 </dependency>
 ```
-
-## Limitation
-
-Since Vet has its own change id computation system, all clients of the same Gerrit instance must use Vet.
 
 ## Build
 
