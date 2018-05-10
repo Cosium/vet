@@ -2,13 +2,11 @@ package com.cosium.vet.gerrit;
 
 import com.cosium.vet.gerrit.config.GerritConfiguration;
 import com.cosium.vet.gerrit.config.GerritConfigurationRepository;
-import com.cosium.vet.git.BranchRefName;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitClient;
 import com.cosium.vet.git.RemoteName;
 import com.cosium.vet.log.Logger;
 import com.cosium.vet.log.LoggerFactory;
-import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 
 import java.util.Optional;
 
@@ -89,12 +87,7 @@ class DefaultChangeRepository implements ChangeRepository {
             .getLastestPatch(numericId)
             .orElseThrow(
                 () -> new RuntimeException("No patch found for change with id " + numericId));
-    String numericIdStr = numericId.toString();
-    String numericIdSuffix = StringUtils.substring(numericIdStr, numericIdStr.length() - 2);
-    git.fetch(
-        RemoteName.ORIGIN,
-        BranchRefName.of(
-            "refs/changes/" + numericIdSuffix + "/" + numericId + "/" + latestPatch.getId()));
+    git.fetch(RemoteName.ORIGIN, numericId.branchRefName(latestPatch));
     git.checkoutFetchHead();
     git.checkoutNewBranch(checkoutBranch.toBranchShortName());
     return trackChange(numericId, branchShortName);
@@ -115,5 +108,13 @@ class DefaultChangeRepository implements ChangeRepository {
   @Override
   public boolean exists(ChangeNumericId numericId) {
     return patchSetRepository.getLastestPatch(numericId).isPresent();
+  }
+
+  @Override
+  public String pull() {
+    Change change =
+        getTrackedChange()
+            .orElseThrow(() -> new RuntimeException("There is no currently tracked change"));
+    return patchSetRepository.pullLatest(change.getNumericId());
   }
 }

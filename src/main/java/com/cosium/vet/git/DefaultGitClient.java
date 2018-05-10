@@ -119,6 +119,12 @@ class DefaultGitClient implements GitClient {
   }
 
   @Override
+  public String pull(RemoteName remote, BranchRefName branchRefName) {
+    return commandRunner.run(
+        repositoryDirectory, GIT, "pull", remote.toString(), branchRefName.toString());
+  }
+
+  @Override
   public String status() {
     return commandRunner.run(repositoryDirectory, GIT, "status");
   }

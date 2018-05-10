@@ -22,5 +22,4 @@ public interface Change {
       boolean workInProgress,
       PatchSetSubject subject,
       boolean bypassReview);
-
 }

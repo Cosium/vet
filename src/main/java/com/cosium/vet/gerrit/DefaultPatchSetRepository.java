@@ -117,6 +117,16 @@ public class DefaultPatchSetRepository implements PatchSetRepository {
         new DefaultPatch(latestPatchSetRef.id, changeNumericId, git.getCommitMessage(revisionId)));
   }
 
+  @Override
+  public String pullLatest(ChangeNumericId changeNumericId) {
+    Patch latestPatch =
+        getLastestPatch(changeNumericId)
+            .orElseThrow(
+                () -> new RuntimeException("No patch found for change with id " + changeNumericId));
+    BranchRefName refName = changeNumericId.branchRefName(latestPatch);
+    return git.pull(RemoteName.ORIGIN, refName);
+  }
+
   private class DefaultPatch implements Patch {
     private final int id;
     private final ChangeNumericId changeNumericId;

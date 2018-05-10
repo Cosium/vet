@@ -12,6 +12,9 @@ import com.cosium.vet.command.checkout_new.CheckoutNewCommandFactory;
 import com.cosium.vet.command.new_.NewCommand;
 import com.cosium.vet.command.new_.NewCommandArgParser;
 import com.cosium.vet.command.new_.NewCommandFactory;
+import com.cosium.vet.command.pull.PullCommand;
+import com.cosium.vet.command.pull.PullCommandArgParser;
+import com.cosium.vet.command.pull.PullCommandFactory;
 import com.cosium.vet.command.push.PushCommand;
 import com.cosium.vet.command.push.PushCommandArgParser;
 import com.cosium.vet.command.push.PushCommandFactory;
@@ -51,6 +54,7 @@ public class Vet {
   private final PushCommandFactory pushCommandFactory;
   private final UntrackCommandFactory untrackCommandFactory;
   private final StatusCommandFactory statusCommandFactory;
+  private final PullCommandFactory pullCommandFactory;
   private final VetCommandArgParser commandParser;
 
   /**
@@ -113,6 +117,7 @@ public class Vet {
     this.untrackCommandFactory = new UntrackCommand.Factory(changeRepositoryFactory, userInput);
     this.statusCommandFactory =
         new StatusCommand.Factory(gitProvider, changeRepositoryFactory, userOutput);
+    this.pullCommandFactory = new PullCommand.Factory(changeRepositoryFactory, userOutput);
 
     this.commandParser =
         new CompositeCommandArgParser(
@@ -124,7 +129,8 @@ public class Vet {
                 new CheckoutCommandArgParser(checkoutCommandFactory),
                 new PushCommandArgParser(pushCommandFactory),
                 new UntrackCommandArgParser(untrackCommandFactory),
-                new StatusCommandArgParser(statusCommandFactory)),
+                new StatusCommandArgParser(statusCommandFactory),
+                new PullCommandArgParser(pullCommandFactory)),
             debugOptions);
   }
 
@@ -151,6 +157,10 @@ public class Vet {
       ChangeNumericId numericId,
       BranchShortName targetbranch) {
     checkoutCommandFactory.build(force, checkoutBranch, numericId, targetbranch);
+  }
+
+  public void pull() {
+    pullCommandFactory.build().execute();
   }
 
   /**

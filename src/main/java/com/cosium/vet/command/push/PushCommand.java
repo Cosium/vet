@@ -21,7 +21,7 @@ public class PushCommand implements VetCommand {
 
   private static final Logger LOG = LoggerFactory.getLogger(PushCommand.class);
 
-  private final ChangeRepository gerritChangeRepository;
+  private final ChangeRepository changeRepository;
   private final UserOutput userOutput;
 
   private final Boolean publishDraftedComments;
@@ -30,14 +30,14 @@ public class PushCommand implements VetCommand {
   private final Boolean bypassReview;
 
   private PushCommand(
-      ChangeRepository gerritChangeRepository,
+      ChangeRepository changeRepository,
       UserOutput userOutput,
       // Optionals
       Boolean publishDraftedComments,
       Boolean workInProgress,
       PatchSetSubject patchSetSubject,
       Boolean bypassReview) {
-    this.gerritChangeRepository = requireNonNull(gerritChangeRepository);
+    this.changeRepository = requireNonNull(changeRepository);
     this.userOutput = requireNonNull(userOutput);
 
     this.publishDraftedComments = publishDraftedComments;
@@ -48,12 +48,10 @@ public class PushCommand implements VetCommand {
 
   @Override
   public void execute() {
-    Change change = gerritChangeRepository.getTrackedChange().orElse(null);
-    if (change == null) {
-      LOG.debug("No tracked change found");
-      userOutput.display("There is no currently tracked change");
-      return;
-    }
+    Change change =
+        changeRepository
+            .getTrackedChange()
+            .orElseThrow(() -> new RuntimeException("There is no currently tracked change"));
 
     LOG.debug("Found tracked change {}", change);
 

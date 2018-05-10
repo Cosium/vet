@@ -1,7 +1,6 @@
 package com.cosium.vet.gerrit;
 
 import com.cosium.vet.git.BranchShortName;
-import com.cosium.vet.git.CommitMessage;
 
 import java.util.Optional;
 
@@ -25,4 +24,10 @@ public interface PatchSetRepository {
    * @return The latest patch of the provided change numeric id.
    */
   Optional<Patch> getLastestPatch(ChangeNumericId changeNumericId);
+
+  /**
+   * @param changeNumericId The numeric id of the change to pull
+   * @return The command output
+   */
+  String pullLatest(ChangeNumericId changeNumericId);
 }

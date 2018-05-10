@@ -56,4 +56,11 @@ public interface ChangeRepository {
    * @return True if a change with the provided numeric id exists
    */
   boolean exists(ChangeNumericId numericId);
+
+  /**
+   * Pull modifications from remote
+   *
+   * @return The command output
+   */
+  String pull();
 }
