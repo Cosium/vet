@@ -51,9 +51,7 @@ public class PushCommand implements VetCommand {
     Change change = gerritChangeRepository.getTrackedChange().orElse(null);
     if (change == null) {
       LOG.debug("No tracked change found");
-      userOutput.display(
-          "There is no currently tracked change.\n"
-              + "Use 'create' or 'track' command to start tracking a change.");
+      userOutput.display("There is no currently tracked change");
       return;
     }
 
