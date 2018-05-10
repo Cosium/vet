@@ -1,5 +1,6 @@
 package com.cosium.vet.gerrit;
 
+import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 import com.cosium.vet.utils.NonBlankString;
 
 import java.util.regex.Matcher;
@@ -27,5 +28,13 @@ public class PushUrl extends NonBlankString {
       throw new RuntimeException("WTF?");
     }
     return ProjectName.of(matcher.group(0));
+  }
+
+  public String computeChangeWebUrl(ChangeNumericId numericId) {
+    ProjectName projectName = parseProjectName();
+    String fullUrl = toString();
+    String gerritBaseUrl =
+        StringUtils.substring(fullUrl, 0, fullUrl.length() - projectName.toString().length());
+    return gerritBaseUrl + "c/" + projectName.toString() + "/+/" + numericId;
   }
 }

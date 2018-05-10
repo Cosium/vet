@@ -30,7 +30,8 @@ public class DefaultGerritChangeTest {
   @Before
   public void before() {
     patchSetRepository = mock(PatchSetRepository.class);
-    ChangeFactory gerritChangeFactory = new DefaultChange.Factory(patchSetRepository);
+    ChangeFactory gerritChangeFactory =
+        new DefaultChange.Factory(patchSetRepository, PushUrl.of("https://foo.com/bar"));
     tested = gerritChangeFactory.build(BAR_BRANCH, NUMERIC_ID);
   }
 

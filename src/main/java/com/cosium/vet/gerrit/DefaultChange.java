@@ -20,14 +20,17 @@ import static java.util.Optional.ofNullable;
 class DefaultChange implements Change {
 
   private final PatchSetRepository patchSetRepository;
+  private final PushUrl pushUrl;
   private final BranchShortName targetBranch;
   private final ChangeNumericId numericId;
 
   private DefaultChange(
       PatchSetRepository patchSetRepository,
+      PushUrl pushUrl,
       BranchShortName targetBranch,
       ChangeNumericId numericId) {
     this.patchSetRepository = requireNonNull(patchSetRepository);
+    this.pushUrl = requireNonNull(pushUrl);
     this.targetBranch = requireNonNull(targetBranch);
     this.numericId = requireNonNull(numericId);
   }
@@ -62,6 +65,11 @@ class DefaultChange implements Change {
     return options.stream().filter(StringUtils::isNotBlank).collect(Collectors.joining(","));
   }
 
+  @Override
+  public String toString() {
+    return pushUrl.computeChangeWebUrl(numericId);
+  }
+
   /**
    * Created on 08/05/18.
    *
@@ -70,19 +78,16 @@ class DefaultChange implements Change {
   static class Factory implements ChangeFactory {
 
     private final PatchSetRepository patchSetRepository;
+    private final PushUrl pushUrl;
 
-    Factory(PatchSetRepository patchSetRepository) {
+    Factory(PatchSetRepository patchSetRepository, PushUrl pushUrl) {
       this.patchSetRepository = requireNonNull(patchSetRepository);
+      this.pushUrl = requireNonNull(pushUrl);
     }
 
     @Override
     public Change build(BranchShortName targetBranch, ChangeNumericId changeNumericId) {
-      return new DefaultChange(patchSetRepository, targetBranch, changeNumericId);
+      return new DefaultChange(patchSetRepository, pushUrl, targetBranch, changeNumericId);
     }
-  }
-
-  @Override
-  public String toString() {
-    return "{\"numericId\": " + numericId + ", \"targetBranch\": \"" + targetBranch + "\"}";
   }
 }

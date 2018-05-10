@@ -16,8 +16,8 @@ import com.cosium.vet.command.untrack.UntrackCommand;
 import com.cosium.vet.command.untrack.UntrackCommandArgParser;
 import com.cosium.vet.command.untrack.UntrackCommandFactory;
 import com.cosium.vet.gerrit.ChangeNumericId;
-import com.cosium.vet.gerrit.DefaultChangeRepositoryFactory;
 import com.cosium.vet.gerrit.ChangeRepositoryFactory;
+import com.cosium.vet.gerrit.DefaultChangeRepositoryFactory;
 import com.cosium.vet.gerrit.PatchSetSubject;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitProvider;
@@ -93,7 +93,8 @@ public class Vet {
     ChangeRepositoryFactory changeRepositoryFactory =
         new DefaultChangeRepositoryFactory(gitProvider, gitProvider);
 
-    this.createCommandFactory = new CreateCommand.Factory(changeRepositoryFactory, userInput);
+    this.createCommandFactory =
+        new CreateCommand.Factory(changeRepositoryFactory, userInput, userOutput);
     this.trackCommandFactory =
         new TrackCommand.Factory(changeRepositoryFactory, userInput, userOutput);
     this.pushCommandFactory = new PushCommand.Factory(changeRepositoryFactory, userOutput);

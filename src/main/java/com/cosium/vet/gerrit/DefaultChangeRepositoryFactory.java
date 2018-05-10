@@ -18,8 +18,7 @@ import static java.util.Objects.requireNonNull;
  */
 public class DefaultChangeRepositoryFactory implements ChangeRepositoryFactory {
 
-  private static final Logger LOG =
-      LoggerFactory.getLogger(DefaultChangeRepositoryFactory.class);
+  private static final Logger LOG = LoggerFactory.getLogger(DefaultChangeRepositoryFactory.class);
 
   private final GerritConfigurationRepositoryFactory configurationRepositoryFactory;
   private final GitClientFactory gitClientFactory;
@@ -64,9 +63,8 @@ public class DefaultChangeRepositoryFactory implements ChangeRepositoryFactory {
         new DefaultPatchSetCommitMessageFactory(gitClient);
     PatchSetRepository patchSetRepository =
         new DefaultPatchSetRepository(gitClient, pushUrl, commitMessageFactory);
-    ChangeFactory changeFactory = new DefaultChange.Factory(patchSetRepository);
+    ChangeFactory changeFactory = new DefaultChange.Factory(patchSetRepository, pushUrl);
 
-    return new DefaultChangeRepository(
-        configurationRepository, changeFactory, patchSetRepository);
+    return new DefaultChangeRepository(configurationRepository, changeFactory, patchSetRepository);
   }
 }

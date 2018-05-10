@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Reda.Housni-Alaoui
  */
-public class GerritPushUrlTest {
+public class PushUrlTest {
 
   private static final String PROJECT_NAME = "baz";
 
@@ -30,5 +30,11 @@ public class GerritPushUrlTest {
   private void testParseProjectName(String projectName, String withoutSlash, String withSlash) {
     assertThat(PushUrl.of(withoutSlash).parseProjectName().toString()).isEqualTo(projectName);
     assertThat(PushUrl.of(withSlash).parseProjectName().toString()).isEqualTo(projectName);
+  }
+
+  @Test
+  public void testComputeChangeUrl() {
+    String changeUrl = PushUrl.of(ROOT_URL).computeChangeWebUrl(ChangeNumericId.of(1234));
+    assertThat(changeUrl).isEqualTo("https://foo.com/c/bar/+/1234");
   }
 }
