@@ -176,6 +176,16 @@ usage: vet untrack [-f]
 Untracks any tracked change
 ```
 
+### track
+
+```bash
+$ vet --help track
+usage: vet track [-b <branch>] [-f] [-i <id>] [-t <branch>]
+ -i,--numeric-id <id>            The numeric id of the change.
+ -t,--target-branch <branch>     The target branch of the change.
+Tracks an existing change from the current branch
+```
+
 ## Library
 
 You will need JDK 9+.

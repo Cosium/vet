@@ -24,6 +24,9 @@ import com.cosium.vet.command.push.PushCommandFactory;
 import com.cosium.vet.command.status.StatusCommand;
 import com.cosium.vet.command.status.StatusCommandArgParser;
 import com.cosium.vet.command.status.StatusCommandFactory;
+import com.cosium.vet.command.track.TrackCommand;
+import com.cosium.vet.command.track.TrackCommandArgParser;
+import com.cosium.vet.command.track.TrackCommandFactory;
 import com.cosium.vet.command.untrack.UntrackCommand;
 import com.cosium.vet.command.untrack.UntrackCommandArgParser;
 import com.cosium.vet.command.untrack.UntrackCommandFactory;
@@ -55,6 +58,7 @@ public class Vet {
   private final StatusCommandFactory statusCommandFactory;
   private final PullCommandFactory pullCommandFactory;
   private final FireAndForgetCommandFactory fireAndForgetCommandFactory;
+  private final TrackCommandFactory trackCommandFactory;
   private final VetCommandArgParser commandParser;
 
   /**
@@ -119,6 +123,8 @@ public class Vet {
     this.fireAndForgetCommandFactory =
         new FireAndForgetCommand.Factory(
             changeRepositoryFactory, gitProvider, userInput, userOutput);
+    this.trackCommandFactory =
+        new TrackCommand.Factory(changeRepositoryFactory, userInput, userOutput);
 
     this.commandParser =
         new CompositeCommandArgParser(
@@ -131,6 +137,7 @@ public class Vet {
                 new NewCommandArgParser(newCommandFactory),
                 new PullCommandArgParser(pullCommandFactory),
                 new StatusCommandArgParser(statusCommandFactory),
+                new TrackCommandArgParser(trackCommandFactory),
                 new UntrackCommandArgParser(untrackCommandFactory)),
             debugOptions);
   }
@@ -183,6 +190,10 @@ public class Vet {
         .build(
             publishDraftedComments, workInProgress, patchSetSubject, bypassReview, codeReviewVote)
         .execute();
+  }
+
+  public void track(Boolean force, ChangeNumericId numericId, BranchShortName targetbranch) {
+    trackCommandFactory.build(force, numericId, targetbranch);
   }
 
   public void untrack(Boolean force) {
