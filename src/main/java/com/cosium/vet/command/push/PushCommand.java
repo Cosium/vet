@@ -51,7 +51,8 @@ public class PushCommand implements VetCommand {
     Change change =
         changeRepository
             .getTrackedChange()
-            .orElseThrow(() -> new RuntimeException("There is no currently tracked change"));
+            .orElseThrow(
+                () -> new RuntimeException("There is no currently tracked change. Aborting."));
 
     LOG.debug("Found tracked change {}", change);
 
