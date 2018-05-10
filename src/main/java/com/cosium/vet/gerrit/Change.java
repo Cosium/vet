@@ -22,5 +22,6 @@ public interface Change {
       boolean publishDraftComments,
       boolean workInProgress,
       PatchSetSubject subject,
-      boolean bypassReview);
+      boolean bypassReview,
+      CodeReviewVote codeReviewVote);
 }

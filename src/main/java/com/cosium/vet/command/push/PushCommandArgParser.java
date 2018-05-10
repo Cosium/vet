@@ -2,6 +2,7 @@ package com.cosium.vet.command.push;
 
 import com.cosium.vet.command.VetAdvancedCommandArgParser;
 import com.cosium.vet.command.VetCommand;
+import com.cosium.vet.gerrit.CodeReviewVote;
 import com.cosium.vet.gerrit.PatchSetSubject;
 import com.cosium.vet.thirdparty.apache_commons_cli.*;
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
@@ -24,6 +25,7 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
   private static final String WORK_IN_PROGRESS = "w";
   private static final String PATCH_SET_SUBJECT = "s";
   private static final String BYPASS_REVIEW = "f";
+  private static final String CODE_REVIEW_VOTE = "c";
 
   private final PushCommandFactory pushCommandFactory;
   private final Options options;
@@ -57,6 +59,13 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
             .longOpt("bypass-review")
             .desc(
                 "Submit directly the change bypassing the review. Neither labels nor submit rules are checked.")
+            .build());
+    options.addOption(
+        Option.builder(CODE_REVIEW_VOTE)
+            .argName("vote")
+            .longOpt("code-review-vote")
+            .hasArg()
+            .desc("Vote on code review. i.e. +1 is a valid vote value.")
             .build());
   }
 
@@ -99,8 +108,13 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
             .map(PatchSetSubject::of)
             .orElse(null);
     Boolean bypassReview = commandLine.hasOption(BYPASS_REVIEW) ? true : null;
+    CodeReviewVote reviewVote =
+        ofNullable(commandLine.getOptionValue(CODE_REVIEW_VOTE))
+            .filter(StringUtils::isNotBlank)
+            .map(CodeReviewVote::of)
+            .orElse(null);
 
     return pushCommandFactory.build(
-        publishDraftedComments, workInProgress, patchSetSubject, bypassReview);
+        publishDraftedComments, workInProgress, patchSetSubject, bypassReview, reviewVote);
   }
 }

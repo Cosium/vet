@@ -39,7 +39,7 @@ public class PushCommandUnitTest {
 
   @Test
   public void WHEN_no_tracked_change_THEN_it_display_a_message_and_does_nothing() {
-    PushCommand pushCommand = factory.build(null, null, null, null);
+    PushCommand pushCommand = factory.build(null, null, null, null, null);
     pushCommand.execute();
     verify(userOutput).display(anyString());
   }

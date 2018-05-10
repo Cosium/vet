@@ -1,10 +1,7 @@
 package com.cosium.vet.command.push;
 
 import com.cosium.vet.command.VetCommand;
-import com.cosium.vet.gerrit.Change;
-import com.cosium.vet.gerrit.ChangeRepository;
-import com.cosium.vet.gerrit.ChangeRepositoryFactory;
-import com.cosium.vet.gerrit.PatchSetSubject;
+import com.cosium.vet.gerrit.*;
 import com.cosium.vet.log.Logger;
 import com.cosium.vet.log.LoggerFactory;
 import com.cosium.vet.runtime.UserOutput;
@@ -28,6 +25,7 @@ public class PushCommand implements VetCommand {
   private final Boolean workInProgress;
   private final PatchSetSubject patchSetSubject;
   private final Boolean bypassReview;
+  private final CodeReviewVote codeReviewVote;
 
   private PushCommand(
       ChangeRepository changeRepository,
@@ -36,7 +34,8 @@ public class PushCommand implements VetCommand {
       Boolean publishDraftedComments,
       Boolean workInProgress,
       PatchSetSubject patchSetSubject,
-      Boolean bypassReview) {
+      Boolean bypassReview,
+      CodeReviewVote codeReviewVote) {
     this.changeRepository = requireNonNull(changeRepository);
     this.userOutput = requireNonNull(userOutput);
 
@@ -44,6 +43,7 @@ public class PushCommand implements VetCommand {
     this.workInProgress = workInProgress;
     this.patchSetSubject = patchSetSubject;
     this.bypassReview = bypassReview;
+    this.codeReviewVote = codeReviewVote;
   }
 
   @Override
@@ -61,7 +61,8 @@ public class PushCommand implements VetCommand {
             BooleanUtils.toBoolean(publishDraftedComments),
             BooleanUtils.toBoolean(workInProgress),
             patchSetSubject,
-            BooleanUtils.toBoolean(bypassReview));
+            BooleanUtils.toBoolean(bypassReview),
+            codeReviewVote);
 
     userOutput.display(output);
     userOutput.display("Pushed to " + change);
@@ -82,14 +83,16 @@ public class PushCommand implements VetCommand {
         Boolean publishDraftedComments,
         Boolean workInProgress,
         PatchSetSubject patchSetSubject,
-        Boolean bypassReview) {
+        Boolean bypassReview,
+        CodeReviewVote codeReviewVote) {
       return new PushCommand(
           gerritChangeRepositoryFactory.build(),
           userOutput,
           publishDraftedComments,
           workInProgress,
           patchSetSubject,
-          bypassReview);
+          bypassReview,
+          codeReviewVote);
     }
   }
 }

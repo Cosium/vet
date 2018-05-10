@@ -45,12 +45,14 @@ class DefaultChange implements Change {
       boolean publishDraftComments,
       boolean workInProgress,
       PatchSetSubject subject,
-      boolean bypassReview) {
+      boolean bypassReview,
+      CodeReviewVote codeReviewVote) {
     Patch patch =
         patchSetRepository.createPatch(
             targetBranch,
             numericId,
-            buildPatchSetOptions(publishDraftComments, workInProgress, subject, bypassReview));
+            buildPatchSetOptions(
+                publishDraftComments, workInProgress, subject, bypassReview, codeReviewVote));
     return patch
         .getCreationLog()
         .orElseThrow(() -> new RuntimeException("Could not extract the creation log"));
@@ -60,7 +62,8 @@ class DefaultChange implements Change {
       boolean publishDraftedComments,
       boolean workInProgress,
       PatchSetSubject subject,
-      boolean bypassReview) {
+      boolean bypassReview,
+      CodeReviewVote codeReviewVote) {
     List<String> options = new ArrayList<>();
     options.add(publishDraftedComments ? "publish-comments" : null);
     options.add(workInProgress ? "wip" : null);
@@ -69,6 +72,12 @@ class DefaultChange implements Change {
             .map(NonBlankString::toString)
             .map(GitUtils::encodeForGitRef)
             .map(s -> String.format("m=%s", s))
+            .orElse(null));
+    options.add(
+        ofNullable(codeReviewVote)
+            .map(CodeReviewVote::toString)
+            .map(vote -> "Code-Review" + vote)
+            .map(code -> String.format("l=%s", code))
             .orElse(null));
     options.add(bypassReview ? "submit" : null);
     return options.stream().filter(StringUtils::isNotBlank).collect(Collectors.joining(","));

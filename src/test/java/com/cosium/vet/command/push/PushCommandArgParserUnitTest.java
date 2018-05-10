@@ -24,7 +24,7 @@ public class PushCommandArgParserUnitTest {
   @Before
   public void before() {
     factory = mock(PushCommandFactory.class);
-    when(factory.build(any(), any(), any(), any())).thenReturn(mock(PushCommand.class));
+    when(factory.build(any(), any(), any(), any(), any())).thenReturn(mock(PushCommand.class));
     tested = new PushCommandArgParser(factory);
   }
 
@@ -41,49 +41,49 @@ public class PushCommandArgParserUnitTest {
   @Test
   public void testPatchSetSubjectShort() {
     tested.parse("push", "-s", "hello");
-    verify(factory).build(isNull(), isNull(), eq(PatchSetSubject.of("hello")), isNull());
+    verify(factory).build(isNull(), isNull(), eq(PatchSetSubject.of("hello")), isNull(), isNull());
   }
 
   @Test
   public void testPatchSetSubjectLong() {
     tested.parse("push", "--patch-set-subject", "hello");
-    verify(factory).build(isNull(), isNull(), eq(PatchSetSubject.of("hello")), isNull());
+    verify(factory).build(isNull(), isNull(), eq(PatchSetSubject.of("hello")), isNull(), isNull());
   }
 
   @Test
   public void testPublishDraftedCommentsShort() {
     tested.parse("push", "-p");
-    verify(factory).build(eq(true), isNull(), isNull(), isNull());
+    verify(factory).build(eq(true), isNull(), isNull(), isNull(), isNull());
   }
 
   @Test
   public void testPublishDraftedCommentsLong() {
     tested.parse("push", "--publish-drafted-comments");
-    verify(factory).build(eq(true), isNull(), isNull(), isNull());
+    verify(factory).build(eq(true), isNull(), isNull(), isNull(), isNull());
   }
 
   @Test
   public void testWipShort() {
     tested.parse("push", "-w");
-    verify(factory).build(isNull(), eq(true), isNull(), isNull());
+    verify(factory).build(isNull(), eq(true), isNull(), isNull(), isNull());
   }
 
   @Test
   public void testWipLong() {
     tested.parse("push", "--work-in-progress");
-    verify(factory).build(isNull(), eq(true), isNull(), isNull());
+    verify(factory).build(isNull(), eq(true), isNull(), isNull(), isNull());
   }
 
   @Test
   public void testBypassReviewShort() {
     tested.parse("push", "-f");
-    verify(factory).build(isNull(), isNull(), isNull(), eq(true));
+    verify(factory).build(isNull(), isNull(), isNull(), eq(true), isNull());
   }
 
   @Test
   public void testBypassReviewLong() {
     tested.parse("push", "--bypass-review");
-    verify(factory).build(isNull(), isNull(), isNull(), eq(true));
+    verify(factory).build(isNull(), isNull(), isNull(), eq(true), isNull());
   }
 
   @Test
@@ -95,7 +95,7 @@ public class PushCommandArgParserUnitTest {
         "--publish-drafted-comments",
         "--work-in-progress",
         "--bypass-review");
-    verify(factory).build(eq(true), eq(true), eq(PatchSetSubject.of("hello")), eq(true));
+    verify(factory).build(eq(true), eq(true), eq(PatchSetSubject.of("hello")), eq(true), isNull());
   }
 
   @Test

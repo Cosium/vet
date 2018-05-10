@@ -49,7 +49,7 @@ public class VetTest extends GerritEnvironmentTest {
               runner.run(downstreamGitDir, "git", "checkout", "master");
               runner.run(downstreamGitDir, "git", "checkout", "-b", "feature" + i);
               addAndCommitFile("feature" + i, "Feature " + i);
-              tested.push(true, true, PatchSetSubject.of("Add feature" + i), false);
+              tested.push(true, true, PatchSetSubject.of("Add feature" + i), false, null);
             });
   }
 
@@ -60,10 +60,10 @@ public class VetTest extends GerritEnvironmentTest {
     runner.run(downstreamGitDir, "git", "checkout", "-b", "feature");
 
     addAndCommitFile("bar", "The topic");
-    tested.push(true, true, PatchSetSubject.of("Add bar"), false);
+    tested.push(true, true, PatchSetSubject.of("Add bar"), false, null);
 
     addAndCommitFile("baz", "Random message");
-    tested.push(null, null, PatchSetSubject.of("Add baz"), false);
+    tested.push(null, null, PatchSetSubject.of("Add baz"), false, null);
   }
 
   // TODO Add test for fetching commit message edition patchset
