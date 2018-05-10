@@ -59,7 +59,7 @@ public class CheckoutCommandArgParser implements VetAdvancedCommandArgParser {
             .argName("branch")
             .longOpt("checkout-branch")
             .hasArg()
-            .desc("The branch that will track the change.")
+            .desc("The branch that will be created to track the change.")
             .build());
   }
 
