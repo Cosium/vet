@@ -2,6 +2,7 @@ package com.cosium.vet.command.checkout;
 
 import com.cosium.vet.command.VetAdvancedCommandArgParser;
 import com.cosium.vet.command.VetCommand;
+import com.cosium.vet.gerrit.ChangeCheckoutBranchName;
 import com.cosium.vet.gerrit.ChangeNumericId;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.thirdparty.apache_commons_cli.*;
@@ -70,7 +71,7 @@ public class CheckoutCommandArgParser implements VetAdvancedCommandArgParser {
         String.format("%s %s", executableName, COMMAND_NAME),
         StringUtils.EMPTY,
         options,
-        "Checkout and track an existing change.",
+        "Track an existing change from a new branch",
         true);
   }
 
@@ -108,10 +109,10 @@ public class CheckoutCommandArgParser implements VetAdvancedCommandArgParser {
             .map(BranchShortName::of)
             .orElse(null);
 
-    BranchShortName checkoutBranch =
+    ChangeCheckoutBranchName checkoutBranch =
         ofNullable(commandLine.getOptionValue(CHECKOUT_BRANCH))
             .filter(StringUtils::isNotBlank)
-            .map(BranchShortName::of)
+            .map(ChangeCheckoutBranchName::of)
             .orElse(null);
 
     return factory.build(force, checkoutBranch, numericId, targetBranch);

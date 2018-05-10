@@ -36,6 +36,11 @@ class DefaultChange implements Change {
   }
 
   @Override
+  public ChangeNumericId getNumericId() {
+    return numericId;
+  }
+
+  @Override
   public void createPatchSet(
       boolean publishDraftComments,
       boolean workInProgress,

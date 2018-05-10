@@ -1,7 +1,6 @@
-package com.cosium.vet.command.checkout;
+package com.cosium.vet.command.checkout_new;
 
 import com.cosium.vet.gerrit.ChangeCheckoutBranchName;
-import com.cosium.vet.gerrit.ChangeNumericId;
 import com.cosium.vet.git.BranchShortName;
 
 /**
@@ -9,18 +8,14 @@ import com.cosium.vet.git.BranchShortName;
  *
  * @author Reda.Housni-Alaoui
  */
-public interface CheckoutCommandFactory {
+public interface CheckoutNewCommandFactory {
 
   /**
    * @param force True to force the command execution without prompt
    * @param checkoutBranch The branch to checkout that will track the change
-   * @param numericId The numeric id of the change to track
    * @param targetBranch The target branch of the change to track
    * @return A new track command
    */
-  CheckoutCommand build(
-      Boolean force,
-      ChangeCheckoutBranchName checkoutBranch,
-      ChangeNumericId numericId,
-      BranchShortName targetBranch);
+  CheckoutNewCommand build(
+      Boolean force, ChangeCheckoutBranchName checkoutBranch, BranchShortName targetBranch);
 }

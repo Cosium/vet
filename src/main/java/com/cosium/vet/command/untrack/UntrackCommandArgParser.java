@@ -42,7 +42,7 @@ public class UntrackCommandArgParser implements VetAdvancedCommandArgParser {
         String.format("%s %s", executableName, COMMAND_NAME),
         StringUtils.EMPTY,
         options,
-        "Starts tracking an existing change.",
+        "Untrack any tracked change",
         true);
   }
 

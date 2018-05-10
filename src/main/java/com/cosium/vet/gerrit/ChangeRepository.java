@@ -31,7 +31,9 @@ public interface ChangeRepository {
    * @return The tracked change
    */
   Change checkoutAndTrackChange(
-      BranchShortName checkoutBranch, ChangeNumericId numericId, BranchShortName branchShortName);
+      ChangeCheckoutBranchName checkoutBranch,
+      ChangeNumericId numericId,
+      BranchShortName branchShortName);
 
   /**
    * Creates a new change on Gerrit and track it
@@ -42,13 +44,12 @@ public interface ChangeRepository {
   Change createAndTrackChange(BranchShortName targetBranch);
 
   /**
-   * Creates a new change and check it out
+   * Creates a new change
    *
-   * @param checkoutBranch The branch that will track the change
    * @param targetBranch The target branch
    * @return The new tracked change
    */
-  Change checkoutNewChange(BranchShortName checkoutBranch, BranchShortName targetBranch);
+  Change createChange(BranchShortName targetBranch);
 
   /**
    * @param numericId The change numeric id

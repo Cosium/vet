@@ -1,4 +1,4 @@
-package com.cosium.vet.command.create;
+package com.cosium.vet.command.new_;
 
 import com.cosium.vet.command.VetCommand;
 import com.cosium.vet.gerrit.Change;
@@ -19,9 +19,9 @@ import static java.util.Optional.ofNullable;
  *
  * @author Reda.Housni-Alaoui
  */
-public class CreateCommand implements VetCommand {
+public class NewCommand implements VetCommand {
 
-  private static final Logger LOG = LoggerFactory.getLogger(CreateCommand.class);
+  private static final Logger LOG = LoggerFactory.getLogger(NewCommand.class);
 
   private final ChangeRepository changeRepository;
   private final UserInput userInput;
@@ -30,7 +30,7 @@ public class CreateCommand implements VetCommand {
   private final boolean force;
   private final BranchShortName targetBranch;
 
-  private CreateCommand(
+  private NewCommand(
       ChangeRepository changeRepository,
       UserInput userInput,
       UserOutput userOutput,
@@ -82,7 +82,7 @@ public class CreateCommand implements VetCommand {
                     userInput.askNonBlank("Target branch", BranchShortName.MASTER.toString())));
   }
 
-  public static class Factory implements CreateCommandFactory {
+  public static class Factory implements NewCommandFactory {
 
     private final ChangeRepositoryFactory changeRepositoryFactory;
     private final UserInput userInput;
@@ -98,8 +98,8 @@ public class CreateCommand implements VetCommand {
     }
 
     @Override
-    public CreateCommand build(Boolean force, BranchShortName targetBranch) {
-      return new CreateCommand(
+    public NewCommand build(Boolean force, BranchShortName targetBranch) {
+      return new NewCommand(
           changeRepositoryFactory.build(), userInput, userOutput, force, targetBranch);
     }
   }

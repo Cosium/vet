@@ -1,4 +1,4 @@
-package com.cosium.vet.command.checkout;
+package com.cosium.vet.command.checkout_new;
 
 import com.cosium.vet.command.VetCommand;
 import com.cosium.vet.gerrit.*;
@@ -17,7 +17,7 @@ import static java.util.Optional.ofNullable;
  *
  * @author Reda.Housni-Alaoui
  */
-public class CheckoutCommand implements VetCommand {
+public class CheckoutNewCommand implements VetCommand {
 
   private final GitClient git;
   private final ChangeRepository changeRepository;
@@ -25,18 +25,16 @@ public class CheckoutCommand implements VetCommand {
   private final UserOutput userOutput;
 
   private final boolean force;
-  private final ChangeNumericId numericId;
   private final BranchShortName targetBranch;
   private final ChangeCheckoutBranchName checkoutBranch;
 
-  private CheckoutCommand(
+  private CheckoutNewCommand(
       GitClient git,
       ChangeRepository changeRepository,
       UserInput userInput,
       UserOutput userOutput,
       // Optionals
       Boolean force,
-      ChangeNumericId numericId,
       BranchShortName targetBranch,
       ChangeCheckoutBranchName checkoutBranch) {
     this.git = requireNonNull(git);
@@ -45,53 +43,38 @@ public class CheckoutCommand implements VetCommand {
     this.userOutput = requireNonNull(userOutput);
 
     this.force = BooleanUtils.toBoolean(force);
-    this.numericId = numericId;
     this.targetBranch = targetBranch;
     this.checkoutBranch = checkoutBranch;
   }
 
   @Override
   public void execute() {
-    ChangeNumericId numericId = getNumericId();
-    if (!changeRepository.exists(numericId)) {
-      userOutput.display(
-          "Could not find any change identified by " + numericId + " on Gerrit. Aborting.");
-      return;
-    }
     BranchShortName targetBranch = getTargetBranch();
+    Change change = changeRepository.createChange(targetBranch);
+    ChangeNumericId numericId = change.getNumericId();
+
+    userOutput.display("Change " + change + " created");
+
     ChangeCheckoutBranchName checkoutBranch = getCheckoutBranch(numericId);
-    if (!confirm(numericId, targetBranch, checkoutBranch)) {
+    if (!confirm(change, checkoutBranch)) {
       return;
     }
-
-    Change change =
-        changeRepository.checkoutAndTrackChange(checkoutBranch, numericId, targetBranch);
-
+    changeRepository.checkoutAndTrackChange(checkoutBranch, numericId, targetBranch);
     userOutput.display(git.status());
-    userOutput.display("Now tracking change " + change);
+    userOutput.display("Now tracking new change " + change);
   }
 
-  private boolean confirm(
-      ChangeNumericId numericId,
-      BranchShortName targetBranch,
-      ChangeCheckoutBranchName checkoutBranch) {
+  private boolean confirm(Change change, ChangeCheckoutBranchName checkoutBranch) {
     if (force) {
       return true;
     }
     return userInput.askYesNo(
         "Branch '"
             + checkoutBranch
-            + "' will be checkout from change id "
-            + numericId
-            + " to target branch '"
-            + targetBranch
-            + "'.\nDo you want to continue?",
+            + "' will be checkout from change "
+            + change
+            + ".\nDo you want to continue?",
         false);
-  }
-
-  private ChangeNumericId getNumericId() {
-    return ofNullable(numericId)
-        .orElseGet(() -> ChangeNumericId.of(userInput.askLong("Change numeric ID")));
   }
 
   private BranchShortName getTargetBranch() {
@@ -108,10 +91,11 @@ public class CheckoutCommand implements VetCommand {
             () ->
                 ChangeCheckoutBranchName.of(
                     userInput.askNonBlank(
-                        "Checkout branch", ChangeCheckoutBranchName.defaults(numericId).toString())));
+                        "Checkout branch",
+                        ChangeCheckoutBranchName.defaults(numericId).toString())));
   }
 
-  public static class Factory implements CheckoutCommandFactory {
+  public static class Factory implements CheckoutNewCommandFactory {
 
     private final GitProvider gitProvider;
     private final ChangeRepositoryFactory changeRepositoryFactory;
@@ -130,18 +114,14 @@ public class CheckoutCommand implements VetCommand {
     }
 
     @Override
-    public CheckoutCommand build(
-        Boolean force,
-        ChangeCheckoutBranchName checkoutBranch,
-        ChangeNumericId numericId,
-        BranchShortName targetBranch) {
-      return new CheckoutCommand(
+    public CheckoutNewCommand build(
+        Boolean force, ChangeCheckoutBranchName checkoutBranch, BranchShortName targetBranch) {
+      return new CheckoutNewCommand(
           gitProvider.build(),
           changeRepositoryFactory.build(),
           userInput,
           userOutput,
           force,
-          numericId,
           targetBranch,
           checkoutBranch);
     }

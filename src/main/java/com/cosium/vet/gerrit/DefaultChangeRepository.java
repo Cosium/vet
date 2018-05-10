@@ -81,7 +81,9 @@ class DefaultChangeRepository implements ChangeRepository {
 
   @Override
   public Change checkoutAndTrackChange(
-      BranchShortName checkoutBranch, ChangeNumericId numericId, BranchShortName branchShortName) {
+      ChangeCheckoutBranchName checkoutBranch,
+      ChangeNumericId numericId,
+      BranchShortName branchShortName) {
     Patch latestPatch =
         patchSetRepository
             .getLastestPatch(numericId)
@@ -94,7 +96,7 @@ class DefaultChangeRepository implements ChangeRepository {
         BranchRefName.of(
             "refs/changes/" + numericIdSuffix + "/" + numericId + "/" + latestPatch.getId()));
     git.checkoutFetchHead();
-    git.checkoutNewBranch(checkoutBranch);
+    git.checkoutNewBranch(checkoutBranch.toBranchShortName());
     return trackChange(numericId, branchShortName);
   }
 
@@ -105,9 +107,9 @@ class DefaultChangeRepository implements ChangeRepository {
   }
 
   @Override
-  public Change checkoutNewChange(BranchShortName checkoutBranch, BranchShortName targetBranch) {
+  public Change createChange(BranchShortName targetBranch) {
     Patch patch = patchSetRepository.createPatch(targetBranch, null, null);
-    return checkoutAndTrackChange(checkoutBranch, patch.getChangeNumericId(), targetBranch);
+    return changeFactory.build(targetBranch, patch.getChangeNumericId());
   }
 
   @Override

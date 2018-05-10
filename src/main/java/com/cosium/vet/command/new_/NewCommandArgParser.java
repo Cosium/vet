@@ -1,12 +1,10 @@
-package com.cosium.vet.command.track;
+package com.cosium.vet.command.new_;
 
 import com.cosium.vet.command.VetAdvancedCommandArgParser;
 import com.cosium.vet.command.VetCommand;
-import com.cosium.vet.gerrit.ChangeNumericId;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.thirdparty.apache_commons_cli.*;
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
-import com.cosium.vet.thirdparty.apache_commons_lang3.math.NumberUtils;
 
 import java.util.Arrays;
 
@@ -18,18 +16,17 @@ import static java.util.Optional.ofNullable;
  *
  * @author Reda.Housni-Alaoui
  */
-public class TrackCommandArgParser implements VetAdvancedCommandArgParser {
+public class NewCommandArgParser implements VetAdvancedCommandArgParser {
 
-  private static final String COMMAND_NAME = "track";
+  private static final String COMMAND_NAME = "new";
 
   private static final String FORCE = "f";
-  private static final String CHANGE_NUMERIC_ID = "i";
   private static final String CHANGE_TARGET_BRANCH = "t";
 
-  private final TrackCommandFactory factory;
+  private final NewCommandFactory factory;
   private final Options options;
 
-  public TrackCommandArgParser(TrackCommandFactory factory) {
+  public NewCommandArgParser(NewCommandFactory factory) {
     this.factory = requireNonNull(factory);
     options = new Options();
     options.addOption(
@@ -40,18 +37,11 @@ public class TrackCommandArgParser implements VetAdvancedCommandArgParser {
             .desc("Forces the execution of the command, bypassing any confirmation prompt.")
             .build());
     options.addOption(
-        Option.builder(CHANGE_NUMERIC_ID)
-            .argName("id")
-            .longOpt("numeric-id")
-            .hasArg()
-            .desc("The numeric id of the change.")
-            .build());
-    options.addOption(
         Option.builder(CHANGE_TARGET_BRANCH)
             .argName("branch")
             .longOpt("target-branch")
             .hasArg()
-            .desc("The change target branch.")
+            .desc("The id of the change.")
             .build());
   }
 
@@ -62,7 +52,7 @@ public class TrackCommandArgParser implements VetAdvancedCommandArgParser {
         String.format("%s %s", executableName, COMMAND_NAME),
         StringUtils.EMPTY,
         options,
-        "Track an existing change from the current branch",
+        "Create a new change and track it from the current branch.",
         true);
   }
 
@@ -87,19 +77,12 @@ public class TrackCommandArgParser implements VetAdvancedCommandArgParser {
     }
 
     Boolean force = commandLine.hasOption(FORCE) ? true : null;
-    ChangeNumericId numericId =
-        ofNullable(commandLine.getOptionValue(CHANGE_NUMERIC_ID))
-            .filter(NumberUtils::isDigits)
-            .map(Long::parseLong)
-            .map(ChangeNumericId::of)
-            .orElse(null);
-
     BranchShortName targetBranch =
         ofNullable(commandLine.getOptionValue(CHANGE_TARGET_BRANCH))
             .filter(StringUtils::isNotBlank)
             .map(BranchShortName::of)
             .orElse(null);
 
-    return factory.build(force, numericId, targetBranch);
+    return factory.build(force, targetBranch);
   }
 }

@@ -1,4 +1,4 @@
-package com.cosium.vet.command.create;
+package com.cosium.vet.command.new_;
 
 import com.cosium.vet.git.BranchShortName;
 
@@ -7,12 +7,12 @@ import com.cosium.vet.git.BranchShortName;
  *
  * @author Reda.Housni-Alaoui
  */
-public interface CreateCommandFactory {
+public interface NewCommandFactory {
 
   /**
    * @param force True to force the command execution without prompt
    * @param targetBranch The target branch of the change
    * @return A new command
    */
-  CreateCommand build(Boolean force, BranchShortName targetBranch);
+  NewCommand build(Boolean force, BranchShortName targetBranch);
 }

@@ -7,6 +7,8 @@ package com.cosium.vet.gerrit;
  */
 public interface Change {
 
+  ChangeNumericId getNumericId();
+
   /**
    * Creates a patch set between start revision and end revision
    *
@@ -20,4 +22,5 @@ public interface Change {
       boolean workInProgress,
       PatchSetSubject subject,
       boolean bypassReview);
+
 }

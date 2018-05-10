@@ -67,7 +67,7 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
         String.format("%s %s", executableName, COMMAND_NAME),
         StringUtils.EMPTY,
         options,
-        "Push the changes to Gerrit by adding a new patch set to the current tracked change.",
+        "Upload modifications to the currently tracked change",
         true);
   }
 

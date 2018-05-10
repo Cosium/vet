@@ -1,7 +1,8 @@
-package com.cosium.vet.command.create;
+package com.cosium.vet.command.checkout_new;
 
 import com.cosium.vet.command.VetAdvancedCommandArgParser;
 import com.cosium.vet.command.VetCommand;
+import com.cosium.vet.gerrit.ChangeCheckoutBranchName;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.thirdparty.apache_commons_cli.*;
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
@@ -16,17 +17,18 @@ import static java.util.Optional.ofNullable;
  *
  * @author Reda.Housni-Alaoui
  */
-public class CreateCommandArgParser implements VetAdvancedCommandArgParser {
+public class CheckoutNewCommandArgParser implements VetAdvancedCommandArgParser {
 
-  private static final String COMMAND_NAME = "create";
+  private static final String COMMAND_NAME = "checkout-new";
 
   private static final String FORCE = "f";
   private static final String CHANGE_TARGET_BRANCH = "t";
+  private static final String CHECKOUT_BRANCH = "b";
 
-  private final CreateCommandFactory factory;
+  private final CheckoutNewCommandFactory factory;
   private final Options options;
 
-  public CreateCommandArgParser(CreateCommandFactory factory) {
+  public CheckoutNewCommandArgParser(CheckoutNewCommandFactory factory) {
     this.factory = requireNonNull(factory);
     options = new Options();
     options.addOption(
@@ -41,7 +43,14 @@ public class CreateCommandArgParser implements VetAdvancedCommandArgParser {
             .argName("branch")
             .longOpt("target-branch")
             .hasArg()
-            .desc("The id of the change.")
+            .desc("The target branch of the change.")
+            .build());
+    options.addOption(
+        Option.builder(CHECKOUT_BRANCH)
+            .argName("branch")
+            .longOpt("checkout-branch")
+            .hasArg()
+            .desc("The branch that will track the change.")
             .build());
   }
 
@@ -52,7 +61,7 @@ public class CreateCommandArgParser implements VetAdvancedCommandArgParser {
         String.format("%s %s", executableName, COMMAND_NAME),
         StringUtils.EMPTY,
         options,
-        "Starts tracking an existing change.",
+        "Create a new change and track it from a new branch",
         true);
   }
 
@@ -77,12 +86,19 @@ public class CreateCommandArgParser implements VetAdvancedCommandArgParser {
     }
 
     Boolean force = commandLine.hasOption(FORCE) ? true : null;
+
     BranchShortName targetBranch =
         ofNullable(commandLine.getOptionValue(CHANGE_TARGET_BRANCH))
             .filter(StringUtils::isNotBlank)
             .map(BranchShortName::of)
             .orElse(null);
 
-    return factory.build(force, targetBranch);
+    ChangeCheckoutBranchName checkoutBranch =
+        ofNullable(commandLine.getOptionValue(CHECKOUT_BRANCH))
+            .filter(StringUtils::isNotBlank)
+            .map(ChangeCheckoutBranchName::of)
+            .orElse(null);
+
+    return factory.build(force, checkoutBranch, targetBranch);
   }
 }
