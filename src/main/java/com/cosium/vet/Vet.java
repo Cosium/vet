@@ -21,9 +21,6 @@ import com.cosium.vet.command.push.PushCommandFactory;
 import com.cosium.vet.command.status.StatusCommand;
 import com.cosium.vet.command.status.StatusCommandArgParser;
 import com.cosium.vet.command.status.StatusCommandFactory;
-import com.cosium.vet.command.track.TrackCommand;
-import com.cosium.vet.command.track.TrackCommandArgParser;
-import com.cosium.vet.command.track.TrackCommandFactory;
 import com.cosium.vet.command.untrack.UntrackCommand;
 import com.cosium.vet.command.untrack.UntrackCommandArgParser;
 import com.cosium.vet.command.untrack.UntrackCommandFactory;
@@ -48,7 +45,6 @@ public class Vet {
   private static final String APP_NAME = "vet";
 
   private final NewCommandFactory newCommandFactory;
-  private final TrackCommandFactory trackCommandFactory;
   private final CheckoutCommandFactory checkoutCommandFactory;
   private final CheckoutNewCommandFactory checkoutNewCommandFactory;
   private final PushCommandFactory pushCommandFactory;
@@ -107,8 +103,6 @@ public class Vet {
         new DefaultChangeRepositoryFactory(gitProvider, gitProvider);
 
     this.newCommandFactory = new NewCommand.Factory(changeRepositoryFactory, userInput, userOutput);
-    this.trackCommandFactory =
-        new TrackCommand.Factory(changeRepositoryFactory, userInput, userOutput);
     this.checkoutCommandFactory =
         new CheckoutCommand.Factory(gitProvider, changeRepositoryFactory, userInput, userOutput);
     this.checkoutNewCommandFactory =
@@ -124,7 +118,6 @@ public class Vet {
             APP_NAME,
             List.of(
                 new NewCommandArgParser(newCommandFactory),
-                new TrackCommandArgParser(trackCommandFactory),
                 new CheckoutNewCommandArgParser(checkoutNewCommandFactory),
                 new CheckoutCommandArgParser(checkoutCommandFactory),
                 new PushCommandArgParser(pushCommandFactory),
@@ -140,10 +133,6 @@ public class Vet {
 
   public void new_(Boolean force, BranchShortName targetBranch) {
     newCommandFactory.build(force, targetBranch).execute();
-  }
-
-  public void track(Boolean force, ChangeNumericId numericId, BranchShortName targetBranch) {
-    trackCommandFactory.build(force, numericId, targetBranch).execute();
   }
 
   public void checkoutNew(
