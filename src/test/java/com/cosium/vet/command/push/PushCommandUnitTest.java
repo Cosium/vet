@@ -1,11 +1,13 @@
 package com.cosium.vet.command.push;
 
+import com.cosium.vet.gerrit.Change;
 import com.cosium.vet.gerrit.ChangeRepository;
 import com.cosium.vet.gerrit.ChangeRepositoryFactory;
-import com.cosium.vet.git.RemoteName;
 import com.cosium.vet.runtime.UserOutput;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
@@ -16,20 +18,21 @@ import static org.mockito.Mockito.*;
  */
 public class PushCommandUnitTest {
 
-  private static final RemoteName REMOTE = RemoteName.ORIGIN;
-
-  private ChangeRepository gerrit;
+  private ChangeRepository changeRepository;
   private UserOutput userOutput;
 
   private PushCommandFactory factory;
 
   @Before
   public void before() {
-    gerrit = mock(ChangeRepository.class);
+    changeRepository = mock(ChangeRepository.class);
+    Change change = mock(Change.class);
+    when(changeRepository.getTrackedChange()).thenReturn(Optional.of(change));
+
     userOutput = mock(UserOutput.class);
 
     ChangeRepositoryFactory gerritClientFactory = mock(ChangeRepositoryFactory.class);
-    when(gerritClientFactory.build()).thenReturn(gerrit);
+    when(gerritClientFactory.build()).thenReturn(changeRepository);
 
     factory = new PushCommand.Factory(gerritClientFactory, userOutput);
   }

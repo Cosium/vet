@@ -5,11 +5,12 @@ import com.cosium.vet.git.GitUtils;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Optional;
+
 import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.contains;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 /**
  * Created on 08/05/18.
@@ -30,6 +31,10 @@ public class DefaultGerritChangeTest {
   @Before
   public void before() {
     patchSetRepository = mock(PatchSetRepository.class);
+    Patch patch = mock(Patch.class);
+    when(patch.getCreationLog()).thenReturn(Optional.of("Hello world"));
+    when(patchSetRepository.createPatch(any(), any(), any())).thenReturn(patch);
+
     ChangeFactory gerritChangeFactory =
         new DefaultChange.Factory(patchSetRepository, PushUrl.of("https://foo.com/bar"));
     tested = gerritChangeFactory.build(BAR_BRANCH, NUMERIC_ID);

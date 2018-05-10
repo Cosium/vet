@@ -5,6 +5,7 @@ import com.cosium.vet.gerrit.PatchSetSubject;
 import com.cosium.vet.runtime.CommandRunner;
 import com.cosium.vet.thirdparty.apache_commons_io.IOUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -39,6 +40,7 @@ public class VetTest extends GerritEnvironmentTest {
     tested = new Vet(downstreamGitDir, runner, false, DebugOptions.empty());
   }
 
+  @Ignore
   @Test
   public void pushTwentyChanges() {
     IntStream.range(1, 21)
@@ -51,6 +53,7 @@ public class VetTest extends GerritEnvironmentTest {
             });
   }
 
+  @Ignore
   @Test
   public void pushTwiceTheSameChange() {
     runner.run(downstreamGitDir, "git", "checkout", "master");
