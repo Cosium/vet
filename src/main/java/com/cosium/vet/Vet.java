@@ -124,14 +124,14 @@ public class Vet {
         new CompositeCommandArgParser(
             APP_NAME,
             List.of(
-                new NewCommandArgParser(newCommandFactory),
                 new CheckoutNewCommandArgParser(checkoutNewCommandFactory),
                 new CheckoutCommandArgParser(checkoutCommandFactory),
                 new PushCommandArgParser(pushCommandFactory),
-                new UntrackCommandArgParser(untrackCommandFactory),
-                new StatusCommandArgParser(statusCommandFactory),
+                new FireAndForgetCommandArgParser(fireAndForgetCommandFactory),
+                new NewCommandArgParser(newCommandFactory),
                 new PullCommandArgParser(pullCommandFactory),
-                new FireAndForgetCommandArgParser(fireAndForgetCommandFactory)),
+                new StatusCommandArgParser(statusCommandFactory),
+                new UntrackCommandArgParser(untrackCommandFactory)),
             debugOptions);
   }
 
