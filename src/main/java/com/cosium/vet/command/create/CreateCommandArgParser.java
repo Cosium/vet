@@ -21,7 +21,7 @@ public class CreateCommandArgParser implements VetAdvancedCommandArgParser {
   private static final String COMMAND_NAME = "create";
 
   private static final String FORCE = "f";
-  private static final String CHANGE_TARGET_BRANCH = "b";
+  private static final String CHANGE_TARGET_BRANCH = "t";
 
   private final CreateCommandFactory factory;
   private final Options options;
@@ -34,14 +34,14 @@ public class CreateCommandArgParser implements VetAdvancedCommandArgParser {
             .numberOfArgs(0)
             .longOpt("force")
             .hasArg()
-            .desc("Forces the execution of the command, bypassing any interactive prompt.")
+            .desc("Forces the execution of the command, bypassing any confirmation prompt.")
             .build());
     options.addOption(
         Option.builder(CHANGE_TARGET_BRANCH)
             .argName("branch")
             .longOpt("target-branch")
             .hasArg()
-            .desc("The id of the change set.")
+            .desc("The id of the change.")
             .build());
   }
 
@@ -52,7 +52,7 @@ public class CreateCommandArgParser implements VetAdvancedCommandArgParser {
         String.format("%s %s", executableName, COMMAND_NAME),
         StringUtils.EMPTY,
         options,
-        "Starts tracking an existing change set.",
+        "Starts tracking an existing change.",
         true);
   }
 

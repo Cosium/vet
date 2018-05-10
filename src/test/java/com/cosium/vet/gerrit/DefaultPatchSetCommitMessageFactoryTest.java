@@ -22,8 +22,6 @@ public class DefaultPatchSetCommitMessageFactoryTest {
 
   private static final String HELLO_WORLD = "Hello World";
 
-  private static final ChangeNumericId NUMERIC_ID = ChangeNumericId.of(1234);
-
   private GitClient git;
 
   private DefaultPatchSetCommitMessageFactory tested;
@@ -59,10 +57,10 @@ public class DefaultPatchSetCommitMessageFactoryTest {
 
   @Test
   public void WHEN_changeid_I1234_THEN_commit_message_should_end_with_I1234() {
-    when(git.getLastCommitMessage())
-        .thenReturn(CommitMessage.of(HELLO_WORLD + "\n" + "Change-Id: I1234"));
+    Patch patch = mock(Patch.class);
+    when(patch.getCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD + "\nChange-Id: I1234"));
 
-    CommitMessage commitMessage = tested.build(null);
+    CommitMessage commitMessage = tested.build(patch);
     assertThat(commitMessage.toString()).endsWith("\nChange-Id: I1234");
   }
 
@@ -70,7 +68,7 @@ public class DefaultPatchSetCommitMessageFactoryTest {
   public void WHEN_existing_change_THEN_commit_message_contains_VET_VERSION() {
     when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
 
-    CommitMessage commitMessage = tested.build(CommitMessage.of("Yo man"));
+    CommitMessage commitMessage = tested.build(null);
     assertThat(commitMessage.toString()).contains("\nVet-Version: " + VetVersion.VALUE);
   }
 }

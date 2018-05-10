@@ -65,6 +65,7 @@ public class DefaultChangeRepositoryFactory implements ChangeRepositoryFactory {
         new DefaultPatchSetRepository(gitClient, pushUrl, commitMessageFactory);
     ChangeFactory changeFactory = new DefaultChange.Factory(patchSetRepository, pushUrl);
 
-    return new DefaultChangeRepository(configurationRepository, changeFactory, patchSetRepository);
+    return new DefaultChangeRepository(
+        configurationRepository, changeFactory, patchSetRepository, gitClient);
   }
 }

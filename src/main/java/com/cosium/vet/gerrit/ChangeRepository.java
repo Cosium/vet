@@ -25,6 +25,15 @@ public interface ChangeRepository {
   Change trackChange(ChangeNumericId numericId, BranchShortName branchShortName);
 
   /**
+   * @param checkoutBranch The branch that will track the change
+   * @param numericId The change numeric ID
+   * @param branchShortName The target branch short name
+   * @return The tracked change
+   */
+  Change checkoutAndTrackChange(
+      BranchShortName checkoutBranch, ChangeNumericId numericId, BranchShortName branchShortName);
+
+  /**
    * Creates a new change on Gerrit and track it
    *
    * @param targetBranch The target branch

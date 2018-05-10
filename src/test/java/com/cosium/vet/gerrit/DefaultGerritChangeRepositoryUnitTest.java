@@ -3,6 +3,7 @@ package com.cosium.vet.gerrit;
 import com.cosium.vet.gerrit.config.GerritConfiguration;
 import com.cosium.vet.gerrit.config.GerritConfigurationRepository;
 import com.cosium.vet.git.BranchShortName;
+import com.cosium.vet.git.GitClient;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,6 +27,7 @@ public class DefaultGerritChangeRepositoryUnitTest {
   private GerritConfiguration gerritConfiguration;
   private ChangeFactory gerritChangeFactory;
   private PatchSetRepository patchSetRepository;
+  private GitClient git;
 
   private ChangeRepository tested;
 
@@ -48,9 +50,10 @@ public class DefaultGerritChangeRepositoryUnitTest {
 
     gerritChangeFactory = mock(ChangeFactory.class);
     patchSetRepository = mock(PatchSetRepository.class);
+    git = mock(GitClient.class);
     tested =
         new DefaultChangeRepository(
-            configurationRepository, gerritChangeFactory, patchSetRepository);
+            configurationRepository, gerritChangeFactory, patchSetRepository, git);
   }
 
   @Test

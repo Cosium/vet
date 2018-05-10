@@ -5,8 +5,6 @@ import com.cosium.vet.log.LoggerFactory;
 import com.cosium.vet.thirdparty.apache_commons_io.IOUtils;
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -39,6 +37,7 @@ public class BasicCommandRunner implements CommandRunner {
         throw new CommandRunException(exitCode, output, command);
       }
 
+      LOG.debug(output);
       return StringUtils.defaultIfBlank(output, null);
     } catch (IOException | InterruptedException e) {
       throw new RuntimeException(e);

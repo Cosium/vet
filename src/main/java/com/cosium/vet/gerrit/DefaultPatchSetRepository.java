@@ -11,6 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.Optional.of;
 import static java.util.Optional.ofNullable;
 
 /**
@@ -30,9 +31,7 @@ public class DefaultPatchSetRepository implements PatchSetRepository {
   private final PatchSetCommitMessageFactory commitMessageFactory;
 
   DefaultPatchSetRepository(
-      GitClient gitClient,
-      PushUrl pushUrl,
-      PatchSetCommitMessageFactory commitMessageFactory) {
+      GitClient gitClient, PushUrl pushUrl, PatchSetCommitMessageFactory commitMessageFactory) {
     this.git = requireNonNull(gitClient);
     this.pushUrl = requireNonNull(pushUrl);
     this.commitMessageFactory = requireNonNull(commitMessageFactory);
@@ -44,7 +43,7 @@ public class DefaultPatchSetRepository implements PatchSetRepository {
    * @return The latest revision for the provided change numeric id
    */
   private Optional<PatchSetRef> getLatestRevision(
-          PushUrl pushUrl, ChangeNumericId changeNumericId) {
+      PushUrl pushUrl, ChangeNumericId changeNumericId) {
     return git.listRemoteRefs(RemoteName.of(pushUrl.toString()))
         .stream()
         .map(PatchSetRefBuilder::new)
@@ -74,9 +73,8 @@ public class DefaultPatchSetRepository implements PatchSetRepository {
         this,
         startRevision,
         endRevision);
-    CommitMessage latestPatchSetCommitMessage =
-        getLastestPatchSetCommitMessage(numericId).orElse(null);
-    CommitMessage commitMessage = commitMessageFactory.build(latestPatchSetCommitMessage);
+    Patch lastestPatch = getLastestPatch(numericId).orElse(null);
+    CommitMessage commitMessage = commitMessageFactory.build(lastestPatch);
 
     LOG.debug("Creating commit tree with message '{}'", commitMessage);
     String commitId = git.commitTree(endRevision, startRevision, commitMessage.toString());
@@ -89,43 +87,60 @@ public class DefaultPatchSetRepository implements PatchSetRepository {
             pushUrl.toString(),
             String.format(
                 "%s:refs/for/%s%%%s", commitId, targetBranch, StringUtils.defaultString(options)));
-    return buildPatch(numericId, output);
+    return buildPatch(
+        lastestPatch == null ? 1 : lastestPatch.getId(), numericId, commitMessage, output);
   }
 
-  private Patch buildPatch(ChangeNumericId numericId, String pushToRefForOutput) {
+  private Patch buildPatch(
+      int id, ChangeNumericId numericId, CommitMessage commitMessage, String pushToRefForOutput) {
     numericId =
         ofNullable(numericId)
             .orElseGet(
                 () -> ChangeNumericId.parseFromPushToRefForOutput(pushUrl, pushToRefForOutput));
-    return new DefaultPatch(numericId);
+    return new DefaultPatch(id, numericId, commitMessage);
   }
 
   @Override
-  public Optional<CommitMessage> getLastestPatchSetCommitMessage(ChangeNumericId changeNumericId) {
+  public Optional<Patch> getLastestPatch(ChangeNumericId changeNumericId) {
     if (changeNumericId == null) {
       return Optional.empty();
     }
 
-    PatchSetRef latestRevision = getLatestRevision(pushUrl, changeNumericId).orElse(null);
-    if (latestRevision == null) {
+    PatchSetRef latestPatchSetRef = getLatestRevision(pushUrl, changeNumericId).orElse(null);
+    if (latestPatchSetRef == null) {
       LOG.debug("No revision found for change {}", changeNumericId);
       return Optional.empty();
     }
-    git.fetch(RemoteName.of(pushUrl.toString()), latestRevision.getBranchRefName());
-    RevisionId revisionId = latestRevision.getRevisionId();
-    return ofNullable(git.getCommitMessage(revisionId));
+    git.fetch(RemoteName.of(pushUrl.toString()), latestPatchSetRef.getBranchRefName());
+    RevisionId revisionId = latestPatchSetRef.getRevisionId();
+    return of(
+        new DefaultPatch(latestPatchSetRef.id, changeNumericId, git.getCommitMessage(revisionId)));
   }
 
   private class DefaultPatch implements Patch {
+    private final int id;
     private final ChangeNumericId changeNumericId;
+    private final CommitMessage commitMessage;
 
-    private DefaultPatch(ChangeNumericId changeNumericId) {
+    private DefaultPatch(int id, ChangeNumericId changeNumericId, CommitMessage commitMessage) {
+      this.id = id;
       this.changeNumericId = requireNonNull(changeNumericId);
+      this.commitMessage = requireNonNull(commitMessage);
+    }
+
+    @Override
+    public int getId() {
+      return id;
     }
 
     @Override
     public ChangeNumericId getChangeNumericId() {
       return changeNumericId;
+    }
+
+    @Override
+    public CommitMessage getCommitMessage() {
+      return commitMessage;
     }
   }
 

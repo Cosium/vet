@@ -9,8 +9,8 @@ import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
  */
 public class DefaultUserOutput implements UserOutput {
   @Override
-  public void display(String message, boolean noLineBreakAppending) {
-    if (noLineBreakAppending) {
+  public void display(String message, boolean appendLineBreak) {
+    if (!appendLineBreak) {
       System.out.print(message + StringUtils.SPACE);
     } else {
       System.out.println(message + StringUtils.SPACE);
@@ -19,6 +19,6 @@ public class DefaultUserOutput implements UserOutput {
 
   @Override
   public void display(String message) {
-    display(message, false);
+    display(message, true);
   }
 }

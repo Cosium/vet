@@ -1,4 +1,4 @@
-package com.cosium.vet.command.track;
+package com.cosium.vet.command.checkout;
 
 import com.cosium.vet.command.VetAdvancedCommandArgParser;
 import com.cosium.vet.command.VetCommand;
@@ -18,18 +18,19 @@ import static java.util.Optional.ofNullable;
  *
  * @author Reda.Housni-Alaoui
  */
-public class TrackCommandArgParser implements VetAdvancedCommandArgParser {
+public class CheckoutCommandArgParser implements VetAdvancedCommandArgParser {
 
-  private static final String COMMAND_NAME = "track";
+  private static final String COMMAND_NAME = "checkout";
 
   private static final String FORCE = "f";
   private static final String CHANGE_NUMERIC_ID = "i";
   private static final String CHANGE_TARGET_BRANCH = "t";
+  private static final String CHECKOUT_BRANCH = "b";
 
-  private final TrackCommandFactory factory;
+  private final CheckoutCommandFactory factory;
   private final Options options;
 
-  public TrackCommandArgParser(TrackCommandFactory factory) {
+  public CheckoutCommandArgParser(CheckoutCommandFactory factory) {
     this.factory = requireNonNull(factory);
     options = new Options();
     options.addOption(
@@ -51,7 +52,14 @@ public class TrackCommandArgParser implements VetAdvancedCommandArgParser {
             .argName("branch")
             .longOpt("target-branch")
             .hasArg()
-            .desc("The change target branch.")
+            .desc("The target branch of the change.")
+            .build());
+    options.addOption(
+        Option.builder(CHECKOUT_BRANCH)
+            .argName("branch")
+            .longOpt("checkout-branch")
+            .hasArg()
+            .desc("The branch that will track the change.")
             .build());
   }
 
@@ -62,7 +70,7 @@ public class TrackCommandArgParser implements VetAdvancedCommandArgParser {
         String.format("%s %s", executableName, COMMAND_NAME),
         StringUtils.EMPTY,
         options,
-        "Starts tracking an existing change.",
+        "Checkout and track an existing change.",
         true);
   }
 
@@ -100,6 +108,12 @@ public class TrackCommandArgParser implements VetAdvancedCommandArgParser {
             .map(BranchShortName::of)
             .orElse(null);
 
-    return factory.build(force, numericId, targetBranch);
+    BranchShortName checkoutBranch =
+        ofNullable(commandLine.getOptionValue(CHECKOUT_BRANCH))
+            .filter(StringUtils::isNotBlank)
+            .map(BranchShortName::of)
+            .orElse(null);
+
+    return factory.build(force, numericId, targetBranch, checkoutBranch);
   }
 }

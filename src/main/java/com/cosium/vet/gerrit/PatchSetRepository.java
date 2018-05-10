@@ -22,7 +22,7 @@ public interface PatchSetRepository {
 
   /**
    * @param changeNumericId The change numeric id
-   * @return The latest patch set commit message of the provided change numeric id.
+   * @return The latest patch of the provided change numeric id.
    */
-  Optional<CommitMessage> getLastestPatchSetCommitMessage(ChangeNumericId changeNumericId);
+  Optional<Patch> getLastestPatch(ChangeNumericId changeNumericId);
 }

@@ -78,8 +78,11 @@ public class GerritPatchSetRepositoryUnitTest {
     when(git.getCommitMessage(_1081_2.getRevisionId()))
         .thenReturn(CommitMessage.of("Foo man Change-Id: I1111"));
 
-    assertThat(tested.getLastestPatchSetCommitMessage(_1081))
-        .contains(CommitMessage.of("Foo man Change-Id: I1111"));
+    assertThat(tested.getLastestPatch(_1081))
+        .hasValueSatisfying(
+            patch ->
+                assertThat(patch.getCommitMessage())
+                    .isEqualTo(CommitMessage.of("Foo man Change-Id: I1111")));
   }
 
   @Test
@@ -98,8 +101,11 @@ public class GerritPatchSetRepositoryUnitTest {
     when(git.getCommitMessage(_1081_3.getRevisionId()))
         .thenReturn(CommitMessage.of("Bar man Change-Id: I1111"));
 
-    assertThat(tested.getLastestPatchSetCommitMessage(_1081))
-        .contains(CommitMessage.of("Bar man Change-Id: I1111"));
+    assertThat(tested.getLastestPatch(_1081))
+        .hasValueSatisfying(
+            patch ->
+                assertThat(patch.getCommitMessage())
+                    .isEqualTo(CommitMessage.of("Bar man Change-Id: I1111")));
   }
 
   @Test
@@ -112,8 +118,11 @@ public class GerritPatchSetRepositoryUnitTest {
     when(git.getCommitMessage(_1048_1.getRevisionId()))
         .thenReturn(CommitMessage.of("Bar man Change-Id: I2222"));
 
-    assertThat(tested.getLastestPatchSetCommitMessage(_1081))
-        .contains(CommitMessage.of("Foo man Change-Id: I2222"));
+    assertThat(tested.getLastestPatch(_1081))
+        .hasValueSatisfying(
+            patch ->
+                assertThat(patch.getCommitMessage())
+                    .isEqualTo(CommitMessage.of("Foo man Change-Id: I2222")));
   }
 
   @Test

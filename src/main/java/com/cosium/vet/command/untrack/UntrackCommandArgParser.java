@@ -31,7 +31,7 @@ public class UntrackCommandArgParser implements VetAdvancedCommandArgParser {
             .numberOfArgs(0)
             .longOpt("force")
             .hasArg()
-            .desc("Forces the execution of the command, bypassing any interactive prompt.")
+            .desc("Forces the execution of the command, bypassing any confirmation prompt.")
             .build());
   }
 
@@ -42,7 +42,7 @@ public class UntrackCommandArgParser implements VetAdvancedCommandArgParser {
         String.format("%s %s", executableName, COMMAND_NAME),
         StringUtils.EMPTY,
         options,
-        "Starts tracking an existing change set.",
+        "Starts tracking an existing change.",
         true);
   }
 

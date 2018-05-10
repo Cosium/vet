@@ -81,4 +81,10 @@ public interface GitClient {
    * @param branchShortName The branch to fetch
    */
   void fetch(RemoteName remote, BranchShortName branchShortName);
+
+  String status();
+
+  String checkoutFetchHead();
+
+  String checkoutNewBranch(BranchShortName branchShortName);
 }

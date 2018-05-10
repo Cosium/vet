@@ -9,9 +9,9 @@ public interface UserOutput {
 
   /**
    * @param message The message to display to the user
-   * @param noLineBreakAppending Don't append a line break
+   * @param appendLineBreak Don't append a line break
    */
-  void display(String message, boolean noLineBreakAppending);
+  void display(String message, boolean appendLineBreak);
 
   /** @param message The message to display to the user */
   void display(String message);

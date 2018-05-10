@@ -2,9 +2,13 @@ package com.cosium.vet.gerrit;
 
 import com.cosium.vet.gerrit.config.GerritConfiguration;
 import com.cosium.vet.gerrit.config.GerritConfigurationRepository;
+import com.cosium.vet.git.BranchRefName;
 import com.cosium.vet.git.BranchShortName;
+import com.cosium.vet.git.GitClient;
+import com.cosium.vet.git.RemoteName;
 import com.cosium.vet.log.Logger;
 import com.cosium.vet.log.LoggerFactory;
+import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 
 import java.util.Optional;
 
@@ -22,14 +26,17 @@ class DefaultChangeRepository implements ChangeRepository {
   private final GerritConfigurationRepository configurationRepository;
   private final ChangeFactory changeFactory;
   private final PatchSetRepository patchSetRepository;
+  private final GitClient git;
 
   DefaultChangeRepository(
       GerritConfigurationRepository configurationRepository,
       ChangeFactory changeFactory,
-      PatchSetRepository patchSetRepository) {
+      PatchSetRepository patchSetRepository,
+      GitClient git) {
     this.configurationRepository = requireNonNull(configurationRepository);
     this.changeFactory = requireNonNull(changeFactory);
     this.patchSetRepository = requireNonNull(patchSetRepository);
+    this.git = requireNonNull(git);
   }
 
   @Override
@@ -73,6 +80,25 @@ class DefaultChangeRepository implements ChangeRepository {
   }
 
   @Override
+  public Change checkoutAndTrackChange(
+      BranchShortName checkoutBranch, ChangeNumericId numericId, BranchShortName branchShortName) {
+    Patch latestPatch =
+        patchSetRepository
+            .getLastestPatch(numericId)
+            .orElseThrow(
+                () -> new RuntimeException("No patch found for change with id " + numericId));
+    String numericIdStr = numericId.toString();
+    String numericIdSuffix = StringUtils.substring(numericIdStr, numericIdStr.length() - 2);
+    git.fetch(
+        RemoteName.ORIGIN,
+        BranchRefName.of(
+            "refs/changes/" + numericIdSuffix + "/" + numericId + "/" + latestPatch.getId()));
+    git.checkoutFetchHead();
+    git.checkoutNewBranch(checkoutBranch);
+    return trackChange(numericId, branchShortName);
+  }
+
+  @Override
   public Change trackNewChange(BranchShortName targetBranch) {
     Patch patch = patchSetRepository.createPatch(targetBranch, null, null);
     return trackChange(patch.getChangeNumericId(), targetBranch);
@@ -80,6 +106,6 @@ class DefaultChangeRepository implements ChangeRepository {
 
   @Override
   public boolean exists(ChangeNumericId numericId) {
-    return patchSetRepository.getLastestPatchSetCommitMessage(numericId).isPresent();
+    return patchSetRepository.getLastestPatch(numericId).isPresent();
   }
 }

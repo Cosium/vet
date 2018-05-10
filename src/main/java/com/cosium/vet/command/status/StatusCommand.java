@@ -4,6 +4,8 @@ import com.cosium.vet.command.VetCommand;
 import com.cosium.vet.gerrit.Change;
 import com.cosium.vet.gerrit.ChangeRepository;
 import com.cosium.vet.gerrit.ChangeRepositoryFactory;
+import com.cosium.vet.git.GitClient;
+import com.cosium.vet.git.GitProvider;
 import com.cosium.vet.runtime.UserOutput;
 
 import java.util.Optional;
@@ -17,10 +19,12 @@ import static java.util.Objects.requireNonNull;
  */
 public class StatusCommand implements VetCommand {
 
+  private final GitClient git;
   private final ChangeRepository changeRepository;
   private final UserOutput userOutput;
 
-  private StatusCommand(ChangeRepository changeRepository, UserOutput userOutput) {
+  private StatusCommand(GitClient git, ChangeRepository changeRepository, UserOutput userOutput) {
+    this.git = requireNonNull(git);
     this.changeRepository = requireNonNull(changeRepository);
     this.userOutput = requireNonNull(userOutput);
   }
@@ -28,6 +32,7 @@ public class StatusCommand implements VetCommand {
   @Override
   public void execute() {
     Optional<Change> change = changeRepository.getTrackedChange();
+    userOutput.display(git.status());
     if (change.isPresent()) {
       userOutput.display("Tracking change " + change.get() + ".");
     } else {
@@ -37,17 +42,22 @@ public class StatusCommand implements VetCommand {
 
   public static class Factory implements StatusCommandFactory {
 
+    private final GitProvider gitProvider;
     private final ChangeRepositoryFactory changeRepositoryFactory;
     private final UserOutput userOutput;
 
-    public Factory(ChangeRepositoryFactory changeRepositoryFactory, UserOutput userOutput) {
+    public Factory(
+        GitProvider gitProvider,
+        ChangeRepositoryFactory changeRepositoryFactory,
+        UserOutput userOutput) {
+      this.gitProvider = requireNonNull(gitProvider);
       this.changeRepositoryFactory = requireNonNull(changeRepositoryFactory);
       this.userOutput = requireNonNull(userOutput);
     }
 
     @Override
     public StatusCommand build() {
-      return new StatusCommand(changeRepositoryFactory.build(), userOutput);
+      return new StatusCommand(gitProvider.build(), changeRepositoryFactory.build(), userOutput);
     }
   }
 }

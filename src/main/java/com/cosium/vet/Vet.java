@@ -3,6 +3,9 @@ package com.cosium.vet;
 import com.cosium.vet.command.CompositeCommandArgParser;
 import com.cosium.vet.command.DebugOptions;
 import com.cosium.vet.command.VetCommandArgParser;
+import com.cosium.vet.command.checkout.CheckoutCommand;
+import com.cosium.vet.command.checkout.CheckoutCommandArgParser;
+import com.cosium.vet.command.checkout.CheckoutCommandFactory;
 import com.cosium.vet.command.create.CreateCommand;
 import com.cosium.vet.command.create.CreateCommandArgParser;
 import com.cosium.vet.command.create.CreateCommandFactory;
@@ -43,6 +46,7 @@ public class Vet {
 
   private final CreateCommandFactory createCommandFactory;
   private final TrackCommandFactory trackCommandFactory;
+  private final CheckoutCommandFactory checkoutCommandFactory;
   private final PushCommandFactory pushCommandFactory;
   private final UntrackCommandFactory untrackCommandFactory;
   private final StatusCommandFactory statusCommandFactory;
@@ -101,9 +105,12 @@ public class Vet {
         new CreateCommand.Factory(changeRepositoryFactory, userInput, userOutput);
     this.trackCommandFactory =
         new TrackCommand.Factory(changeRepositoryFactory, userInput, userOutput);
+    this.checkoutCommandFactory =
+        new CheckoutCommand.Factory(gitProvider, changeRepositoryFactory, userInput, userOutput);
     this.pushCommandFactory = new PushCommand.Factory(changeRepositoryFactory, userOutput);
     this.untrackCommandFactory = new UntrackCommand.Factory(changeRepositoryFactory, userInput);
-    this.statusCommandFactory = new StatusCommand.Factory(changeRepositoryFactory, userOutput);
+    this.statusCommandFactory =
+        new StatusCommand.Factory(gitProvider, changeRepositoryFactory, userOutput);
 
     this.commandParser =
         new CompositeCommandArgParser(
@@ -111,6 +118,7 @@ public class Vet {
             List.of(
                 new CreateCommandArgParser(createCommandFactory),
                 new TrackCommandArgParser(trackCommandFactory),
+                new CheckoutCommandArgParser(checkoutCommandFactory),
                 new PushCommandArgParser(pushCommandFactory),
                 new UntrackCommandArgParser(untrackCommandFactory),
                 new StatusCommandArgParser(statusCommandFactory)),

@@ -36,7 +36,7 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
         Option.builder(PUBLISH_DRAFTED_COMMENTS)
             .numberOfArgs(0)
             .longOpt("publish-drafted-comments")
-            .desc("Publish currently drafted comments of the change set if any.")
+            .desc("Publish currently drafted comments of the change if any.")
             .build());
     options.addOption(
         Option.builder(WORK_IN_PROGRESS)
@@ -67,7 +67,7 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
         String.format("%s %s", executableName, COMMAND_NAME),
         StringUtils.EMPTY,
         options,
-        "Push the changes to Gerrit by adding a new patch set to the current tracked change set.",
+        "Push the changes to Gerrit by adding a new patch set to the current tracked change.",
         true);
   }
 

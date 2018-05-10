@@ -33,14 +33,14 @@ class DefaultPatchSetCommitMessageFactory implements PatchSetCommitMessageFactor
   }
 
   @Override
-  public CommitMessage build(CommitMessage latestPatchSetCommitMessage) {
+  public CommitMessage build(Patch latestPatch) {
     String changeChangeId;
     CommitMessage commitMessage;
-    if (latestPatchSetCommitMessage == null) {
+    if (latestPatch == null) {
       commitMessage = git.getLastCommitMessage();
       changeChangeId = generateChangeChangeId(commitMessage);
     } else {
-      commitMessage = latestPatchSetCommitMessage;
+      commitMessage = latestPatch.getCommitMessage();
       changeChangeId = parseChangeChangeId(commitMessage);
     }
 
