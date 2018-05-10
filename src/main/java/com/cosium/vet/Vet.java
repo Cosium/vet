@@ -9,6 +9,9 @@ import com.cosium.vet.command.create.CreateCommandFactory;
 import com.cosium.vet.command.push.PushCommand;
 import com.cosium.vet.command.push.PushCommandArgParser;
 import com.cosium.vet.command.push.PushCommandFactory;
+import com.cosium.vet.command.status.StatusCommand;
+import com.cosium.vet.command.status.StatusCommandArgParser;
+import com.cosium.vet.command.status.StatusCommandFactory;
 import com.cosium.vet.command.track.TrackCommand;
 import com.cosium.vet.command.track.TrackCommandArgParser;
 import com.cosium.vet.command.track.TrackCommandFactory;
@@ -42,6 +45,7 @@ public class Vet {
   private final TrackCommandFactory trackCommandFactory;
   private final PushCommandFactory pushCommandFactory;
   private final UntrackCommandFactory untrackCommandFactory;
+  private final StatusCommandFactory statusCommandFactory;
   private final VetCommandArgParser commandParser;
 
   /**
@@ -99,6 +103,7 @@ public class Vet {
         new TrackCommand.Factory(changeRepositoryFactory, userInput, userOutput);
     this.pushCommandFactory = new PushCommand.Factory(changeRepositoryFactory, userOutput);
     this.untrackCommandFactory = new UntrackCommand.Factory(changeRepositoryFactory, userInput);
+    this.statusCommandFactory = new StatusCommand.Factory(changeRepositoryFactory, userOutput);
 
     this.commandParser =
         new CompositeCommandArgParser(
@@ -107,7 +112,8 @@ public class Vet {
                 new CreateCommandArgParser(createCommandFactory),
                 new TrackCommandArgParser(trackCommandFactory),
                 new PushCommandArgParser(pushCommandFactory),
-                new UntrackCommandArgParser(untrackCommandFactory)),
+                new UntrackCommandArgParser(untrackCommandFactory),
+                new StatusCommandArgParser(statusCommandFactory)),
             debugOptions);
   }
 

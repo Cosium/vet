@@ -55,7 +55,7 @@ public class CreateCommand implements VetCommand {
     BranchShortName targetBranch = getTargetBranch();
     Change change = changeRepository.trackNewChange(targetBranch);
 
-    userOutput.display("Now tracking new change " + change);
+    userOutput.display("Now tracking new change " + change + ".");
   }
 
   private boolean preserveCurrentChange() {

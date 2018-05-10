@@ -63,7 +63,8 @@ public class TrackCommand implements VetCommand {
           "Could not find any change identified by " + numericId + " on Gerrit. Aborting.");
       return;
     }
-    changeRepository.trackChange(numericId, getTargetBranch());
+    Change change = changeRepository.trackChange(numericId, getTargetBranch());
+    userOutput.display("Now tracking change " + change + ".");
   }
 
   private boolean preserveCurrentChange() {
