@@ -30,7 +30,6 @@ public class UntrackCommandArgParser implements VetAdvancedCommandArgParser {
         Option.builder(FORCE)
             .numberOfArgs(0)
             .longOpt("force")
-            .hasArg()
             .desc("Forces the execution of the command, bypassing any confirmation prompt.")
             .build());
   }
