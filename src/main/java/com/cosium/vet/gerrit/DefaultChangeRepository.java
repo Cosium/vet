@@ -99,9 +99,15 @@ class DefaultChangeRepository implements ChangeRepository {
   }
 
   @Override
-  public Change trackNewChange(BranchShortName targetBranch) {
+  public Change createAndTrackChange(BranchShortName targetBranch) {
     Patch patch = patchSetRepository.createPatch(targetBranch, null, null);
     return trackChange(patch.getChangeNumericId(), targetBranch);
+  }
+
+  @Override
+  public Change checkoutNewChange(BranchShortName checkoutBranch, BranchShortName targetBranch) {
+    Patch patch = patchSetRepository.createPatch(targetBranch, null, null);
+    return checkoutAndTrackChange(checkoutBranch, patch.getChangeNumericId(), targetBranch);
   }
 
   @Override

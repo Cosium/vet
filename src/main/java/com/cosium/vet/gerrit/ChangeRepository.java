@@ -39,7 +39,16 @@ public interface ChangeRepository {
    * @param targetBranch The target branch
    * @return The new tracked change
    */
-  Change trackNewChange(BranchShortName targetBranch);
+  Change createAndTrackChange(BranchShortName targetBranch);
+
+  /**
+   * Creates a new change and check it out
+   *
+   * @param checkoutBranch The branch that will track the change
+   * @param targetBranch The target branch
+   * @return The new tracked change
+   */
+  Change checkoutNewChange(BranchShortName checkoutBranch, BranchShortName targetBranch);
 
   /**
    * @param numericId The change numeric id
