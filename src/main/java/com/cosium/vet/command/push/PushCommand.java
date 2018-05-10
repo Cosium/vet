@@ -52,7 +52,8 @@ public class PushCommand implements VetCommand {
     if (change == null) {
       LOG.debug("No tracked change found");
       userOutput.display(
-          "There is no currently tracked change. Please use 'create' or 'track' command to track a change.");
+          "There is no currently tracked change.\n"
+              + "Use 'create' or 'track' command to start tracking a change.");
       return;
     }
 
@@ -70,8 +71,7 @@ public class PushCommand implements VetCommand {
     private final ChangeRepositoryFactory gerritChangeRepositoryFactory;
     private final UserOutput userOutput;
 
-    public Factory(
-            ChangeRepositoryFactory gerritChangeRepositoryFactory, UserOutput userOutput) {
+    public Factory(ChangeRepositoryFactory gerritChangeRepositoryFactory, UserOutput userOutput) {
       this.gerritChangeRepositoryFactory = requireNonNull(gerritChangeRepositoryFactory);
       this.userOutput = requireNonNull(userOutput);
     }

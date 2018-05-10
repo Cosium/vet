@@ -56,7 +56,7 @@ public class UntrackCommand implements VetCommand {
     return !userInput.askYesNo(
         "You are tracking change "
             + gerritChange
-            + ". Are you sure that you want to stop tracking the current change?",
+            + ".\nAre you sure that you want to stop tracking this change?",
         false);
   }
 
