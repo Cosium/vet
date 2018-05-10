@@ -97,7 +97,7 @@ public class DefaultPatchSetRepository implements PatchSetRepository {
         ofNullable(numericId)
             .orElseGet(
                 () -> ChangeNumericId.parseFromPushToRefForOutput(pushUrl, pushToRefForOutput));
-    return new DefaultPatch(id, numericId, commitMessage);
+    return new DefaultPatch(id, numericId, commitMessage, pushToRefForOutput);
   }
 
   @Override
@@ -131,11 +131,18 @@ public class DefaultPatchSetRepository implements PatchSetRepository {
     private final int id;
     private final ChangeNumericId changeNumericId;
     private final CommitMessage commitMessage;
+    private final String creationLog;
 
     private DefaultPatch(int id, ChangeNumericId changeNumericId, CommitMessage commitMessage) {
+      this(id, changeNumericId, commitMessage, null);
+    }
+
+    private DefaultPatch(
+        int id, ChangeNumericId changeNumericId, CommitMessage commitMessage, String creationLog) {
       this.id = id;
       this.changeNumericId = requireNonNull(changeNumericId);
       this.commitMessage = requireNonNull(commitMessage);
+      this.creationLog = creationLog;
     }
 
     @Override
@@ -151,6 +158,11 @@ public class DefaultPatchSetRepository implements PatchSetRepository {
     @Override
     public CommitMessage getCommitMessage() {
       return commitMessage;
+    }
+
+    @Override
+    public Optional<String> getCreationLog() {
+      return Optional.ofNullable(creationLog);
     }
   }
 

@@ -55,12 +55,14 @@ public class PushCommand implements VetCommand {
 
     LOG.debug("Found tracked change {}", change);
 
-    change.createPatchSet(
-        BooleanUtils.toBoolean(publishDraftedComments),
-        BooleanUtils.toBoolean(workInProgress),
-        patchSetSubject,
-        BooleanUtils.toBoolean(bypassReview));
+    String output =
+        change.createPatchSet(
+            BooleanUtils.toBoolean(publishDraftedComments),
+            BooleanUtils.toBoolean(workInProgress),
+            patchSetSubject,
+            BooleanUtils.toBoolean(bypassReview));
 
+    userOutput.display(output);
     userOutput.display("Pushed to " + change);
   }
 

@@ -41,15 +41,19 @@ class DefaultChange implements Change {
   }
 
   @Override
-  public void createPatchSet(
+  public String createPatchSet(
       boolean publishDraftComments,
       boolean workInProgress,
       PatchSetSubject subject,
       boolean bypassReview) {
-    patchSetRepository.createPatch(
-        targetBranch,
-        numericId,
-        buildPatchSetOptions(publishDraftComments, workInProgress, subject, bypassReview));
+    Patch patch =
+        patchSetRepository.createPatch(
+            targetBranch,
+            numericId,
+            buildPatchSetOptions(publishDraftComments, workInProgress, subject, bypassReview));
+    return patch
+        .getCreationLog()
+        .orElseThrow(() -> new RuntimeException("Could not extract the creation log"));
   }
 
   private String buildPatchSetOptions(
