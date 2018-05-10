@@ -58,7 +58,7 @@ public interface ChangeRepository {
   boolean exists(ChangeNumericId numericId);
 
   /**
-   * Pull modifications from remote
+   * Pull modifications from remote for the current tracked change
    *
    * @return The command output
    */
