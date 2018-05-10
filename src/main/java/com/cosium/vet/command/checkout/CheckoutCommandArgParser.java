@@ -114,6 +114,6 @@ public class CheckoutCommandArgParser implements VetAdvancedCommandArgParser {
             .map(BranchShortName::of)
             .orElse(null);
 
-    return factory.build(force, numericId, targetBranch, checkoutBranch);
+    return factory.build(force, checkoutBranch, numericId, targetBranch);
   }
 }

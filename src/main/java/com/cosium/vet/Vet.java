@@ -137,6 +137,14 @@ public class Vet {
     trackCommandFactory.build(force, numericId, targetBranch).execute();
   }
 
+  public void checkout(
+      Boolean force,
+      BranchShortName checkoutBranch,
+      ChangeNumericId numericId,
+      BranchShortName targetbranch) {
+    checkoutCommandFactory.build(force, checkoutBranch, numericId, targetbranch);
+  }
+
   /**
    * Executes the push command.
    *
@@ -157,5 +165,9 @@ public class Vet {
 
   public void untrack(Boolean force) {
     untrackCommandFactory.build(force).execute();
+  }
+
+  public void status() {
+    statusCommandFactory.build().execute();
   }
 }

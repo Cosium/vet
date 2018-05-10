@@ -12,14 +12,14 @@ public interface CheckoutCommandFactory {
 
   /**
    * @param force True to force the command execution without prompt
-   * @param numericId The numeric id of the change to track
-   * @param branchShortName The target branch of the change to track
    * @param checkoutBranch The branch to checkout that will track the change
+   * @param numericId The numeric id of the change to track
+   * @param targetBranch The target branch of the change to track
    * @return A new track command
    */
   CheckoutCommand build(
       Boolean force,
+      BranchShortName checkoutBranch,
       ChangeNumericId numericId,
-      BranchShortName branchShortName,
-      BranchShortName checkoutBranch);
+      BranchShortName targetBranch);
 }

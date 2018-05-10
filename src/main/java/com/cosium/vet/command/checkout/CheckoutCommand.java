@@ -131,10 +131,9 @@ public class CheckoutCommand implements VetCommand {
 
     @Override
     public CheckoutCommand build(
-        Boolean force,
-        ChangeNumericId numericId,
-        BranchShortName targetBranch,
-        BranchShortName checkoutBranch) {
+            Boolean force,
+            BranchShortName checkoutBranch, ChangeNumericId numericId,
+            BranchShortName targetBranch) {
       return new CheckoutCommand(
           gitProvider.build(),
           changeRepositoryFactory.build(),
