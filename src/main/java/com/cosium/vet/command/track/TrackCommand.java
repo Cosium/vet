@@ -64,7 +64,7 @@ public class TrackCommand implements VetCommand {
       return;
     }
     Change change = changeRepository.trackChange(numericId, getTargetBranch());
-    userOutput.display("Now tracking change " + change + ".");
+    userOutput.display("Now tracking change " + change);
   }
 
   private boolean preserveCurrentChange() {

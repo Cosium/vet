@@ -34,7 +34,7 @@ public class StatusCommand implements VetCommand {
     Optional<Change> change = changeRepository.getTrackedChange();
     userOutput.display(git.status());
     if (change.isPresent()) {
-      userOutput.display("Tracking change " + change.get() + ".");
+      userOutput.display("Tracking change " + change.get());
     } else {
       userOutput.display("No tracked change.");
     }

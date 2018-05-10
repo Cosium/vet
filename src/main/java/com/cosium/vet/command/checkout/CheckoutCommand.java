@@ -71,7 +71,7 @@ public class CheckoutCommand implements VetCommand {
         changeRepository.checkoutAndTrackChange(checkoutBranch, numericId, targetBranch);
 
     userOutput.display(git.status());
-    userOutput.display("Now tracking change " + change + ".");
+    userOutput.display("Now tracking change " + change);
   }
 
   private boolean confirm(
@@ -131,9 +131,10 @@ public class CheckoutCommand implements VetCommand {
 
     @Override
     public CheckoutCommand build(
-            Boolean force,
-            BranchShortName checkoutBranch, ChangeNumericId numericId,
-            BranchShortName targetBranch) {
+        Boolean force,
+        BranchShortName checkoutBranch,
+        ChangeNumericId numericId,
+        BranchShortName targetBranch) {
       return new CheckoutCommand(
           gitProvider.build(),
           changeRepositoryFactory.build(),

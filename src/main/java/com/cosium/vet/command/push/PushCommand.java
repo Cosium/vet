@@ -64,6 +64,8 @@ public class PushCommand implements VetCommand {
         BooleanUtils.toBoolean(workInProgress),
         patchSetSubject,
         BooleanUtils.toBoolean(bypassReview));
+
+    userOutput.display("Pushed to " + change);
   }
 
   public static class Factory implements PushCommandFactory {
