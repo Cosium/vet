@@ -96,4 +96,6 @@ public interface GitClient {
   String checkoutFetchHead();
 
   String checkoutNewBranch(BranchShortName branchShortName);
+
+  String resetHard(BranchShortName branchShortName);
 }

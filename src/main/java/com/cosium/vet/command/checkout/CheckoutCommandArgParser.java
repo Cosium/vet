@@ -70,7 +70,7 @@ public class CheckoutCommandArgParser implements VetAdvancedCommandArgParser {
         String.format("%s %s", executableName, COMMAND_NAME),
         StringUtils.EMPTY,
         options,
-        "Track an existing change from a new branch",
+        "Tracks an existing change from a new branch",
         true);
   }
 

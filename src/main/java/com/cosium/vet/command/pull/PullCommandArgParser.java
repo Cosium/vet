@@ -33,7 +33,7 @@ public class PullCommandArgParser implements VetAdvancedCommandArgParser {
         String.format("%s %s", executableName, COMMAND_NAME),
         StringUtils.EMPTY,
         options,
-        "Pull modifications of the curretly tracked change",
+        "Pulls modifications of the currently tracked change",
         true);
   }
 

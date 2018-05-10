@@ -12,11 +12,11 @@ import java.util.regex.Pattern;
  */
 public class CodeReviewVote extends NonBlankString {
 
-  private static final Pattern VALIDATION_PATTERN = Pattern.compile("[+|\\-]\\d");
+  public static final CodeReviewVote PLUS_2 = CodeReviewVote.of("+2");
 
   private CodeReviewVote(String value) {
     super(value);
-    Matcher matcher = VALIDATION_PATTERN.matcher(value);
+    Matcher matcher = Pattern.compile("[+|\\-]\\d").matcher(value);
     if (!matcher.matches()) {
       throw new IllegalArgumentException("'" + value + "' is not a valid code review vote format");
     }

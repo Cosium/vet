@@ -139,4 +139,10 @@ class DefaultGitClient implements GitClient {
     return commandRunner.run(
         repositoryDirectory, GIT, "checkout", "-b", branchShortName.toString());
   }
+
+  @Override
+  public String resetHard(BranchShortName branchShortName) {
+    return commandRunner.run(
+        repositoryDirectory, GIT, "reset", "--hard", branchShortName.toString());
+  }
 }

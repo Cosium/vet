@@ -33,7 +33,7 @@ public class StatusCommandArgParser implements VetAdvancedCommandArgParser {
         String.format("%s %s", executableName, COMMAND_NAME),
         StringUtils.EMPTY,
         options,
-        "Display the current status",
+        "Displays the current status",
         true);
   }
 

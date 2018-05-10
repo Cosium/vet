@@ -51,7 +51,7 @@ public class NewCommandArgParser implements VetAdvancedCommandArgParser {
         String.format("%s %s", executableName, COMMAND_NAME),
         StringUtils.EMPTY,
         options,
-        "Create a new change and track it from the current branch.",
+        "Creates a new change and tracks it from the current branch.",
         true);
   }
 

@@ -76,7 +76,7 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
         String.format("%s %s", executableName, COMMAND_NAME),
         StringUtils.EMPTY,
         options,
-        "Upload modifications to the currently tracked change",
+        "Uploads modifications to the currently tracked change",
         true);
   }
 

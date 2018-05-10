@@ -9,6 +9,9 @@ import com.cosium.vet.command.checkout.CheckoutCommandFactory;
 import com.cosium.vet.command.checkout_new.CheckoutNewCommand;
 import com.cosium.vet.command.checkout_new.CheckoutNewCommandArgParser;
 import com.cosium.vet.command.checkout_new.CheckoutNewCommandFactory;
+import com.cosium.vet.command.fire_and_forget.FireAndForgetCommand;
+import com.cosium.vet.command.fire_and_forget.FireAndForgetCommandArgParser;
+import com.cosium.vet.command.fire_and_forget.FireAndForgetCommandFactory;
 import com.cosium.vet.command.new_.NewCommand;
 import com.cosium.vet.command.new_.NewCommandArgParser;
 import com.cosium.vet.command.new_.NewCommandFactory;
@@ -51,6 +54,7 @@ public class Vet {
   private final UntrackCommandFactory untrackCommandFactory;
   private final StatusCommandFactory statusCommandFactory;
   private final PullCommandFactory pullCommandFactory;
+  private final FireAndForgetCommandFactory fireAndForgetCommandFactory;
   private final VetCommandArgParser commandParser;
 
   /**
@@ -112,6 +116,9 @@ public class Vet {
     this.statusCommandFactory =
         new StatusCommand.Factory(gitProvider, changeRepositoryFactory, userOutput);
     this.pullCommandFactory = new PullCommand.Factory(changeRepositoryFactory, userOutput);
+    this.fireAndForgetCommandFactory =
+        new FireAndForgetCommand.Factory(
+            changeRepositoryFactory, gitProvider, userInput, userOutput);
 
     this.commandParser =
         new CompositeCommandArgParser(
@@ -123,7 +130,8 @@ public class Vet {
                 new PushCommandArgParser(pushCommandFactory),
                 new UntrackCommandArgParser(untrackCommandFactory),
                 new StatusCommandArgParser(statusCommandFactory),
-                new PullCommandArgParser(pullCommandFactory)),
+                new PullCommandArgParser(pullCommandFactory),
+                new FireAndForgetCommandArgParser(fireAndForgetCommandFactory)),
             debugOptions);
   }
 
@@ -133,6 +141,10 @@ public class Vet {
 
   public void new_(Boolean force, BranchShortName targetBranch) {
     newCommandFactory.build(force, targetBranch).execute();
+  }
+
+  public void fireAndForget(Boolean force, BranchShortName targetBranch) {
+    fireAndForgetCommandFactory.build(force, targetBranch).execute();
   }
 
   public void checkoutNew(
