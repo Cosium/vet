@@ -71,7 +71,7 @@ public class NewCommand implements VetCommand {
         "You are tracking change "
             + gerritChange
             + ".\nAre you sure that you want to create and track a new one?",
-        false);
+        true);
   }
 
   private BranchShortName getTargetBranch() {

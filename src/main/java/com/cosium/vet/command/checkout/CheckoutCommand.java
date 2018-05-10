@@ -86,7 +86,7 @@ public class CheckoutCommand implements VetCommand {
             + " to target branch '"
             + targetBranch
             + "'.\nDo you want to continue?",
-        false);
+        true);
   }
 
   private ChangeNumericId getNumericId() {

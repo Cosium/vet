@@ -74,7 +74,7 @@ public class CheckoutNewCommand implements VetCommand {
             + "' will be checkout from change "
             + change
             + ".\nDo you want to continue?",
-        false);
+        true);
   }
 
   private BranchShortName getTargetBranch() {
