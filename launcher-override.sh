@@ -7,5 +7,17 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
+# Preserve quotes on quoted arguments
+WHITESPACE="[[:space:]]"
+RECEIVED_ARGUMENTS=""
+for arg in "$@"
+do
+    if [[ ${arg} =~ $WHITESPACE ]]
+    then
+        arg=\"${arg}\"
+    fi
+    RECEIVED_ARGUMENTS="${RECEIVED_ARGUMENTS} ${arg}"
+done
+
 JLINK_VM_OPTIONS=
-$DIR/java $JLINK_VM_OPTIONS -m com.cosium.vet/com.cosium.vet.App $@
+$DIR/java $JLINK_VM_OPTIONS -m com.cosium.vet/com.cosium.vet.App ${RECEIVED_ARGUMENTS}
