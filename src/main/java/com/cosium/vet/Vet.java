@@ -2,7 +2,10 @@ package com.cosium.vet;
 
 import com.cosium.vet.command.CompositeCommandArgParser;
 import com.cosium.vet.command.DebugOptions;
+import com.cosium.vet.command.VetAdvancedCommandArgParser;
 import com.cosium.vet.command.VetCommandArgParser;
+import com.cosium.vet.command.autocomplete.AutocompleteCommand;
+import com.cosium.vet.command.autocomplete.AutocompleteCommandArgParser;
 import com.cosium.vet.command.checkout.CheckoutCommand;
 import com.cosium.vet.command.checkout.CheckoutCommandArgParser;
 import com.cosium.vet.command.checkout.CheckoutCommandFactory;
@@ -38,6 +41,8 @@ import com.cosium.vet.runtime.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
 
@@ -126,20 +131,27 @@ public class Vet {
     this.trackCommandFactory =
         new TrackCommand.Factory(changeRepositoryFactory, userInput, userOutput);
 
-    this.commandParser =
-        new CompositeCommandArgParser(
-            APP_NAME,
-            List.of(
-                new CheckoutNewCommandArgParser(checkoutNewCommandFactory),
-                new CheckoutCommandArgParser(checkoutCommandFactory),
-                new PushCommandArgParser(pushCommandFactory),
-                new FireAndForgetCommandArgParser(fireAndForgetCommandFactory),
-                new NewCommandArgParser(newCommandFactory),
-                new PullCommandArgParser(pullCommandFactory),
-                new StatusCommandArgParser(statusCommandFactory),
-                new TrackCommandArgParser(trackCommandFactory),
-                new UntrackCommandArgParser(untrackCommandFactory)),
-            debugOptions);
+    List<VetAdvancedCommandArgParser> normalParsers =
+        List.of(
+            new CheckoutNewCommandArgParser(checkoutNewCommandFactory),
+            new CheckoutCommandArgParser(checkoutCommandFactory),
+            new PushCommandArgParser(pushCommandFactory),
+            new FireAndForgetCommandArgParser(fireAndForgetCommandFactory),
+            new NewCommandArgParser(newCommandFactory),
+            new PullCommandArgParser(pullCommandFactory),
+            new StatusCommandArgParser(statusCommandFactory),
+            new TrackCommandArgParser(trackCommandFactory),
+            new UntrackCommandArgParser(untrackCommandFactory));
+
+    AutocompleteCommandArgParser autocompleteCommandArgParser =
+        new AutocompleteCommandArgParser(
+            new AutocompleteCommand.Factory(userOutput, normalParsers));
+
+    List<VetAdvancedCommandArgParser> allParsers =
+        Stream.concat(Stream.of(autocompleteCommandArgParser), normalParsers.stream())
+            .collect(Collectors.toList());
+
+    this.commandParser = new CompositeCommandArgParser(APP_NAME, allParsers, debugOptions);
   }
 
   public void run(String args[]) {

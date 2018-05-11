@@ -1,6 +1,6 @@
 package com.cosium.vet.command.push;
 
-import com.cosium.vet.command.VetAdvancedCommandArgParser;
+import com.cosium.vet.command.AbstractVetAdvancedCommandArgParser;
 import com.cosium.vet.command.VetCommand;
 import com.cosium.vet.gerrit.CodeReviewVote;
 import com.cosium.vet.gerrit.PatchSetSubject;
@@ -17,7 +17,7 @@ import static java.util.Optional.ofNullable;
  *
  * @author Reda.Housni-Alaoui
  */
-public class PushCommandArgParser implements VetAdvancedCommandArgParser {
+public class PushCommandArgParser extends AbstractVetAdvancedCommandArgParser {
 
   private static final String COMMAND_NAME = "push";
 
@@ -28,45 +28,44 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
   private static final String CODE_REVIEW_VOTE = "c";
 
   private final PushCommandFactory pushCommandFactory;
-  private final Options options;
 
   public PushCommandArgParser(PushCommandFactory pushCommandFactory) {
-    requireNonNull(pushCommandFactory);
-    this.pushCommandFactory = pushCommandFactory;
-    options = new Options();
-    options.addOption(
-        Option.builder(PUBLISH_DRAFTED_COMMENTS)
-            .numberOfArgs(0)
-            .longOpt("publish-drafted-comments")
-            .desc("Publish currently drafted comments of the change if any.")
-            .build());
-    options.addOption(
-        Option.builder(WORK_IN_PROGRESS)
-            .numberOfArgs(0)
-            .longOpt("work-in-progress")
-            .desc("Turn the change to work in progress (e.g. wip).")
-            .build());
-    options.addOption(
-        Option.builder(PATCH_SET_SUBJECT)
-            .argName("subject")
-            .longOpt("patch-set-subject")
-            .hasArg()
-            .desc("The subject of the patch set.")
-            .build());
-    options.addOption(
-        Option.builder(BYPASS_REVIEW)
-            .numberOfArgs(0)
-            .longOpt("bypass-review")
-            .desc(
-                "Submit directly the change bypassing the review. Neither labels nor submit rules are checked.")
-            .build());
-    options.addOption(
-        Option.builder(CODE_REVIEW_VOTE)
-            .argName("vote")
-            .longOpt("code-review-vote")
-            .hasArg()
-            .desc("Vote on code review. i.e. +1 is a valid vote value.")
-            .build());
+    super(
+        new Options()
+            .addOption(
+                Option.builder(PUBLISH_DRAFTED_COMMENTS)
+                    .numberOfArgs(0)
+                    .longOpt("publish-drafted-comments")
+                    .desc("Publish currently drafted comments of the change if any.")
+                    .build())
+            .addOption(
+                Option.builder(WORK_IN_PROGRESS)
+                    .numberOfArgs(0)
+                    .longOpt("work-in-progress")
+                    .desc("Turn the change to work in progress (e.g. wip).")
+                    .build())
+            .addOption(
+                Option.builder(PATCH_SET_SUBJECT)
+                    .argName("subject")
+                    .longOpt("patch-set-subject")
+                    .hasArg()
+                    .desc("The subject of the patch set.")
+                    .build())
+            .addOption(
+                Option.builder(BYPASS_REVIEW)
+                    .numberOfArgs(0)
+                    .longOpt("bypass-review")
+                    .desc(
+                        "Submit directly the change bypassing the review. Neither labels nor submit rules are checked.")
+                    .build())
+            .addOption(
+                Option.builder(CODE_REVIEW_VOTE)
+                    .argName("vote")
+                    .longOpt("code-review-vote")
+                    .hasArg()
+                    .desc("Vote on code review. i.e. +1 is a valid vote value.")
+                    .build()));
+    this.pushCommandFactory = requireNonNull(pushCommandFactory);
   }
 
   @Override
@@ -75,7 +74,7 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
     formatter.printHelp(
         String.format("%s %s", executableName, COMMAND_NAME),
         StringUtils.EMPTY,
-        options,
+        getOptions(),
         "Uploads modifications to the currently tracked change",
         true);
   }
@@ -95,7 +94,7 @@ public class PushCommandArgParser implements VetAdvancedCommandArgParser {
     CommandLineParser parser = new DefaultParser();
     CommandLine commandLine;
     try {
-      commandLine = parser.parse(options, args);
+      commandLine = parser.parse(getOptions(), args);
     } catch (ParseException e) {
       throw new RuntimeException(e);
     }

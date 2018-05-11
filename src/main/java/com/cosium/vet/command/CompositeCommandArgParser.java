@@ -43,6 +43,8 @@ public class CompositeCommandArgParser implements VetCommandArgParser {
 
   @Override
   public VetCommand parse(String... args) {
+    LOG.debug("Parsing arguments {}", Arrays.asList(args));
+
     if (Arrays.stream(args).anyMatch(VERSION_OPT::equals)) {
       return () -> System.out.println(VetVersion.VALUE);
     }

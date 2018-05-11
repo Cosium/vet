@@ -1,6 +1,6 @@
 package com.cosium.vet.command.untrack;
 
-import com.cosium.vet.command.VetAdvancedCommandArgParser;
+import com.cosium.vet.command.AbstractVetAdvancedCommandArgParser;
 import com.cosium.vet.command.VetCommand;
 import com.cosium.vet.thirdparty.apache_commons_cli.*;
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
@@ -14,24 +14,24 @@ import static java.util.Objects.requireNonNull;
  *
  * @author Reda.Housni-Alaoui
  */
-public class UntrackCommandArgParser implements VetAdvancedCommandArgParser {
+public class UntrackCommandArgParser extends AbstractVetAdvancedCommandArgParser {
 
   private static final String COMMAND_NAME = "untrack";
 
   private static final String FORCE = "f";
 
   private final UntrackCommandFactory factory;
-  private final Options options;
 
   public UntrackCommandArgParser(UntrackCommandFactory factory) {
+    super(
+        new Options()
+            .addOption(
+                Option.builder(FORCE)
+                    .numberOfArgs(0)
+                    .longOpt("force")
+                    .desc("Forces the execution of the command, bypassing any confirmation prompt.")
+                    .build()));
     this.factory = requireNonNull(factory);
-    options = new Options();
-    options.addOption(
-        Option.builder(FORCE)
-            .numberOfArgs(0)
-            .longOpt("force")
-            .desc("Forces the execution of the command, bypassing any confirmation prompt.")
-            .build());
   }
 
   @Override
@@ -40,7 +40,7 @@ public class UntrackCommandArgParser implements VetAdvancedCommandArgParser {
     formatter.printHelp(
         String.format("%s %s", executableName, COMMAND_NAME),
         StringUtils.EMPTY,
-        options,
+        getOptions(),
         "Untracks any tracked change",
         true);
   }
@@ -60,7 +60,7 @@ public class UntrackCommandArgParser implements VetAdvancedCommandArgParser {
     CommandLineParser parser = new DefaultParser();
     CommandLine commandLine;
     try {
-      commandLine = parser.parse(options, args);
+      commandLine = parser.parse(getOptions(), args);
     } catch (ParseException e) {
       throw new RuntimeException(e);
     }

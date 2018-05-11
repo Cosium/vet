@@ -1,6 +1,6 @@
 package com.cosium.vet.command.new_;
 
-import com.cosium.vet.command.VetAdvancedCommandArgParser;
+import com.cosium.vet.command.AbstractVetAdvancedCommandArgParser;
 import com.cosium.vet.command.VetCommand;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.thirdparty.apache_commons_cli.*;
@@ -16,7 +16,7 @@ import static java.util.Optional.ofNullable;
  *
  * @author Reda.Housni-Alaoui
  */
-public class NewCommandArgParser implements VetAdvancedCommandArgParser {
+public class NewCommandArgParser extends AbstractVetAdvancedCommandArgParser {
 
   private static final String COMMAND_NAME = "new";
 
@@ -24,24 +24,24 @@ public class NewCommandArgParser implements VetAdvancedCommandArgParser {
   private static final String CHANGE_TARGET_BRANCH = "t";
 
   private final NewCommandFactory factory;
-  private final Options options;
 
   public NewCommandArgParser(NewCommandFactory factory) {
+    super(
+        new Options()
+            .addOption(
+                Option.builder(FORCE)
+                    .numberOfArgs(0)
+                    .longOpt("force")
+                    .desc("Forces the execution of the command, bypassing any confirmation prompt.")
+                    .build())
+            .addOption(
+                Option.builder(CHANGE_TARGET_BRANCH)
+                    .argName("branch")
+                    .longOpt("target-branch")
+                    .hasArg()
+                    .desc("The id of the change.")
+                    .build()));
     this.factory = requireNonNull(factory);
-    options = new Options();
-    options.addOption(
-        Option.builder(FORCE)
-            .numberOfArgs(0)
-            .longOpt("force")
-            .desc("Forces the execution of the command, bypassing any confirmation prompt.")
-            .build());
-    options.addOption(
-        Option.builder(CHANGE_TARGET_BRANCH)
-            .argName("branch")
-            .longOpt("target-branch")
-            .hasArg()
-            .desc("The id of the change.")
-            .build());
   }
 
   @Override
@@ -50,7 +50,7 @@ public class NewCommandArgParser implements VetAdvancedCommandArgParser {
     formatter.printHelp(
         String.format("%s %s", executableName, COMMAND_NAME),
         StringUtils.EMPTY,
-        options,
+        getOptions(),
         "Creates a new change and tracks it from the current branch.",
         true);
   }
@@ -70,7 +70,7 @@ public class NewCommandArgParser implements VetAdvancedCommandArgParser {
     CommandLineParser parser = new DefaultParser();
     CommandLine commandLine;
     try {
-      commandLine = parser.parse(options, args);
+      commandLine = parser.parse(getOptions(), args);
     } catch (ParseException e) {
       throw new RuntimeException(e);
     }

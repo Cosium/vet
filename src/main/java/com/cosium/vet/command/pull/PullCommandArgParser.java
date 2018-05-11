@@ -1,6 +1,6 @@
 package com.cosium.vet.command.pull;
 
-import com.cosium.vet.command.VetAdvancedCommandArgParser;
+import com.cosium.vet.command.AbstractVetAdvancedCommandArgParser;
 import com.cosium.vet.command.VetCommand;
 import com.cosium.vet.thirdparty.apache_commons_cli.*;
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
@@ -14,16 +14,15 @@ import static java.util.Objects.requireNonNull;
  *
  * @author Reda.Housni-Alaoui
  */
-public class PullCommandArgParser implements VetAdvancedCommandArgParser {
+public class PullCommandArgParser extends AbstractVetAdvancedCommandArgParser {
 
   private static final String COMMAND_NAME = "pull";
 
   private final PullCommandFactory factory;
-  private final Options options;
 
   public PullCommandArgParser(PullCommandFactory factory) {
+    super(new Options());
     this.factory = requireNonNull(factory);
-    options = new Options();
   }
 
   @Override
@@ -32,7 +31,7 @@ public class PullCommandArgParser implements VetAdvancedCommandArgParser {
     formatter.printHelp(
         String.format("%s %s", executableName, COMMAND_NAME),
         StringUtils.EMPTY,
-        options,
+        getOptions(),
         "Pulls modifications of the currently tracked change",
         true);
   }
@@ -51,7 +50,7 @@ public class PullCommandArgParser implements VetAdvancedCommandArgParser {
   public VetCommand parse(String... args) {
     CommandLineParser parser = new DefaultParser();
     try {
-      parser.parse(options, args);
+      parser.parse(getOptions(), args);
     } catch (ParseException e) {
       throw new RuntimeException(e);
     }

@@ -1,8 +1,7 @@
-package com.cosium.vet.command.fire_and_forget;
+package com.cosium.vet.command.autocomplete;
 
 import com.cosium.vet.command.AbstractVetAdvancedCommandArgParser;
 import com.cosium.vet.command.VetCommand;
-import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.thirdparty.apache_commons_cli.*;
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 
@@ -12,34 +11,35 @@ import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 
 /**
- * Created on 09/05/18.
+ * Created on 11/05/18.
  *
  * @author Reda.Housni-Alaoui
  */
-public class FireAndForgetCommandArgParser extends AbstractVetAdvancedCommandArgParser {
+public class AutocompleteCommandArgParser extends AbstractVetAdvancedCommandArgParser {
 
-  private static final String COMMAND_NAME = "fire-and-forget";
+  private static final String COMMAND_NAME = "autocomplete";
 
-  private static final String FORCE = "f";
-  private static final String CHANGE_TARGET_BRANCH = "t";
+  private static final String TYPED_WORD_ARRAY = "a";
+  private static final String HIGHLIGHTED_WORD_INDEX = "i";
 
-  private final FireAndForgetCommandFactory factory;
+  private final AutocompleteCommandFactory factory;
 
-  public FireAndForgetCommandArgParser(FireAndForgetCommandFactory factory) {
+  public AutocompleteCommandArgParser(AutocompleteCommandFactory factory) {
     super(
         new Options()
             .addOption(
-                Option.builder(FORCE)
-                    .numberOfArgs(0)
-                    .longOpt("force")
-                    .desc("Forces the execution of the command, bypassing any confirmation prompt.")
+                Option.builder(TYPED_WORD_ARRAY)
+                    .argName("array")
+                    .longOpt("typed-word-array")
+                    .hasArg()
+                    .desc("The array of typed words. Space separated words.")
                     .build())
             .addOption(
-                Option.builder(CHANGE_TARGET_BRANCH)
-                    .argName("branch")
-                    .longOpt("target-branch")
+                Option.builder(HIGHLIGHTED_WORD_INDEX)
+                    .argName("index")
+                    .longOpt("highlighted-word-index")
                     .hasArg()
-                    .desc("The id of the change.")
+                    .desc("The index of the highlighted word.")
                     .build()));
     this.factory = requireNonNull(factory);
   }
@@ -51,8 +51,7 @@ public class FireAndForgetCommandArgParser extends AbstractVetAdvancedCommandArg
         String.format("%s %s", executableName, COMMAND_NAME),
         StringUtils.EMPTY,
         getOptions(),
-        "Creates a new untracked change with +2 then resets the current branch to the target branch. "
-            + "Ideal for self voted quick fixes.",
+        "Autocompletes command",
         true);
   }
 
@@ -76,13 +75,16 @@ public class FireAndForgetCommandArgParser extends AbstractVetAdvancedCommandArg
       throw new RuntimeException(e);
     }
 
-    Boolean force = commandLine.hasOption(FORCE) ? true : null;
-    BranchShortName targetBranch =
-        ofNullable(commandLine.getOptionValue(CHANGE_TARGET_BRANCH))
-            .filter(StringUtils::isNotBlank)
-            .map(BranchShortName::of)
+    String[] typedWordArray =
+        ofNullable(commandLine.getOptionValue(TYPED_WORD_ARRAY))
+            .map(s -> StringUtils.split(s, StringUtils.SPACE))
+            .orElse(new String[0]);
+
+    Integer highlightedWordIndex =
+        ofNullable(commandLine.getOptionValue(HIGHLIGHTED_WORD_INDEX))
+            .map(Integer::parseInt)
             .orElse(null);
 
-    return factory.build(force, targetBranch);
+    return factory.build(typedWordArray, highlightedWordIndex);
   }
 }

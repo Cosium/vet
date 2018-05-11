@@ -1,6 +1,6 @@
 package com.cosium.vet.command.checkout_new;
 
-import com.cosium.vet.command.VetAdvancedCommandArgParser;
+import com.cosium.vet.command.AbstractVetAdvancedCommandArgParser;
 import com.cosium.vet.command.VetCommand;
 import com.cosium.vet.gerrit.ChangeCheckoutBranchName;
 import com.cosium.vet.git.BranchShortName;
@@ -17,7 +17,7 @@ import static java.util.Optional.ofNullable;
  *
  * @author Reda.Housni-Alaoui
  */
-public class CheckoutNewCommandArgParser implements VetAdvancedCommandArgParser {
+public class CheckoutNewCommandArgParser extends AbstractVetAdvancedCommandArgParser {
 
   private static final String COMMAND_NAME = "checkout-new";
 
@@ -26,31 +26,31 @@ public class CheckoutNewCommandArgParser implements VetAdvancedCommandArgParser 
   private static final String CHECKOUT_BRANCH = "b";
 
   private final CheckoutNewCommandFactory factory;
-  private final Options options;
 
   public CheckoutNewCommandArgParser(CheckoutNewCommandFactory factory) {
+    super(
+        new Options()
+            .addOption(
+                Option.builder(FORCE)
+                    .numberOfArgs(0)
+                    .longOpt("force")
+                    .desc("Forces the execution of the command, bypassing any confirmation prompt.")
+                    .build())
+            .addOption(
+                Option.builder(CHANGE_TARGET_BRANCH)
+                    .argName("branch")
+                    .longOpt("target-branch")
+                    .hasArg()
+                    .desc("The target branch of the change.")
+                    .build())
+            .addOption(
+                Option.builder(CHECKOUT_BRANCH)
+                    .argName("branch")
+                    .longOpt("checkout-branch")
+                    .hasArg()
+                    .desc("The branch that will be created to track the change.")
+                    .build()));
     this.factory = requireNonNull(factory);
-    options = new Options();
-    options.addOption(
-        Option.builder(FORCE)
-            .numberOfArgs(0)
-            .longOpt("force")
-            .desc("Forces the execution of the command, bypassing any confirmation prompt.")
-            .build());
-    options.addOption(
-        Option.builder(CHANGE_TARGET_BRANCH)
-            .argName("branch")
-            .longOpt("target-branch")
-            .hasArg()
-            .desc("The target branch of the change.")
-            .build());
-    options.addOption(
-        Option.builder(CHECKOUT_BRANCH)
-            .argName("branch")
-            .longOpt("checkout-branch")
-            .hasArg()
-            .desc("The branch that will be created to track the change.")
-            .build());
   }
 
   @Override
@@ -59,7 +59,7 @@ public class CheckoutNewCommandArgParser implements VetAdvancedCommandArgParser 
     formatter.printHelp(
         String.format("%s %s", executableName, COMMAND_NAME),
         StringUtils.EMPTY,
-        options,
+        getOptions(),
         "Creates a new change and tracks it from a new branch",
         true);
   }
@@ -79,7 +79,7 @@ public class CheckoutNewCommandArgParser implements VetAdvancedCommandArgParser 
     CommandLineParser parser = new DefaultParser();
     CommandLine commandLine;
     try {
-      commandLine = parser.parse(options, args);
+      commandLine = parser.parse(getOptions(), args);
     } catch (ParseException e) {
       throw new RuntimeException(e);
     }

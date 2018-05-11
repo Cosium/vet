@@ -1,5 +1,7 @@
 package com.cosium.vet.command;
 
+import java.util.List;
+
 /**
  * Created on 14/02/18.
  *
@@ -18,4 +20,10 @@ public interface VetAdvancedCommandArgParser extends VetCommandArgParser {
    * @return True if the current parser is able to parse the arguments
    */
   boolean canParse(String... args);
+
+  /**
+   * @param word The word begining to match
+   * @return Options starting with the provided word
+   */
+  List<String> getMatchingOptions(String word);
 }
