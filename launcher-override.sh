@@ -9,15 +9,15 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 # Preserve quotes on quoted arguments
 WHITESPACE="[[:space:]]"
-RECEIVED_ARGUMENTS=""
+RECEIVED_ARGUMENTS=()
 for arg in "$@"
 do
     if [[ ${arg} =~ $WHITESPACE ]]
     then
         arg=\"${arg}\"
     fi
-    RECEIVED_ARGUMENTS="${RECEIVED_ARGUMENTS} ${arg}"
+    RECEIVED_ARGUMENTS+=("${arg}")
 done
 
 JLINK_VM_OPTIONS=
-$DIR/java $JLINK_VM_OPTIONS -m com.cosium.vet/com.cosium.vet.App ${RECEIVED_ARGUMENTS}
+$DIR/java $JLINK_VM_OPTIONS -m com.cosium.vet/com.cosium.vet.App "${RECEIVED_ARGUMENTS[@]}"
