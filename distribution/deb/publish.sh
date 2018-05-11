@@ -33,6 +33,7 @@ cat > ${DEB_DIR}/DEBIAN/postinst <<EOF
 source /etc/bash_completion.d/vet_completion.sh
 
 EOF
+chmod 775 ${DEB_DIR}/DEBIAN/postinst
 
 dpkg-deb --build ${DEB_DIR}
 
