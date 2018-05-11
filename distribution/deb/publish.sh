@@ -7,6 +7,8 @@ GITHUB_CREDENTIALS=$(cat ${WORKDIR}/../../.github-credentials)
 DEB_DIR=${WORKDIR}/vet_$1
 mkdir -p ${DEB_DIR}/usr/local/bin
 mkdir -p ${DEB_DIR}/usr/local/lib/vet
+mkdir -p ${DEB_DIR}/etc/bash_completion.d
+cp ${WORKDIR}/../../vet_completion.sh ${DEB_DIR}/etc/bash_completion.d
 cp ${WORKDIR}/../../build/binaries/vet-linux_x64.zip ${DEB_DIR}/usr/local/lib/vet/vet.zip
 unzip ${DEB_DIR}/usr/local/lib/vet/vet.zip -d ${DEB_DIR}/usr/local/lib/vet
 rm ${DEB_DIR}/usr/local/lib/vet/vet.zip
