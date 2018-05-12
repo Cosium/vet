@@ -85,7 +85,7 @@ public class CheckoutNewCommand implements VetCommand {
             + git.getBranch()
             + " to the parent revision of the change and checkout the change to a new local branch."
             + "\nDo you want to continue?",
-        true);
+        false);
   }
 
   private BranchShortName getTargetBranch() {
