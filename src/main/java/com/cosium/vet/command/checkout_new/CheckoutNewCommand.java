@@ -54,12 +54,12 @@ public class CheckoutNewCommand implements VetCommand {
 
   @Override
   public void execute() {
-    BranchShortName targetBranch = getTargetBranch();
     if (!confirm()) {
       LOG.debug("Confirmation not ok. Aborted.");
       return;
     }
 
+    BranchShortName targetBranch = getTargetBranch();
     LOG.debug("Creating change with target branch '{}'", targetBranch);
     Change change = changeRepository.createChange(targetBranch);
     ChangeNumericId numericId = change.getNumericId();

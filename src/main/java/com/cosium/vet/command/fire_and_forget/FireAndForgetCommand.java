@@ -62,11 +62,11 @@ public class FireAndForgetCommand implements VetCommand {
                       + "\n'fire-and-forget' command can only be run when there is no tracked change.");
             });
 
-    BranchShortName targetBranch = getTargetBranch();
     if (!confirm()) {
       return;
     }
 
+    BranchShortName targetBranch = getTargetBranch();
     LOG.debug("Creating change targeting {}", targetBranch);
     Change change = changeRepository.createChange(targetBranch);
     LOG.debug("Change {} created", change);
