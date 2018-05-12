@@ -23,7 +23,14 @@ public interface PatchSetRepository {
    * @param changeNumericId The change numeric id
    * @return The latest patch of the provided change numeric id.
    */
-  Optional<Patch> getLastestPatch(ChangeNumericId changeNumericId);
+  Optional<Patch> findLastestPatch(ChangeNumericId changeNumericId);
+
+  /**
+   * @param changeNumericId The change numeric id
+   * @param patchNumber The patch number. Incremental from 1.
+   * @return The patch matching the provided parameters.
+   */
+  Patch findPatch(ChangeNumericId changeNumericId, int patchNumber);
 
   /**
    * @param changeNumericId The numeric id of the change to pull

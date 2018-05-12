@@ -52,6 +52,12 @@ public interface GitClient {
   CommitMessage getCommitMessage(RevisionId revisionId);
 
   /**
+   * @param revisionId The child revision id
+   * @return The parent of the provided revision id
+   */
+  RevisionId getParent(RevisionId revisionId);
+
+  /**
    * Push the refspec to remote
    *
    * @param remote The remote to push to
@@ -91,11 +97,18 @@ public interface GitClient {
    */
   String pull(RemoteName remote, BranchRefName branchRefName);
 
+  /** @return The printed git status */
   String status();
 
   String checkoutFetchHead();
 
   String checkoutNewBranch(BranchShortName branchShortName);
 
-  String resetHard(BranchShortName branchShortName);
+  /**
+   * Hard reset the current branch to the provided revision id
+   *
+   * @param revisionId The revision of to hard reset to
+   * @return The command output
+   */
+  String resetHard(RevisionId revisionId);
 }

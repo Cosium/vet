@@ -60,8 +60,11 @@ public class GerritPatchSetRepositoryUnitTest {
   @Before
   public void before() {
     git = mock(GitClient.class);
+    when(git.getParent(any())).thenReturn(RevisionId.of("parent"));
     when(git.getRemote(BAR_BRANCH)).thenReturn(Optional.of(RemoteName.ORIGIN));
     when(git.commitTree(any(), any(), any())).thenReturn("commit");
+    when(git.getMostRecentCommonCommit(any())).thenReturn("most-recent-commit");
+
     patchSetCommitMessageFactory = mock(PatchSetCommitMessageFactory.class);
     when(patchSetCommitMessageFactory.build(any())).thenReturn(CommitMessage.of("Hello world"));
     tested = new DefaultPatchSetRepository(git, PUSH_URL, patchSetCommitMessageFactory);
@@ -78,7 +81,7 @@ public class GerritPatchSetRepositoryUnitTest {
     when(git.getCommitMessage(_1081_2.getRevisionId()))
         .thenReturn(CommitMessage.of("Foo man Change-Id: I1111"));
 
-    assertThat(tested.getLastestPatch(_1081))
+    assertThat(tested.findLastestPatch(_1081))
         .hasValueSatisfying(
             patch ->
                 assertThat(patch.getCommitMessage())
@@ -101,7 +104,7 @@ public class GerritPatchSetRepositoryUnitTest {
     when(git.getCommitMessage(_1081_3.getRevisionId()))
         .thenReturn(CommitMessage.of("Bar man Change-Id: I1111"));
 
-    assertThat(tested.getLastestPatch(_1081))
+    assertThat(tested.findLastestPatch(_1081))
         .hasValueSatisfying(
             patch ->
                 assertThat(patch.getCommitMessage())
@@ -118,7 +121,7 @@ public class GerritPatchSetRepositoryUnitTest {
     when(git.getCommitMessage(_1048_1.getRevisionId()))
         .thenReturn(CommitMessage.of("Bar man Change-Id: I2222"));
 
-    assertThat(tested.getLastestPatch(_1081))
+    assertThat(tested.findLastestPatch(_1081))
         .hasValueSatisfying(
             patch ->
                 assertThat(patch.getCommitMessage())

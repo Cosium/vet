@@ -1,6 +1,7 @@
 package com.cosium.vet.gerrit;
 
 import com.cosium.vet.git.CommitMessage;
+import com.cosium.vet.git.RevisionId;
 
 import java.util.Optional;
 
@@ -11,14 +12,17 @@ import java.util.Optional;
  */
 public interface Patch {
 
-  /** @return The patch id in the change */
-  int getId();
+  /** @return The patch number in the change */
+  int getNumber();
 
   /** @return The change numeric id */
   ChangeNumericId getChangeNumericId();
 
   /** @return The commit message */
   CommitMessage getCommitMessage();
+
+  /** @return The parent revision id */
+  RevisionId getParent();
 
   /** @return The log emitted during creation */
   Optional<String> getCreationLog();

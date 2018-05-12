@@ -89,6 +89,13 @@ class DefaultGitClient implements GitClient {
   }
 
   @Override
+  public RevisionId getParent(RevisionId revisionId) {
+    return RevisionId.of(
+        commandRunner.run(
+            repositoryDirectory, GIT, "log", "--pretty=%P", "-n", "1", revisionId.toString()));
+  }
+
+  @Override
   public String push(String remote, String refspec) {
     return commandRunner.run(repositoryDirectory, GIT, "push", remote, refspec);
   }
@@ -141,8 +148,7 @@ class DefaultGitClient implements GitClient {
   }
 
   @Override
-  public String resetHard(BranchShortName branchShortName) {
-    return commandRunner.run(
-        repositoryDirectory, GIT, "reset", "--hard", branchShortName.toString());
+  public String resetHard(RevisionId revisionId) {
+    return commandRunner.run(repositoryDirectory, GIT, "reset", "--hard", revisionId.toString());
   }
 }

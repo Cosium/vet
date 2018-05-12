@@ -5,7 +5,9 @@ import com.cosium.vet.gerrit.*;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitClient;
 import com.cosium.vet.git.GitProvider;
-import com.cosium.vet.git.RemoteName;
+import com.cosium.vet.git.RevisionId;
+import com.cosium.vet.log.Logger;
+import com.cosium.vet.log.LoggerFactory;
 import com.cosium.vet.runtime.UserInput;
 import com.cosium.vet.runtime.UserOutput;
 import com.cosium.vet.thirdparty.apache_commons_lang3.BooleanUtils;
@@ -19,6 +21,8 @@ import static java.util.Optional.ofNullable;
  * @author Reda.Housni-Alaoui
  */
 public class FireAndForgetCommand implements VetCommand {
+
+  private static final Logger LOG = LoggerFactory.getLogger(FireAndForgetCommand.class);
 
   private final ChangeRepository changeRepository;
   private final GitClient git;
@@ -59,33 +63,32 @@ public class FireAndForgetCommand implements VetCommand {
             });
 
     BranchShortName targetBranch = getTargetBranch();
-    RemoteName remote =
-        git.getRemote(targetBranch)
-            .orElseThrow(
-                () -> new RuntimeException("No remote found for target branch " + targetBranch));
-    BranchShortName remoteTargetBranch = remote.branch(targetBranch);
-
-    if (!confirm(remoteTargetBranch)) {
+    if (!confirm()) {
       return;
     }
 
+    LOG.debug("Creating change targeting {}", targetBranch);
     Change change = changeRepository.createChange(targetBranch);
+    LOG.debug("Change {} created", change);
     String output =
         change.createPatchSet(
             false, false, PatchSetSubject.of("Fire and forget"), false, CodeReviewVote.PLUS_2);
     userOutput.display(output);
-    userOutput.display(git.resetHard(remoteTargetBranch));
+
+    RevisionId parent = change.fetchParent();
+    LOG.debug("Resetting current branch to {}", parent);
+    userOutput.display(git.resetHard(parent));
     userOutput.display("Change " + change + " has been created with code review +2.");
-    userOutput.display("Current branch was reset to " + remoteTargetBranch + ".");
   }
 
-  private boolean confirm(BranchShortName remoteTargetBranch) {
+  private boolean confirm() {
     if (force) {
       return true;
     }
     return userInput.askYesNo(
-        "This will create a change with code review +2 and reset the current branch to "
-            + remoteTargetBranch
+        "This will create a change with code review +2 and reset the current branch "
+            + git.getBranch()
+            + " to the parent revision of the change"
             + ".\nDo you want to continue?",
         false);
   }

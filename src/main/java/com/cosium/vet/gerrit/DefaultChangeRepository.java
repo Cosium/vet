@@ -84,7 +84,7 @@ class DefaultChangeRepository implements ChangeRepository {
       BranchShortName branchShortName) {
     Patch latestPatch =
         patchSetRepository
-            .getLastestPatch(numericId)
+            .findLastestPatch(numericId)
             .orElseThrow(
                 () -> new RuntimeException("No patch found for change with id " + numericId));
     git.fetch(RemoteName.ORIGIN, numericId.branchRefName(latestPatch));
@@ -107,7 +107,7 @@ class DefaultChangeRepository implements ChangeRepository {
 
   @Override
   public boolean exists(ChangeNumericId numericId) {
-    return patchSetRepository.getLastestPatch(numericId).isPresent();
+    return patchSetRepository.findLastestPatch(numericId).isPresent();
   }
 
   @Override

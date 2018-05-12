@@ -31,7 +31,7 @@ public class ChangeNumericIdTest {
   public void testBranchRefName() {
     ChangeNumericId numericId = ChangeNumericId.of(1234);
     Patch patch = mock(Patch.class);
-    when(patch.getId()).thenReturn(5);
+    when(patch.getNumber()).thenReturn(5);
 
     assertThat(numericId.branchRefName(patch))
         .isEqualTo(BranchRefName.of("refs/changes/34/1234/5"));

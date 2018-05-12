@@ -5,7 +5,7 @@ import com.cosium.vet.gerrit.*;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitClient;
 import com.cosium.vet.git.GitProvider;
-import com.cosium.vet.git.RemoteName;
+import com.cosium.vet.git.RevisionId;
 import com.cosium.vet.log.Logger;
 import com.cosium.vet.log.LoggerFactory;
 import com.cosium.vet.runtime.UserInput;
@@ -55,9 +55,7 @@ public class CheckoutNewCommand implements VetCommand {
   @Override
   public void execute() {
     BranchShortName targetBranch = getTargetBranch();
-    BranchShortName remoteTargetBranch = getRemoteTargetBranch(targetBranch);
-
-    if (!confirm(remoteTargetBranch)) {
+    if (!confirm()) {
       LOG.debug("Confirmation not ok. Aborted.");
       return;
     }
@@ -67,8 +65,9 @@ public class CheckoutNewCommand implements VetCommand {
     ChangeNumericId numericId = change.getNumericId();
     userOutput.display("Change " + change + " created");
 
-    LOG.debug("Hard reset to '{}'", remoteTargetBranch);
-    userOutput.display(git.resetHard(remoteTargetBranch));
+    RevisionId parent = change.fetchParent();
+    LOG.debug("Resetting to '{}'", parent);
+    userOutput.display(git.resetHard(parent));
 
     ChangeCheckoutBranchName checkoutBranch = getCheckoutBranch(numericId);
     LOG.debug("Checking out new local branch '{}' to track {}", checkoutBranch, change);
@@ -77,26 +76,16 @@ public class CheckoutNewCommand implements VetCommand {
     userOutput.display("Now tracking new change " + change);
   }
 
-  private boolean confirm(BranchShortName remoteTargetBranch) {
+  private boolean confirm() {
     if (force) {
       return true;
     }
     return userInput.askYesNo(
         "This will create a change, reset the current branch "
             + git.getBranch()
-            + " to "
-            + remoteTargetBranch
-            + " and checkout the change to a new local branch."
+            + " to the parent revision of the change and checkout the change to a new local branch."
             + "\nDo you want to continue?",
         true);
-  }
-
-  private BranchShortName getRemoteTargetBranch(BranchShortName targetBranch) {
-    RemoteName remote =
-        git.getRemote(targetBranch)
-            .orElseThrow(
-                () -> new RuntimeException("No remote found for target branch " + targetBranch));
-    return remote.branch(targetBranch);
   }
 
   private BranchShortName getTargetBranch() {

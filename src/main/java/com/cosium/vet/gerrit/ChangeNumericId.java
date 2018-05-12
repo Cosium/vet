@@ -40,7 +40,7 @@ public class ChangeNumericId {
     String numericIdStr = toString();
     String numericIdSuffix = StringUtils.substring(numericIdStr, numericIdStr.length() - 2);
     return BranchRefName.of(
-        "refs/changes/" + numericIdSuffix + "/" + numericIdStr + "/" + patch.getId());
+        "refs/changes/" + numericIdSuffix + "/" + numericIdStr + "/" + patch.getNumber());
   }
 
   @Override

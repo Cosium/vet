@@ -1,5 +1,7 @@
 package com.cosium.vet.gerrit;
 
+import com.cosium.vet.git.RevisionId;
+
 /**
  * Created on 23/02/18.
  *
@@ -7,7 +9,11 @@ package com.cosium.vet.gerrit;
  */
 public interface Change {
 
+  /** @return The numeric id of this change */
   ChangeNumericId getNumericId();
+
+  /** @return The parent revision of this change */
+  RevisionId fetchParent();
 
   /**
    * Creates a patch set between start revision and end revision

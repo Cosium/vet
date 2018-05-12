@@ -2,6 +2,7 @@ package com.cosium.vet.gerrit;
 
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitUtils;
+import com.cosium.vet.git.RevisionId;
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 import com.cosium.vet.utils.NonBlankString;
 
@@ -38,6 +39,11 @@ class DefaultChange implements Change {
   @Override
   public ChangeNumericId getNumericId() {
     return numericId;
+  }
+
+  @Override
+  public RevisionId fetchParent() {
+    return patchSetRepository.findPatch(numericId, 1).getParent();
   }
 
   @Override
