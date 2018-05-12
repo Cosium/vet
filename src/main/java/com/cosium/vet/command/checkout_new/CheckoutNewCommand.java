@@ -5,6 +5,9 @@ import com.cosium.vet.gerrit.*;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitClient;
 import com.cosium.vet.git.GitProvider;
+import com.cosium.vet.git.RemoteName;
+import com.cosium.vet.log.Logger;
+import com.cosium.vet.log.LoggerFactory;
 import com.cosium.vet.runtime.UserInput;
 import com.cosium.vet.runtime.UserOutput;
 import com.cosium.vet.thirdparty.apache_commons_lang3.BooleanUtils;
@@ -18,6 +21,8 @@ import static java.util.Optional.ofNullable;
  * @author Reda.Housni-Alaoui
  */
 public class CheckoutNewCommand implements VetCommand {
+
+  private static final Logger LOG = LoggerFactory.getLogger(CheckoutNewCommand.class);
 
   private final GitClient git;
   private final ChangeRepository changeRepository;
@@ -50,31 +55,48 @@ public class CheckoutNewCommand implements VetCommand {
   @Override
   public void execute() {
     BranchShortName targetBranch = getTargetBranch();
-    Change change = changeRepository.createChange(targetBranch);
-    ChangeNumericId numericId = change.getNumericId();
+    BranchShortName remoteTargetBranch = getRemoteTargetBranch(targetBranch);
 
-    userOutput.display("Change " + change + " created");
-
-    ChangeCheckoutBranchName checkoutBranch = getCheckoutBranch(numericId);
-    if (!confirm(change, checkoutBranch)) {
+    if (!confirm(remoteTargetBranch)) {
+      LOG.debug("Confirmation not ok. Aborted.");
       return;
     }
+
+    LOG.debug("Creating change with target branch '{}'", targetBranch);
+    Change change = changeRepository.createChange(targetBranch);
+    ChangeNumericId numericId = change.getNumericId();
+    userOutput.display("Change " + change + " created");
+
+    LOG.debug("Hard reset to '{}'", remoteTargetBranch);
+    userOutput.display(git.resetHard(remoteTargetBranch));
+
+    ChangeCheckoutBranchName checkoutBranch = getCheckoutBranch(numericId);
+    LOG.debug("Checking out new local branch '{}' to track {}", checkoutBranch, change);
     changeRepository.checkoutAndTrackChange(checkoutBranch, numericId, targetBranch);
     userOutput.display(git.status());
     userOutput.display("Now tracking new change " + change);
   }
 
-  private boolean confirm(Change change, ChangeCheckoutBranchName checkoutBranch) {
+  private boolean confirm(BranchShortName remoteTargetBranch) {
     if (force) {
       return true;
     }
     return userInput.askYesNo(
-        "Branch '"
-            + checkoutBranch
-            + "' will be checkout from change "
-            + change
-            + ".\nDo you want to continue?",
+        "This will create a change, reset the current branch "
+            + git.getBranch()
+            + " to "
+            + remoteTargetBranch
+            + " and checkout the change to a new local branch."
+            + "\nDo you want to continue?",
         true);
+  }
+
+  private BranchShortName getRemoteTargetBranch(BranchShortName targetBranch) {
+    RemoteName remote =
+        git.getRemote(targetBranch)
+            .orElseThrow(
+                () -> new RuntimeException("No remote found for target branch " + targetBranch));
+    return remote.branch(targetBranch);
   }
 
   private BranchShortName getTargetBranch() {
