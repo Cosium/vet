@@ -10,6 +10,10 @@ import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 public class DefaultUserOutput implements UserOutput {
   @Override
   public void display(String message, boolean appendLineBreak) {
+    if (message == null) {
+      return;
+    }
+
     if (!appendLineBreak) {
       System.out.print(message + StringUtils.SPACE);
     } else {
