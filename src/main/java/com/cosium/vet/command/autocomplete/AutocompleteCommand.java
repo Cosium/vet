@@ -91,8 +91,12 @@ public class AutocompleteCommand implements VetCommand {
     }
 
     String possibilities =
-        parser.getMatchingOptions(currentWord).stream().collect(Collectors.joining(StringUtils.LF));
-    userOutput.display(possibilities, true);
+        parser
+            .getMatchingOptions(currentWord)
+            .stream()
+            .filter(opt -> !typedWordList.contains(opt))
+            .collect(Collectors.joining(StringUtils.LF));
+    userOutput.display(possibilities);
   }
 
   public static class Factory implements AutocompleteCommandFactory {
