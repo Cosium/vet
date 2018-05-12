@@ -31,6 +31,7 @@ public class FireAndForgetCommand implements VetCommand {
 
   private final boolean force;
   private final BranchShortName targetBranch;
+  private final CodeReviewVote codeReviewVote;
 
   private FireAndForgetCommand(
       ChangeRepository changeRepository,
@@ -39,7 +40,8 @@ public class FireAndForgetCommand implements VetCommand {
       UserOutput userOutput,
       // Optionals
       Boolean force,
-      BranchShortName targetBranch) {
+      BranchShortName targetBranch,
+      CodeReviewVote codeReviewVote) {
     this.changeRepository = requireNonNull(changeRepository);
     this.git = requireNonNull(git);
     this.userInput = requireNonNull(userInput);
@@ -47,6 +49,7 @@ public class FireAndForgetCommand implements VetCommand {
 
     this.force = BooleanUtils.toBoolean(force);
     this.targetBranch = targetBranch;
+    this.codeReviewVote = codeReviewVote;
   }
 
   @Override
@@ -71,7 +74,7 @@ public class FireAndForgetCommand implements VetCommand {
     PatchOptions patchOptions =
         PatchOptions.builder()
             .subject(PatchSubject.of("Fire and forget"))
-            .codeReviewVote(CodeReviewVote.PLUS_2)
+            .codeReviewVote(codeReviewVote)
             .build();
 
     CreatedChange change = changeRepository.createChange(targetBranch, patchOptions);
@@ -81,7 +84,7 @@ public class FireAndForgetCommand implements VetCommand {
     RevisionId parent = change.fetchParent();
     LOG.debug("Resetting current branch to {}", parent);
     userOutput.display(git.resetHard(parent));
-    userOutput.display("Change " + change + " has been created with code review +2.");
+    userOutput.display("Change " + change + " has been created.");
   }
 
   private boolean confirm() {
@@ -89,7 +92,7 @@ public class FireAndForgetCommand implements VetCommand {
       return true;
     }
     return userInput.askYesNo(
-        "This will create a change with code review +2 and reset the current branch "
+        "This will create a change and reset the current branch "
             + git.getBranch()
             + " to the parent revision of the change"
             + ".\nDo you want to continue?",
@@ -123,14 +126,16 @@ public class FireAndForgetCommand implements VetCommand {
     }
 
     @Override
-    public FireAndForgetCommand build(Boolean force, BranchShortName targetBranch) {
+    public FireAndForgetCommand build(
+        Boolean force, BranchShortName targetBranch, CodeReviewVote codeReviewVote) {
       return new FireAndForgetCommand(
           changeRepositoryFactory.build(),
           gitProvider.build(),
           userInput,
           userOutput,
           force,
-          targetBranch);
+          targetBranch,
+          codeReviewVote);
     }
   }
 }

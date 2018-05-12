@@ -25,7 +25,7 @@ public class PushCommandArgParser extends AbstractVetAdvancedCommandArgParser {
   private static final String WORK_IN_PROGRESS = "w";
   private static final String PATCH_SET_SUBJECT = "s";
   private static final String BYPASS_REVIEW = "f";
-  private static final String CODE_REVIEW_VOTE = "c";
+  private static final String CODE_REVIEW_VOTE = "v";
 
   private final PushCommandFactory pushCommandFactory;
 

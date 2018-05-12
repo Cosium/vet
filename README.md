@@ -111,15 +111,15 @@ Tracks an existing change from a new branch
 
 ```bash
 $ vet --help push
-usage: vet push [-c <vote>] [-f] [-p] [-s <subject>] [-w]
- -c,--code-review-vote <vote>       Vote on code review. i.e. +1 is a
-                                    valid vote value.
+usage: vet push [-f] [-p] [-s <subject>] [-v <vote>] [-w]
  -f,--bypass-review                 Submit directly the change bypassing
                                     the review. Neither labels nor submit
                                     rules are checked.
  -p,--publish-drafted-comments      Publish currently drafted comments of
                                     the change if any.
  -s,--patch-set-subject <subject>   The subject of the patch set.
+ -v,--code-review-vote <vote>       Vote on code review. i.e. +1 is a
+                                    valid vote value.
  -w,--work-in-progress              Turn the change to work in progress
                                     (e.g. wip).
 Uploads modifications to the currently tracked change
@@ -129,12 +129,14 @@ Uploads modifications to the currently tracked change
 
 ```bash
 $ vet --help fire-and-forget
-usage: vet fire-and-forget [-f] [-t <branch>]
- -f,--force                    Forces the execution of the command,
-                               bypassing any confirmation prompt.
- -t,--target-branch <branch>   The id of the change.
-Creates a new untracked change with +2 then resets the current branch to
-the target branch. Ideal for self voted quick fixes.
+usage: vet fire-and-forget [-f] [-t <branch>] [-v <vote>]
+ -f,--force                     Forces the execution of the command,
+                                bypassing any confirmation prompt.
+ -t,--target-branch <branch>    The id of the change.
+ -v,--code-review-vote <vote>   Vote on code review. i.e. +1 is a valid
+                                vote value.
+Creates a new untracked change then resets the current branch to change
+parent revision.
 ```
 
 ### new

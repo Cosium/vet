@@ -2,6 +2,7 @@ package com.cosium.vet.command.fire_and_forget;
 
 import com.cosium.vet.command.AbstractVetAdvancedCommandArgParser;
 import com.cosium.vet.command.VetCommand;
+import com.cosium.vet.gerrit.CodeReviewVote;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.thirdparty.apache_commons_cli.*;
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
@@ -22,6 +23,7 @@ public class FireAndForgetCommandArgParser extends AbstractVetAdvancedCommandArg
 
   private static final String FORCE = "f";
   private static final String CHANGE_TARGET_BRANCH = "t";
+  private static final String CODE_REVIEW_VOTE = "v";
 
   private final FireAndForgetCommandFactory factory;
 
@@ -40,6 +42,13 @@ public class FireAndForgetCommandArgParser extends AbstractVetAdvancedCommandArg
                     .longOpt("target-branch")
                     .hasArg()
                     .desc("The id of the change.")
+                    .build())
+            .addOption(
+                Option.builder(CODE_REVIEW_VOTE)
+                    .argName("vote")
+                    .longOpt("code-review-vote")
+                    .hasArg()
+                    .desc("Vote on code review. i.e. +1 is a valid vote value.")
                     .build()));
     this.factory = requireNonNull(factory);
   }
@@ -51,8 +60,7 @@ public class FireAndForgetCommandArgParser extends AbstractVetAdvancedCommandArg
         String.format("%s %s", executableName, COMMAND_NAME),
         StringUtils.EMPTY,
         getOptions(),
-        "Creates a new untracked change with +2 then resets the current branch to the target branch. "
-            + "Ideal for self voted quick fixes.",
+        "Creates a new untracked change then resets the current branch to change parent revision. ",
         true);
   }
 
@@ -82,7 +90,12 @@ public class FireAndForgetCommandArgParser extends AbstractVetAdvancedCommandArg
             .filter(StringUtils::isNotBlank)
             .map(BranchShortName::of)
             .orElse(null);
+    CodeReviewVote reviewVote =
+        ofNullable(commandLine.getOptionValue(CODE_REVIEW_VOTE))
+            .filter(StringUtils::isNotBlank)
+            .map(CodeReviewVote::of)
+            .orElse(null);
 
-    return factory.build(force, targetBranch);
+    return factory.build(force, targetBranch, reviewVote);
   }
 }
