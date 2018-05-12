@@ -3,7 +3,6 @@ package com.cosium.vet.command.fire_and_forget;
 import com.cosium.vet.command.AbstractVetAdvancedCommandArgParser;
 import com.cosium.vet.command.VetCommand;
 import com.cosium.vet.gerrit.CodeReviewVote;
-import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.thirdparty.apache_commons_cli.*;
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 
@@ -22,7 +21,6 @@ public class FireAndForgetCommandArgParser extends AbstractVetAdvancedCommandArg
   private static final String COMMAND_NAME = "fire-and-forget";
 
   private static final String FORCE = "f";
-  private static final String CHANGE_TARGET_BRANCH = "t";
   private static final String CODE_REVIEW_VOTE = "v";
 
   private final FireAndForgetCommandFactory factory;
@@ -35,13 +33,6 @@ public class FireAndForgetCommandArgParser extends AbstractVetAdvancedCommandArg
                     .numberOfArgs(0)
                     .longOpt("force")
                     .desc("Forces the execution of the command, bypassing any confirmation prompt.")
-                    .build())
-            .addOption(
-                Option.builder(CHANGE_TARGET_BRANCH)
-                    .argName("branch")
-                    .longOpt("target-branch")
-                    .hasArg()
-                    .desc("The id of the change.")
                     .build())
             .addOption(
                 Option.builder(CODE_REVIEW_VOTE)
@@ -85,17 +76,12 @@ public class FireAndForgetCommandArgParser extends AbstractVetAdvancedCommandArg
     }
 
     Boolean force = commandLine.hasOption(FORCE) ? true : null;
-    BranchShortName targetBranch =
-        ofNullable(commandLine.getOptionValue(CHANGE_TARGET_BRANCH))
-            .filter(StringUtils::isNotBlank)
-            .map(BranchShortName::of)
-            .orElse(null);
     CodeReviewVote reviewVote =
         ofNullable(commandLine.getOptionValue(CODE_REVIEW_VOTE))
             .filter(StringUtils::isNotBlank)
             .map(CodeReviewVote::of)
             .orElse(null);
 
-    return factory.build(force, targetBranch, reviewVote);
+    return factory.build(force, reviewVote);
   }
 }

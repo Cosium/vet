@@ -13,7 +13,6 @@ import com.cosium.vet.runtime.UserOutput;
 import com.cosium.vet.thirdparty.apache_commons_lang3.BooleanUtils;
 
 import static java.util.Objects.requireNonNull;
-import static java.util.Optional.ofNullable;
 
 /**
  * Created on 09/05/18.
@@ -30,7 +29,6 @@ public class FireAndForgetCommand implements VetCommand {
   private final UserOutput userOutput;
 
   private final boolean force;
-  private final BranchShortName targetBranch;
   private final CodeReviewVote codeReviewVote;
 
   private FireAndForgetCommand(
@@ -40,7 +38,6 @@ public class FireAndForgetCommand implements VetCommand {
       UserOutput userOutput,
       // Optionals
       Boolean force,
-      BranchShortName targetBranch,
       CodeReviewVote codeReviewVote) {
     this.changeRepository = requireNonNull(changeRepository);
     this.git = requireNonNull(git);
@@ -48,7 +45,6 @@ public class FireAndForgetCommand implements VetCommand {
     this.userOutput = requireNonNull(userOutput);
 
     this.force = BooleanUtils.toBoolean(force);
-    this.targetBranch = targetBranch;
     this.codeReviewVote = codeReviewVote;
   }
 
@@ -65,11 +61,11 @@ public class FireAndForgetCommand implements VetCommand {
                       + "\n'fire-and-forget' command can only be run when there is no tracked change.");
             });
 
-    if (!confirm()) {
+    BranchShortName targetBranch = git.getBranch();
+    if (!confirm(targetBranch)) {
       return;
     }
 
-    BranchShortName targetBranch = getTargetBranch();
     LOG.debug("Creating change targeting {}", targetBranch);
     PatchOptions patchOptions =
         PatchOptions.builder()
@@ -87,24 +83,18 @@ public class FireAndForgetCommand implements VetCommand {
     userOutput.display("Change " + change + " has been created.");
   }
 
-  private boolean confirm() {
+  private boolean confirm(BranchShortName targetBranch) {
     if (force) {
       return true;
     }
     return userInput.askYesNo(
-        "This will create a change and reset the current branch "
+        "This will create a change targeting branch "
+            + targetBranch
+            + " and reset the current branch "
             + git.getBranch()
             + " to the parent revision of the change"
             + ".\nDo you want to continue?",
         false);
-  }
-
-  private BranchShortName getTargetBranch() {
-    return ofNullable(targetBranch)
-        .orElseGet(
-            () ->
-                BranchShortName.of(
-                    userInput.askNonBlank("Target branch", BranchShortName.MASTER.toString())));
   }
 
   public static class Factory implements FireAndForgetCommandFactory {
@@ -126,15 +116,13 @@ public class FireAndForgetCommand implements VetCommand {
     }
 
     @Override
-    public FireAndForgetCommand build(
-        Boolean force, BranchShortName targetBranch, CodeReviewVote codeReviewVote) {
+    public FireAndForgetCommand build(Boolean force, CodeReviewVote codeReviewVote) {
       return new FireAndForgetCommand(
           changeRepositoryFactory.build(),
           gitProvider.build(),
           userInput,
           userOutput,
           force,
-          targetBranch,
           codeReviewVote);
     }
   }

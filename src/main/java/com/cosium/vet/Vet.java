@@ -162,14 +162,12 @@ public class Vet {
     newCommandFactory.build(force, targetBranch).execute();
   }
 
-  public void fireAndForget(
-      Boolean force, BranchShortName targetBranch, CodeReviewVote codeReviewVote) {
-    fireAndForgetCommandFactory.build(force, targetBranch, codeReviewVote).execute();
+  public void fireAndForget(Boolean force, CodeReviewVote codeReviewVote) {
+    fireAndForgetCommandFactory.build(force, codeReviewVote).execute();
   }
 
-  public void checkoutNew(
-      Boolean force, ChangeCheckoutBranchName checkoutBranch, BranchShortName targetbranch) {
-    checkoutNewCommandFactory.build(force, checkoutBranch, targetbranch);
+  public void checkoutNew(Boolean force, ChangeCheckoutBranchName checkoutBranch) {
+    checkoutNewCommandFactory.build(force, checkoutBranch);
   }
 
   public void checkout(

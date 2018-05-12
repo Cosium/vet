@@ -84,12 +84,11 @@ Vet: The Gerrit client using pull request review workflow
 
 ```bash
 $ vet --help checkout-new
-usage: vet checkout-new [-b <branch>] [-f] [-t <branch>]
+usage: vet checkout-new [-b <branch>] [-f]
  -b,--checkout-branch <branch>   The branch that will be created to track
                                  the change.
  -f,--force                      Forces the execution of the command,
                                  bypassing any confirmation prompt.
- -t,--target-branch <branch>     The target branch of the change.
 Creates a new change and tracks it from a new branch
 ```
 
@@ -129,14 +128,12 @@ Uploads modifications to the currently tracked change
 
 ```bash
 $ vet --help fire-and-forget
-usage: vet fire-and-forget [-f] [-t <branch>] [-v <vote>]
+usage: vet fire-and-forget [-f] [-v <vote>]
  -f,--force                     Forces the execution of the command,
                                 bypassing any confirmation prompt.
- -t,--target-branch <branch>    The id of the change.
  -v,--code-review-vote <vote>   Vote on code review. i.e. +1 is a valid
                                 vote value.
 Creates a new untracked change then resets the current branch to change
-parent revision.
 ```
 
 ### new

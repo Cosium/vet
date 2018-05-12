@@ -3,7 +3,6 @@ package com.cosium.vet.command.checkout_new;
 import com.cosium.vet.command.AbstractVetAdvancedCommandArgParser;
 import com.cosium.vet.command.VetCommand;
 import com.cosium.vet.gerrit.ChangeCheckoutBranchName;
-import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.thirdparty.apache_commons_cli.*;
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 
@@ -22,7 +21,6 @@ public class CheckoutNewCommandArgParser extends AbstractVetAdvancedCommandArgPa
   private static final String COMMAND_NAME = "checkout-new";
 
   private static final String FORCE = "f";
-  private static final String CHANGE_TARGET_BRANCH = "t";
   private static final String CHECKOUT_BRANCH = "b";
 
   private final CheckoutNewCommandFactory factory;
@@ -35,13 +33,6 @@ public class CheckoutNewCommandArgParser extends AbstractVetAdvancedCommandArgPa
                     .numberOfArgs(0)
                     .longOpt("force")
                     .desc("Forces the execution of the command, bypassing any confirmation prompt.")
-                    .build())
-            .addOption(
-                Option.builder(CHANGE_TARGET_BRANCH)
-                    .argName("branch")
-                    .longOpt("target-branch")
-                    .hasArg()
-                    .desc("The target branch of the change.")
                     .build())
             .addOption(
                 Option.builder(CHECKOUT_BRANCH)
@@ -86,18 +77,12 @@ public class CheckoutNewCommandArgParser extends AbstractVetAdvancedCommandArgPa
 
     Boolean force = commandLine.hasOption(FORCE) ? true : null;
 
-    BranchShortName targetBranch =
-        ofNullable(commandLine.getOptionValue(CHANGE_TARGET_BRANCH))
-            .filter(StringUtils::isNotBlank)
-            .map(BranchShortName::of)
-            .orElse(null);
-
     ChangeCheckoutBranchName checkoutBranch =
         ofNullable(commandLine.getOptionValue(CHECKOUT_BRANCH))
             .filter(StringUtils::isNotBlank)
             .map(ChangeCheckoutBranchName::of)
             .orElse(null);
 
-    return factory.build(force, checkoutBranch, targetBranch);
+    return factory.build(force, checkoutBranch);
   }
 }

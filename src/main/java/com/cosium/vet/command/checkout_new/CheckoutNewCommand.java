@@ -30,7 +30,6 @@ public class CheckoutNewCommand implements VetCommand {
   private final UserOutput userOutput;
 
   private final boolean force;
-  private final BranchShortName targetBranch;
   private final ChangeCheckoutBranchName checkoutBranch;
 
   private CheckoutNewCommand(
@@ -40,7 +39,6 @@ public class CheckoutNewCommand implements VetCommand {
       UserOutput userOutput,
       // Optionals
       Boolean force,
-      BranchShortName targetBranch,
       ChangeCheckoutBranchName checkoutBranch) {
     this.git = requireNonNull(git);
     this.changeRepository = requireNonNull(changeRepository);
@@ -48,18 +46,17 @@ public class CheckoutNewCommand implements VetCommand {
     this.userOutput = requireNonNull(userOutput);
 
     this.force = BooleanUtils.toBoolean(force);
-    this.targetBranch = targetBranch;
     this.checkoutBranch = checkoutBranch;
   }
 
   @Override
   public void execute() {
-    if (!confirm()) {
+    BranchShortName targetBranch = git.getBranch();
+    if (!confirm(targetBranch)) {
       LOG.debug("Confirmation not ok. Aborted.");
       return;
     }
 
-    BranchShortName targetBranch = getTargetBranch();
     LOG.debug("Creating change with target branch '{}'", targetBranch);
     Change change = changeRepository.createChange(targetBranch, PatchOptions.DEFAULT);
     ChangeNumericId numericId = change.getNumericId();
@@ -76,24 +73,18 @@ public class CheckoutNewCommand implements VetCommand {
     userOutput.display("Now tracking new change " + change);
   }
 
-  private boolean confirm() {
+  private boolean confirm(BranchShortName targetBranch) {
     if (force) {
       return true;
     }
     return userInput.askYesNo(
-        "This will create a change, reset the current branch "
+        "This will create a change targeting branch "
+            + targetBranch
+            + ", reset the current branch "
             + git.getBranch()
             + " to the parent revision of the change and checkout the change to a new local branch."
             + "\nDo you want to continue?",
         false);
-  }
-
-  private BranchShortName getTargetBranch() {
-    return ofNullable(targetBranch)
-        .orElseGet(
-            () ->
-                BranchShortName.of(
-                    userInput.askNonBlank("Target branch", BranchShortName.MASTER.toString())));
   }
 
   private ChangeCheckoutBranchName getCheckoutBranch(ChangeNumericId numericId) {
@@ -125,15 +116,13 @@ public class CheckoutNewCommand implements VetCommand {
     }
 
     @Override
-    public CheckoutNewCommand build(
-        Boolean force, ChangeCheckoutBranchName checkoutBranch, BranchShortName targetBranch) {
+    public CheckoutNewCommand build(Boolean force, ChangeCheckoutBranchName checkoutBranch) {
       return new CheckoutNewCommand(
           gitProvider.build(),
           changeRepositoryFactory.build(),
           userInput,
           userOutput,
           force,
-          targetBranch,
           checkoutBranch);
     }
   }
