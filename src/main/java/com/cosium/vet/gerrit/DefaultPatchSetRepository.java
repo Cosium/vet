@@ -3,7 +3,6 @@ package com.cosium.vet.gerrit;
 import com.cosium.vet.git.*;
 import com.cosium.vet.log.Logger;
 import com.cosium.vet.log.LoggerFactory;
-import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 
 import java.util.Comparator;
 import java.util.List;
@@ -40,7 +39,7 @@ public class DefaultPatchSetRepository implements PatchSetRepository {
 
   @Override
   public Patch createPatch(
-      BranchShortName targetBranch, ChangeNumericId numericId, String options) {
+      BranchShortName targetBranch, ChangeNumericId numericId, PatchOptions options) {
     RemoteName remote =
         git.getRemote(targetBranch)
             .orElseThrow(
@@ -66,11 +65,7 @@ public class DefaultPatchSetRepository implements PatchSetRepository {
 
     LOG.debug("Pushing '{}' to '{}', with options '{}'", commitId, targetBranch, options);
 
-    String output =
-        git.push(
-            pushUrl.toString(),
-            String.format(
-                "%s:refs/for/%s%%%s", commitId, targetBranch, StringUtils.defaultString(options)));
+    String output = git.push(pushUrl.toString(), options.buildGitPushTarget(commitId, targetBranch));
     return buildPatch(
         lastestPatch == null ? 1 : lastestPatch.getNumber(),
         numericId,

@@ -1,7 +1,7 @@
 package com.cosium.vet;
 
 import com.cosium.vet.command.DebugOptions;
-import com.cosium.vet.gerrit.PatchSetSubject;
+import com.cosium.vet.gerrit.PatchSubject;
 import com.cosium.vet.runtime.CommandRunner;
 import com.cosium.vet.thirdparty.apache_commons_io.IOUtils;
 import org.junit.Before;
@@ -49,7 +49,7 @@ public class VetTest extends GerritEnvironmentTest {
               runner.run(downstreamGitDir, "git", "checkout", "master");
               runner.run(downstreamGitDir, "git", "checkout", "-b", "feature" + i);
               addAndCommitFile("feature" + i, "Feature " + i);
-              tested.push(true, true, PatchSetSubject.of("Add feature" + i), false, null);
+              tested.push(true, true, PatchSubject.of("Add feature" + i), false, null);
             });
   }
 
@@ -60,10 +60,10 @@ public class VetTest extends GerritEnvironmentTest {
     runner.run(downstreamGitDir, "git", "checkout", "-b", "feature");
 
     addAndCommitFile("bar", "The topic");
-    tested.push(true, true, PatchSetSubject.of("Add bar"), false, null);
+    tested.push(true, true, PatchSubject.of("Add bar"), false, null);
 
     addAndCommitFile("baz", "Random message");
-    tested.push(null, null, PatchSetSubject.of("Add baz"), false, null);
+    tested.push(null, null, PatchSubject.of("Add baz"), false, null);
   }
 
   // TODO Add test for fetching commit message edition patchset

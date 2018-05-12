@@ -195,7 +195,7 @@ public class Vet {
   public void push(
       Boolean publishDraftedComments,
       Boolean workInProgress,
-      PatchSetSubject patchSetSubject,
+      PatchSubject patchSetSubject,
       Boolean bypassReview,
       CodeReviewVote codeReviewVote) {
     pushCommandFactory

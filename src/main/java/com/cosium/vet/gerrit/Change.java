@@ -16,18 +16,10 @@ public interface Change {
   RevisionId fetchParent();
 
   /**
-   * Creates a patch set between start revision and end revision
+   * Creates a patch based on the diff between the HEAD and target branch
    *
-   * @param publishDraftComments True to publish comments in draft. False otherwise.
-   * @param workInProgress True to mark change set in work in progress
-   * @param subject The patch set subject
-   * @param bypassReview True to to bypass the review by directly submitting the change.
+   * @param options The patch options
    * @return The creationg log output
    */
-  String createPatchSet(
-      boolean publishDraftComments,
-      boolean workInProgress,
-      PatchSetSubject subject,
-      boolean bypassReview,
-      CodeReviewVote codeReviewVote);
+  String createPatch(PatchOptions options);
 }

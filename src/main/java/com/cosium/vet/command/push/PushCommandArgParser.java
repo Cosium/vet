@@ -3,7 +3,7 @@ package com.cosium.vet.command.push;
 import com.cosium.vet.command.AbstractVetAdvancedCommandArgParser;
 import com.cosium.vet.command.VetCommand;
 import com.cosium.vet.gerrit.CodeReviewVote;
-import com.cosium.vet.gerrit.PatchSetSubject;
+import com.cosium.vet.gerrit.PatchSubject;
 import com.cosium.vet.thirdparty.apache_commons_cli.*;
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 
@@ -101,10 +101,10 @@ public class PushCommandArgParser extends AbstractVetAdvancedCommandArgParser {
 
     Boolean publishDraftedComments = commandLine.hasOption(PUBLISH_DRAFTED_COMMENTS) ? true : null;
     Boolean workInProgress = commandLine.hasOption(WORK_IN_PROGRESS) ? true : null;
-    PatchSetSubject patchSetSubject =
+    PatchSubject patchSetSubject =
         ofNullable(commandLine.getOptionValue(PATCH_SET_SUBJECT))
             .filter(StringUtils::isNotBlank)
-            .map(PatchSetSubject::of)
+            .map(PatchSubject::of)
             .orElse(null);
     Boolean bypassReview = commandLine.hasOption(BYPASS_REVIEW) ? true : null;
     CodeReviewVote reviewVote =

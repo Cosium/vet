@@ -70,9 +70,13 @@ public class FireAndForgetCommand implements VetCommand {
     LOG.debug("Creating change targeting {}", targetBranch);
     Change change = changeRepository.createChange(targetBranch);
     LOG.debug("Change {} created", change);
-    String output =
-        change.createPatchSet(
-            false, false, PatchSetSubject.of("Fire and forget"), false, CodeReviewVote.PLUS_2);
+
+    PatchOptions patchOptions =
+        PatchOptions.builder()
+            .subject(PatchSubject.of("Fire and forget"))
+            .codeReviewVote(CodeReviewVote.PLUS_2)
+            .build();
+    String output = change.createPatch(patchOptions);
     userOutput.display(output);
 
     RevisionId parent = change.fetchParent();

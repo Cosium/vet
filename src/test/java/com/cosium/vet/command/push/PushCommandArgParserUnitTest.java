@@ -1,7 +1,7 @@
 package com.cosium.vet.command.push;
 
 import com.cosium.vet.command.VetAdvancedCommandArgParser;
-import com.cosium.vet.gerrit.PatchSetSubject;
+import com.cosium.vet.gerrit.PatchSubject;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -41,13 +41,13 @@ public class PushCommandArgParserUnitTest {
   @Test
   public void testPatchSetSubjectShort() {
     tested.parse("push", "-s", "hello");
-    verify(factory).build(isNull(), isNull(), eq(PatchSetSubject.of("hello")), isNull(), isNull());
+    verify(factory).build(isNull(), isNull(), eq(PatchSubject.of("hello")), isNull(), isNull());
   }
 
   @Test
   public void testPatchSetSubjectLong() {
     tested.parse("push", "--patch-set-subject", "hello");
-    verify(factory).build(isNull(), isNull(), eq(PatchSetSubject.of("hello")), isNull(), isNull());
+    verify(factory).build(isNull(), isNull(), eq(PatchSubject.of("hello")), isNull(), isNull());
   }
 
   @Test
@@ -95,7 +95,7 @@ public class PushCommandArgParserUnitTest {
         "--publish-drafted-comments",
         "--work-in-progress",
         "--bypass-review");
-    verify(factory).build(eq(true), eq(true), eq(PatchSetSubject.of("hello")), eq(true), isNull());
+    verify(factory).build(eq(true), eq(true), eq(PatchSubject.of("hello")), eq(true), isNull());
   }
 
   @Test
