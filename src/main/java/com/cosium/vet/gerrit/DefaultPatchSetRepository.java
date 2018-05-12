@@ -38,7 +38,12 @@ public class DefaultPatchSetRepository implements PatchSetRepository {
   }
 
   @Override
-  public Patch createPatch(
+  public CreatedPatch createPatch(BranchShortName targetBranch, PatchOptions options) {
+    return createPatch(targetBranch, null, options);
+  }
+
+  @Override
+  public CreatedPatch createPatch(
       BranchShortName targetBranch, ChangeNumericId numericId, PatchOptions options) {
     RemoteName remote =
         git.getRemote(targetBranch)
@@ -65,13 +70,14 @@ public class DefaultPatchSetRepository implements PatchSetRepository {
 
     LOG.debug("Pushing '{}' to '{}', with options '{}'", commitId, targetBranch, options);
 
-    String output = git.push(pushUrl.toString(), options.buildGitPushTarget(commitId, targetBranch));
-    return buildPatch(
+    String creationLog =
+        git.push(pushUrl.toString(), options.buildGitPushTarget(commitId, targetBranch));
+    return buildCreatedPatch(
         lastestPatch == null ? 1 : lastestPatch.getNumber(),
         numericId,
         commitMessage,
         RevisionId.of(startRevision),
-        output);
+        creationLog);
   }
 
   @Override
@@ -140,17 +146,17 @@ public class DefaultPatchSetRepository implements PatchSetRepository {
         .collect(Collectors.toList());
   }
 
-  private Patch buildPatch(
+  private CreatedPatch buildCreatedPatch(
       int id,
       ChangeNumericId numericId,
       CommitMessage commitMessage,
       RevisionId parent,
-      String pushToRefForOutput) {
+      String creationLog) {
     numericId =
         ofNullable(numericId)
             .orElseGet(
-                () -> ChangeNumericId.parseFromPushToRefForOutput(pushUrl, pushToRefForOutput));
-    return new DefaultPatch(id, numericId, parent, commitMessage, pushToRefForOutput);
+                () -> ChangeNumericId.parseFromPushToRefForOutput(pushUrl, creationLog));
+    return new DefaultCreatedPatch(id, numericId, parent, commitMessage, creationLog);
   }
 
   private Patch buildPatch(PatchRef patchSetRef) {
@@ -168,27 +174,16 @@ public class DefaultPatchSetRepository implements PatchSetRepository {
     private final ChangeNumericId changeNumericId;
     private final CommitMessage commitMessage;
     private final RevisionId parent;
-    private final String creationLog;
 
     private DefaultPatch(
         int number,
         ChangeNumericId changeNumericId,
         RevisionId parent,
         CommitMessage commitMessage) {
-      this(number, changeNumericId, parent, commitMessage, null);
-    }
-
-    private DefaultPatch(
-        int number,
-        ChangeNumericId changeNumericId,
-        RevisionId parent,
-        CommitMessage commitMessage,
-        String creationLog) {
       this.number = number;
       this.changeNumericId = requireNonNull(changeNumericId);
       this.parent = requireNonNull(parent);
       this.commitMessage = requireNonNull(commitMessage);
-      this.creationLog = creationLog;
     }
 
     @Override
@@ -210,10 +205,24 @@ public class DefaultPatchSetRepository implements PatchSetRepository {
     public RevisionId getParent() {
       return parent;
     }
+  }
+
+  private class DefaultCreatedPatch extends DefaultPatch implements CreatedPatch {
+    private final String creationLog;
+
+    private DefaultCreatedPatch(
+        int number,
+        ChangeNumericId changeNumericId,
+        RevisionId parent,
+        CommitMessage commitMessage,
+        String creationLog) {
+      super(number, changeNumericId, parent, commitMessage);
+      this.creationLog = requireNonNull(creationLog);
+    }
 
     @Override
-    public Optional<String> getCreationLog() {
-      return Optional.ofNullable(creationLog);
+    public String getCreationLog() {
+      return creationLog;
     }
   }
 

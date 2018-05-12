@@ -23,7 +23,4 @@ public interface Patch {
 
   /** @return The parent revision id */
   RevisionId getParent();
-
-  /** @return The log emitted during creation */
-  Optional<String> getCreationLog();
 }

@@ -61,7 +61,7 @@ public class CheckoutNewCommand implements VetCommand {
 
     BranchShortName targetBranch = getTargetBranch();
     LOG.debug("Creating change with target branch '{}'", targetBranch);
-    Change change = changeRepository.createChange(targetBranch);
+    Change change = changeRepository.createChange(targetBranch, PatchOptions.DEFAULT);
     ChangeNumericId numericId = change.getNumericId();
     userOutput.display("Change " + change + " created");
 

@@ -39,17 +39,19 @@ public interface ChangeRepository {
    * Creates a new change on Gerrit and track it
    *
    * @param targetBranch The target branch
+   * @param firstPatchOptions The options to apply to the first patch
    * @return The new tracked change
    */
-  Change createAndTrackChange(BranchShortName targetBranch);
+  CreatedChange createAndTrackChange(BranchShortName targetBranch, PatchOptions firstPatchOptions);
 
   /**
    * Creates a new change
    *
    * @param targetBranch The target branch
+   * @param firstPatchOptions The options to apply to the first patch
    * @return The new tracked change
    */
-  Change createChange(BranchShortName targetBranch);
+  CreatedChange createChange(BranchShortName targetBranch, PatchOptions firstPatchOptions);
 
   /**
    * @param numericId The change numeric id

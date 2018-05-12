@@ -15,16 +15,15 @@ public class PatchOptionsTest {
 
   private static final String REVISION_ID = "revision-id";
   private static final String WHERE_IS_MY_MIND = "Where is my mind?!";
-  private static final PatchSubject WHERE_IS_MY_MIND_SUBJECT =
-      PatchSubject.of(WHERE_IS_MY_MIND);
+  private static final PatchSubject WHERE_IS_MY_MIND_SUBJECT = PatchSubject.of(WHERE_IS_MY_MIND);
 
   private String buildTargetOptions(PatchOptions patchOptions) {
     return patchOptions.buildGitPushTarget(REVISION_ID, BranchShortName.MASTER);
   }
 
   @Test
-  public void WHEN_empty_THEN_push_target_has_no_option() {
-    String pushTarget = PatchOptions.EMPTY.buildGitPushTarget(REVISION_ID, BranchShortName.MASTER);
+  public void WHEN_default_THEN_push_target_has_no_option() {
+    String pushTarget = PatchOptions.DEFAULT.buildGitPushTarget(REVISION_ID, BranchShortName.MASTER);
     assertThat(pushTarget).isEqualTo(REVISION_ID + ":refs/for/" + BranchShortName.MASTER + "%");
   }
 

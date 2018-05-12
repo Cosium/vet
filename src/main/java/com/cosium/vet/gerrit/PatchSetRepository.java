@@ -13,11 +13,19 @@ public interface PatchSetRepository {
 
   /**
    * @param targetBranch The target of the change
+   * @param options The options for the push.
+   * @return The created patch
+   */
+  CreatedPatch createPatch(BranchShortName targetBranch, PatchOptions options);
+
+  /**
+   * @param targetBranch The target of the change
    * @param numericId The numeric id of the change. Can be null.
    * @param options The options for the push.
    * @return The created patch
    */
-  Patch createPatch(BranchShortName targetBranch, ChangeNumericId numericId, PatchOptions options);
+  CreatedPatch createPatch(
+      BranchShortName targetBranch, ChangeNumericId numericId, PatchOptions options);
 
   /**
    * @param changeNumericId The change numeric id

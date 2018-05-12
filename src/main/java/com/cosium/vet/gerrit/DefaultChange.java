@@ -40,10 +40,7 @@ class DefaultChange implements Change {
 
   @Override
   public String createPatch(PatchOptions options) {
-    return patchSetRepository
-        .createPatch(targetBranch, numericId, options)
-        .getCreationLog()
-        .orElseThrow(() -> new RuntimeException("Could not extract the creation log"));
+    return patchSetRepository.createPatch(targetBranch, numericId, options).getCreationLog();
   }
 
   @Override

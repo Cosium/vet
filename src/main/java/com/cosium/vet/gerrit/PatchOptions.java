@@ -18,7 +18,7 @@ import static java.util.Optional.ofNullable;
  */
 public class PatchOptions {
 
-  public static final PatchOptions EMPTY = PatchOptions.builder().build();
+  public static final PatchOptions DEFAULT = PatchOptions.builder().build();
 
   private final boolean publishDraftComments;
   private final boolean workInProgress;

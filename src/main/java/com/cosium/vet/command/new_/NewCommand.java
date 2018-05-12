@@ -1,9 +1,7 @@
 package com.cosium.vet.command.new_;
 
 import com.cosium.vet.command.VetCommand;
-import com.cosium.vet.gerrit.Change;
-import com.cosium.vet.gerrit.ChangeRepository;
-import com.cosium.vet.gerrit.ChangeRepositoryFactory;
+import com.cosium.vet.gerrit.*;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.log.Logger;
 import com.cosium.vet.log.LoggerFactory;
@@ -53,8 +51,8 @@ public class NewCommand implements VetCommand {
     changeRepository.untrack();
 
     BranchShortName targetBranch = getTargetBranch();
-    Change change = changeRepository.createAndTrackChange(targetBranch);
-
+    CreatedChange change = changeRepository.createAndTrackChange(targetBranch, PatchOptions.DEFAULT);
+    userOutput.display(change.getCreationLog());
     userOutput.display("Now tracking new change " + change);
   }
 

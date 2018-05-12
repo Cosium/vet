@@ -5,6 +5,7 @@ import com.cosium.vet.gerrit.config.GerritConfigurationRepository;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitClient;
 import com.cosium.vet.git.RemoteName;
+import com.cosium.vet.git.RevisionId;
 import com.cosium.vet.log.Logger;
 import com.cosium.vet.log.LoggerFactory;
 
@@ -94,15 +95,18 @@ class DefaultChangeRepository implements ChangeRepository {
   }
 
   @Override
-  public Change createAndTrackChange(BranchShortName targetBranch) {
-    Patch patch = patchSetRepository.createPatch(targetBranch, null, PatchOptions.EMPTY);
-    return trackChange(patch.getChangeNumericId(), targetBranch);
+  public CreatedChange createAndTrackChange(
+      BranchShortName targetBranch, PatchOptions firstPatchOptions) {
+    CreatedPatch patch = patchSetRepository.createPatch(targetBranch, firstPatchOptions);
+    Change change = trackChange(patch.getChangeNumericId(), targetBranch);
+    return new DefaultCreatedChange(change, patch.getCreationLog());
   }
 
   @Override
-  public Change createChange(BranchShortName targetBranch) {
-    Patch patch = patchSetRepository.createPatch(targetBranch, null, PatchOptions.EMPTY);
-    return changeFactory.build(targetBranch, patch.getChangeNumericId());
+  public CreatedChange createChange(BranchShortName targetBranch, PatchOptions firstPatchOptions) {
+    CreatedPatch patch = patchSetRepository.createPatch(targetBranch, firstPatchOptions);
+    Change change = changeFactory.build(targetBranch, patch.getChangeNumericId());
+    return new DefaultCreatedChange(change, patch.getCreationLog());
   }
 
   @Override
@@ -116,5 +120,41 @@ class DefaultChangeRepository implements ChangeRepository {
         getTrackedChange()
             .orElseThrow(() -> new RuntimeException("There is no currently tracked change"));
     return patchSetRepository.pullLatest(change.getNumericId());
+  }
+
+  private class DefaultCreatedChange implements CreatedChange {
+
+    private final Change change;
+    private final String creationLog;
+
+    private DefaultCreatedChange(Change change, String creationLog) {
+      this.change = requireNonNull(change);
+      this.creationLog = requireNonNull(creationLog);
+    }
+
+    @Override
+    public String getCreationLog() {
+      return creationLog;
+    }
+
+    @Override
+    public ChangeNumericId getNumericId() {
+      return change.getNumericId();
+    }
+
+    @Override
+    public RevisionId fetchParent() {
+      return change.fetchParent();
+    }
+
+    @Override
+    public String createPatch(PatchOptions options) {
+      return change.createPatch(options);
+    }
+
+    @Override
+    public String toString() {
+      return change.toString();
+    }
   }
 }
