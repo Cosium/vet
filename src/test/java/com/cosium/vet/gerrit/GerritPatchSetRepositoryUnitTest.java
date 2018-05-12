@@ -131,7 +131,7 @@ public class GerritPatchSetRepositoryUnitTest {
   @Test
   public void WHEN_create_patch_set_until_end_THEN_commit_tree_be_until_end() {
     when(git.getTree()).thenReturn("end");
-    tested.createPatch(BAR_BRANCH, _1081, null);
+    tested.createPatch(BAR_BRANCH, _1081, PatchOptions.EMPTY);
     verify(git).commitTree(eq("end"), any(), any());
   }
 
@@ -139,13 +139,13 @@ public class GerritPatchSetRepositoryUnitTest {
   public void
       GIVEN_commit_tree_id_foo_and_target_bar_WHEN_create_patch_set_THEN_it_should_push_foo_to_ref_for_bar() {
     when(git.commitTree(any(), any(), any())).thenReturn("foo");
-    tested.createPatch(BAR_BRANCH, _1081, null);
+    tested.createPatch(BAR_BRANCH, _1081, PatchOptions.EMPTY);
     verify(git).push(any(), startsWith("foo:refs/for/" + BAR_BRANCH));
   }
 
   @Test
   public void WHEN_create_patch_set_THEN_it_should_push_to_pushurl() {
-    tested.createPatch(BAR_BRANCH, _1081, null);
+    tested.createPatch(BAR_BRANCH, _1081, PatchOptions.EMPTY);
     verify(git).push(eq(PUSH_URL.toString()), any());
   }
 }

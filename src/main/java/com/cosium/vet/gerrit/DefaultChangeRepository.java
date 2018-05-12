@@ -95,13 +95,13 @@ class DefaultChangeRepository implements ChangeRepository {
 
   @Override
   public Change createAndTrackChange(BranchShortName targetBranch) {
-    Patch patch = patchSetRepository.createPatch(targetBranch, null, null);
+    Patch patch = patchSetRepository.createPatch(targetBranch, null, PatchOptions.EMPTY);
     return trackChange(patch.getChangeNumericId(), targetBranch);
   }
 
   @Override
   public Change createChange(BranchShortName targetBranch) {
-    Patch patch = patchSetRepository.createPatch(targetBranch, null, null);
+    Patch patch = patchSetRepository.createPatch(targetBranch, null, PatchOptions.EMPTY);
     return changeFactory.build(targetBranch, patch.getChangeNumericId());
   }
 
