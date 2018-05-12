@@ -83,7 +83,7 @@ public class FireAndForgetCommand implements VetCommand {
 
     RevisionId parent = change.fetchParent();
     LOG.debug("Resetting current branch to {}", parent);
-    userOutput.display(git.resetHard(parent));
+    userOutput.display(git.resetKeep(parent));
     userOutput.display("Change " + change + " has been created.");
   }
 

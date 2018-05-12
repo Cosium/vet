@@ -105,10 +105,10 @@ public interface GitClient {
   String checkoutNewBranch(BranchShortName branchShortName);
 
   /**
-   * Hard reset the current branch to the provided revision id
+   * Reset the current branch to the provided revision id. Preserves local changes.
    *
-   * @param revisionId The revision of to hard reset to
+   * @param revisionId The revision of to reset to
    * @return The command output
    */
-  String resetHard(RevisionId revisionId);
+  String resetKeep(RevisionId revisionId);
 }

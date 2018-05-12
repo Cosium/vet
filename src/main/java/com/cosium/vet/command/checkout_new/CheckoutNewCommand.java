@@ -67,7 +67,7 @@ public class CheckoutNewCommand implements VetCommand {
 
     RevisionId parent = change.fetchParent();
     LOG.debug("Resetting to '{}'", parent);
-    userOutput.display(git.resetHard(parent));
+    userOutput.display(git.resetKeep(parent));
 
     ChangeCheckoutBranchName checkoutBranch = getCheckoutBranch(numericId);
     LOG.debug("Checking out new local branch '{}' to track {}", checkoutBranch, change);
