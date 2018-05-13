@@ -10,7 +10,7 @@ Vet allows to review code on Gerrit using a pull-request workflow similar to Git
 ### Linux - Debian based distributions
 
 ```
-wget https://github.com/Cosium/vet/releases/download/3.0/vet-linux_x64.deb.zip -O vet.deb.zip \
+wget https://github.com/Cosium/vet/releases/download/3.09/vet-linux_x64.deb.zip -O vet.deb.zip \
 && unzip vet.deb.zip \
 && sudo dpkg -i vet.deb \
 && rm vet.deb.zip vet.deb
@@ -193,7 +193,7 @@ You will need JDK 9+.
 <dependency>
    <groupId>com.cosium.vet</groupId>
    <artifactId>vet</artifactId>
-   <version>3.0</version>
+   <version>3.09</version>
 </dependency>
 ```
 
