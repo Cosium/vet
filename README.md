@@ -193,7 +193,7 @@ You will need JDK 9+.
 <dependency>
    <groupId>com.cosium.vet</groupId>
    <artifactId>vet</artifactId>
-   <version>3.09</version>
+   <version>${vet.version}</version>
 </dependency>
 ```
 
