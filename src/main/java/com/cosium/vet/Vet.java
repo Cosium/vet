@@ -40,6 +40,7 @@ import com.cosium.vet.runtime.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -132,7 +133,7 @@ public class Vet {
         new TrackCommand.Factory(changeRepositoryFactory, userInput, userOutput);
 
     List<VetAdvancedCommandArgParser> normalParsers =
-        List.of(
+        Arrays.asList(
             new CheckoutNewCommandArgParser(checkoutNewCommandFactory),
             new CheckoutCommandArgParser(checkoutCommandFactory),
             new PushCommandArgParser(pushCommandFactory),

@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class AutocompleteCommandTest {
   private static final String FULL_OPT_1 = "--" + OPT_1;
   private static final String OPT_2 = "opt2";
   private static final String FULL_OPT_2 = "--" + OPT_2;
-  private static final List<String> OPTIONS = List.of(FULL_OPT_1, FULL_OPT_2);
+  private static final List<String> OPTIONS = Arrays.asList(FULL_OPT_1, FULL_OPT_2);
 
   private UserOutput userOutput;
   private VetAdvancedCommandArgParser parser;

@@ -56,7 +56,7 @@ class DefaultLogger implements Logger {
       return;
     }
 
-    StringBuilder log = new StringBuilder();
+    StringBuffer log = new StringBuffer();
 
     if (LoggerFactory.isPrintContext()) {
       log.append(TIME_FORMATTER.format(LocalDateTime.now()))

@@ -6,6 +6,7 @@ import com.cosium.vet.log.Logger;
 import com.cosium.vet.log.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,8 +14,8 @@ public class App {
 
   private static final Logger LOG = LoggerFactory.getLogger(App.class);
 
-  private static final List<String> STACKTRACE_ARG_NAMES = List.of("--stacktrace");
-  private static final List<String> VERBOSE_ARG_NAMES = List.of("--verbose");
+  private static final List<String> STACKTRACE_ARG_NAMES = Collections.singletonList("--stacktrace");
+  private static final List<String> VERBOSE_ARG_NAMES = Collections.singletonList("--verbose");
 
   public static void main(String[] args) {
     try {

@@ -88,7 +88,6 @@ tasks {
     "test"(Test::class) {
         testLogging {
             exceptionFormat = TestExceptionFormat.FULL
-            showStandardStreams = true
         }
     }
 

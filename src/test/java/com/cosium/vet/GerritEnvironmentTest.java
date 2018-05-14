@@ -25,7 +25,7 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -126,7 +126,7 @@ public abstract class GerritEnvironmentTest {
             .setHeader("Content-Type", "application/x-www-form-urlencoded")
             .setEntity(
                 new UrlEncodedFormEntity(
-                    List.of(
+                    Arrays.asList(
                         new BasicNameValuePair("username", USER),
                         new BasicNameValuePair("password", PASSWORD))))
             .build();

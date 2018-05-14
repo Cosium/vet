@@ -3,7 +3,7 @@ package com.cosium.vet.command;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -34,8 +34,9 @@ public class CompositeCommandArgParserUnitTest {
     tested =
         new CompositeCommandArgParser(
             "vet",
-            List.of(stdParser),
-            new DebugOptions(List.of("--stacktrace"), List.of("--verbose")));
+            Collections.singletonList(stdParser),
+            new DebugOptions(
+                Collections.singletonList("--stacktrace"), Collections.singletonList("--verbose")));
   }
 
   @Test

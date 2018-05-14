@@ -4,7 +4,7 @@ import com.cosium.vet.git.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
+import java.util.Arrays;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -74,7 +74,7 @@ public class GerritPatchSetRepositoryUnitTest {
   @Test
   public void
       GIVEN_refs_1048_1_with_i2222_and_1081_2_with_i1111_WHEN_retrieving_latestpatchsetcommitmessage_of_i1111_THEN_it_should_return_1081_2_commit_message() {
-    when(git.listRemoteRefs(any())).thenReturn(List.of(HEAD, _1048_1, META, _1081_2));
+    when(git.listRemoteRefs(any())).thenReturn(Arrays.asList(HEAD, _1048_1, META, _1081_2));
 
     when(git.getCommitMessage(_1048_1.getRevisionId()))
         .thenReturn(CommitMessage.of("Bar man Change-Id: I2222"));
@@ -93,7 +93,7 @@ public class GerritPatchSetRepositoryUnitTest {
   public void
       GIVEN_refs_1048_1_and_1048_4_with_i2222_comma_1081_2_and_1081_3_with_i1111_WHEN_retrieving_latestpatchsetcommitmessage_i1111_THEN_it_should_retrieve_1081_3_commitmessages() {
     when(git.listRemoteRefs(any()))
-        .thenReturn(List.of(HEAD, _1081_3, _1048_1, META, _1081_2, _1048_4));
+        .thenReturn(Arrays.asList(HEAD, _1081_3, _1048_1, META, _1081_2, _1048_4));
 
     when(git.getCommitMessage(_1048_1.getRevisionId()))
         .thenReturn(CommitMessage.of("Foo man Change-Id: I2222"));
@@ -115,7 +115,7 @@ public class GerritPatchSetRepositoryUnitTest {
   @Test
   public void
       GIVEN_refs_1048_1_with_i2222_and_1081_2_with_i2222_WHEN_retrieving_latestpatchsetcommitmessage_of_i2222_THEN_1081_2_will_be_returned() {
-    when(git.listRemoteRefs(any())).thenReturn(List.of(_1048_1, _1081_2));
+    when(git.listRemoteRefs(any())).thenReturn(Arrays.asList(_1048_1, _1081_2));
 
     when(git.getCommitMessage(_1081_2.getRevisionId()))
         .thenReturn(CommitMessage.of("Foo man Change-Id: I2222"));
