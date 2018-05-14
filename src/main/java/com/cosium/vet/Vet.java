@@ -33,8 +33,9 @@ import com.cosium.vet.command.track.TrackCommandFactory;
 import com.cosium.vet.command.untrack.UntrackCommand;
 import com.cosium.vet.command.untrack.UntrackCommandArgParser;
 import com.cosium.vet.command.untrack.UntrackCommandFactory;
-import com.cosium.vet.gerrit.*;
-import com.cosium.vet.git.BranchShortName;
+import com.cosium.vet.gerrit.ChangeRepository;
+import com.cosium.vet.gerrit.DefaultChangeRepositoryFactory;
+import com.cosium.vet.git.GitClient;
 import com.cosium.vet.git.GitProvider;
 import com.cosium.vet.runtime.*;
 
@@ -56,6 +57,9 @@ public class Vet {
 
   private static final String APP_NAME = "vet";
 
+  private final GitClient git;
+  private final ChangeRepository changeRepository;
+
   private final NewCommandFactory newCommandFactory;
   private final CheckoutCommandFactory checkoutCommandFactory;
   private final CheckoutNewCommandFactory checkoutNewCommandFactory;
@@ -65,40 +69,33 @@ public class Vet {
   private final PullCommandFactory pullCommandFactory;
   private final FireAndForgetCommandFactory fireAndForgetCommandFactory;
   private final TrackCommandFactory trackCommandFactory;
+
   private final VetCommandArgParser commandParser;
 
-  /**
-   * @param interactive True if interactive mode (human interaction) should be enabled. False
-   *     otherwise.
-   */
   public Vet(boolean interactive) {
     this(interactive, DebugOptions.empty());
   }
 
-  /**
-   * @param interactive True if interactive mode (human interaction) should be enabled. False
-   *     otherwise.
-   * @param debugOptions The debug options to use
-   */
   public Vet(boolean interactive, DebugOptions debugOptions) {
-    this(
-        Paths.get(System.getProperty("user.dir")),
-        new BasicCommandRunner(),
-        interactive,
-        debugOptions);
+    this(interactive, debugOptions, Paths.get(System.getProperty("user.dir")));
+  }
+
+  public Vet(boolean interactive, DebugOptions debugOptions, Path workingDir) {
+    this(interactive, debugOptions, workingDir, new BasicCommandRunner());
   }
 
   /**
-   * @param workingDir The working directory
-   * @param commandRunner The command runner
    * @param interactive True if interactive mode (human interaction) should be enabled. False
    *     otherwise.
+   * @param debugOptions Th debug options to use
+   * @param workingDir The working directory
+   * @param commandRunner The command runner
    */
   public Vet(
-      Path workingDir,
-      CommandRunner commandRunner,
       boolean interactive,
-      DebugOptions debugOptions) {
+      DebugOptions debugOptions,
+      Path workingDir,
+      CommandRunner commandRunner) {
     requireNonNull(workingDir);
     requireNonNull(commandRunner);
     requireNonNull(debugOptions);
@@ -113,24 +110,21 @@ public class Vet {
     }
 
     GitProvider gitProvider = new GitProvider(workingDir, commandRunner);
-    ChangeRepositoryFactory changeRepositoryFactory =
-        new DefaultChangeRepositoryFactory(gitProvider, gitProvider);
+    git = gitProvider.build();
+    changeRepository = new DefaultChangeRepositoryFactory(gitProvider, git).build();
 
-    this.newCommandFactory = new NewCommand.Factory(changeRepositoryFactory, userInput, userOutput);
+    this.newCommandFactory = new NewCommand.Factory(changeRepository, userInput, userOutput);
     this.checkoutCommandFactory =
-        new CheckoutCommand.Factory(gitProvider, changeRepositoryFactory, userInput, userOutput);
+        new CheckoutCommand.Factory(git, changeRepository, userInput, userOutput);
     this.checkoutNewCommandFactory =
-        new CheckoutNewCommand.Factory(gitProvider, changeRepositoryFactory, userInput, userOutput);
-    this.pushCommandFactory = new PushCommand.Factory(changeRepositoryFactory, userOutput);
-    this.untrackCommandFactory = new UntrackCommand.Factory(changeRepositoryFactory, userInput);
-    this.statusCommandFactory =
-        new StatusCommand.Factory(gitProvider, changeRepositoryFactory, userOutput);
-    this.pullCommandFactory = new PullCommand.Factory(changeRepositoryFactory, userOutput);
+        new CheckoutNewCommand.Factory(git, changeRepository, userInput, userOutput);
+    this.pushCommandFactory = new PushCommand.Factory(changeRepository, userOutput);
+    this.untrackCommandFactory = new UntrackCommand.Factory(changeRepository, userInput);
+    this.statusCommandFactory = new StatusCommand.Factory(git, changeRepository, userOutput);
+    this.pullCommandFactory = new PullCommand.Factory(changeRepository, userOutput);
     this.fireAndForgetCommandFactory =
-        new FireAndForgetCommand.Factory(
-            changeRepositoryFactory, gitProvider, userInput, userOutput);
-    this.trackCommandFactory =
-        new TrackCommand.Factory(changeRepositoryFactory, userInput, userOutput);
+        new FireAndForgetCommand.Factory(git, changeRepository, userInput, userOutput);
+    this.trackCommandFactory = new TrackCommand.Factory(changeRepository, userInput, userOutput);
 
     List<VetAdvancedCommandArgParser> normalParsers =
         Arrays.asList(
@@ -159,60 +153,11 @@ public class Vet {
     commandParser.parse(args).execute();
   }
 
-  public void new_(Boolean force, BranchShortName targetBranch) {
-    newCommandFactory.build(force, targetBranch).execute();
+  public boolean isTrackingChange() {
+    return changeRepository.getTrackedChange().isPresent();
   }
 
-  public void fireAndForget(Boolean force, CodeReviewVote codeReviewVote) {
-    fireAndForgetCommandFactory.build(force, codeReviewVote).execute();
-  }
-
-  public void checkoutNew(Boolean force, ChangeCheckoutBranchName checkoutBranch) {
-    checkoutNewCommandFactory.build(force, checkoutBranch);
-  }
-
-  public void checkout(
-      Boolean force,
-      ChangeCheckoutBranchName checkoutBranch,
-      ChangeNumericId numericId,
-      BranchShortName targetbranch) {
-    checkoutCommandFactory.build(force, checkoutBranch, numericId, targetbranch);
-  }
-
-  public void pull() {
-    pullCommandFactory.build().execute();
-  }
-
-  /**
-   * Executes the push command.
-   *
-   * @param publishDraftedComments True to publish drafted comments
-   * @param workInProgress True to turn the change set to work in progress
-   * @param patchSetSubject The optional patch set subject
-   * @param bypassReview Submit directly the change, bypassing the review
-   * @param codeReviewVote The code review vote
-   */
-  public void push(
-      Boolean publishDraftedComments,
-      Boolean workInProgress,
-      PatchSubject patchSetSubject,
-      Boolean bypassReview,
-      CodeReviewVote codeReviewVote) {
-    pushCommandFactory
-        .build(
-            publishDraftedComments, workInProgress, patchSetSubject, bypassReview, codeReviewVote)
-        .execute();
-  }
-
-  public void track(Boolean force, ChangeNumericId numericId, BranchShortName targetbranch) {
-    trackCommandFactory.build(force, numericId, targetbranch);
-  }
-
-  public void untrack(Boolean force) {
-    untrackCommandFactory.build(force).execute();
-  }
-
-  public void status() {
-    statusCommandFactory.build().execute();
+  public PushCommandFactory pushCommandFactory() {
+    return pushCommandFactory;
   }
 }

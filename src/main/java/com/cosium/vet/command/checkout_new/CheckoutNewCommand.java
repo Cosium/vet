@@ -4,7 +4,6 @@ import com.cosium.vet.command.VetCommand;
 import com.cosium.vet.gerrit.*;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitClient;
-import com.cosium.vet.git.GitProvider;
 import com.cosium.vet.git.RevisionId;
 import com.cosium.vet.log.Logger;
 import com.cosium.vet.log.LoggerFactory;
@@ -99,18 +98,18 @@ public class CheckoutNewCommand implements VetCommand {
 
   public static class Factory implements CheckoutNewCommandFactory {
 
-    private final GitProvider gitProvider;
-    private final ChangeRepositoryFactory changeRepositoryFactory;
+    private final GitClient git;
+    private final ChangeRepository changeRepository;
     private final UserInput userInput;
     private final UserOutput userOutput;
 
     public Factory(
-        GitProvider gitProvider,
-        ChangeRepositoryFactory changeRepositoryFactory,
+        GitClient git,
+        ChangeRepository changeRepository,
         UserInput userInput,
         UserOutput userOutput) {
-      this.gitProvider = requireNonNull(gitProvider);
-      this.changeRepositoryFactory = requireNonNull(changeRepositoryFactory);
+      this.git = requireNonNull(git);
+      this.changeRepository = requireNonNull(changeRepository);
       this.userInput = requireNonNull(userInput);
       this.userOutput = requireNonNull(userOutput);
     }
@@ -118,12 +117,7 @@ public class CheckoutNewCommand implements VetCommand {
     @Override
     public CheckoutNewCommand build(Boolean force, ChangeCheckoutBranchName checkoutBranch) {
       return new CheckoutNewCommand(
-          gitProvider.build(),
-          changeRepositoryFactory.build(),
-          userInput,
-          userOutput,
-          force,
-          checkoutBranch);
+          git, changeRepository, userInput, userOutput, force, checkoutBranch);
     }
   }
 }

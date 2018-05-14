@@ -3,9 +3,7 @@ package com.cosium.vet.command.status;
 import com.cosium.vet.command.VetCommand;
 import com.cosium.vet.gerrit.Change;
 import com.cosium.vet.gerrit.ChangeRepository;
-import com.cosium.vet.gerrit.ChangeRepositoryFactory;
 import com.cosium.vet.git.GitClient;
-import com.cosium.vet.git.GitProvider;
 import com.cosium.vet.runtime.UserOutput;
 
 import java.util.Optional;
@@ -42,22 +40,19 @@ public class StatusCommand implements VetCommand {
 
   public static class Factory implements StatusCommandFactory {
 
-    private final GitProvider gitProvider;
-    private final ChangeRepositoryFactory changeRepositoryFactory;
+    private final GitClient git;
+    private final ChangeRepository changeRepository;
     private final UserOutput userOutput;
 
-    public Factory(
-        GitProvider gitProvider,
-        ChangeRepositoryFactory changeRepositoryFactory,
-        UserOutput userOutput) {
-      this.gitProvider = requireNonNull(gitProvider);
-      this.changeRepositoryFactory = requireNonNull(changeRepositoryFactory);
+    public Factory(GitClient git, ChangeRepository changeRepository, UserOutput userOutput) {
+      this.git = requireNonNull(git);
+      this.changeRepository = requireNonNull(changeRepository);
       this.userOutput = requireNonNull(userOutput);
     }
 
     @Override
     public StatusCommand build() {
-      return new StatusCommand(gitProvider.build(), changeRepositoryFactory.build(), userOutput);
+      return new StatusCommand(git, changeRepository, userOutput);
     }
   }
 }

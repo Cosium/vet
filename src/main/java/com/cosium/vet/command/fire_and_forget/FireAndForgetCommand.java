@@ -4,7 +4,6 @@ import com.cosium.vet.command.VetCommand;
 import com.cosium.vet.gerrit.*;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitClient;
-import com.cosium.vet.git.GitProvider;
 import com.cosium.vet.git.RevisionId;
 import com.cosium.vet.log.Logger;
 import com.cosium.vet.log.LoggerFactory;
@@ -32,8 +31,8 @@ public class FireAndForgetCommand implements VetCommand {
   private final CodeReviewVote codeReviewVote;
 
   private FireAndForgetCommand(
-      ChangeRepository changeRepository,
       GitClient git,
+      ChangeRepository changeRepository,
       UserInput userInput,
       UserOutput userOutput,
       // Optionals
@@ -99,18 +98,18 @@ public class FireAndForgetCommand implements VetCommand {
 
   public static class Factory implements FireAndForgetCommandFactory {
 
-    private final ChangeRepositoryFactory changeRepositoryFactory;
-    private final GitProvider gitProvider;
+    private final ChangeRepository changeRepository;
+    private final GitClient git;
     private final UserInput userInput;
     private final UserOutput userOutput;
 
     public Factory(
-        ChangeRepositoryFactory changeRepositoryFactory,
-        GitProvider gitProvider,
+        GitClient git,
+        ChangeRepository changeRepository,
         UserInput userInput,
         UserOutput userOutput) {
-      this.changeRepositoryFactory = requireNonNull(changeRepositoryFactory);
-      this.gitProvider = requireNonNull(gitProvider);
+      this.changeRepository = requireNonNull(changeRepository);
+      this.git = requireNonNull(git);
       this.userInput = requireNonNull(userInput);
       this.userOutput = requireNonNull(userOutput);
     }
@@ -118,12 +117,7 @@ public class FireAndForgetCommand implements VetCommand {
     @Override
     public FireAndForgetCommand build(Boolean force, CodeReviewVote codeReviewVote) {
       return new FireAndForgetCommand(
-          changeRepositoryFactory.build(),
-          gitProvider.build(),
-          userInput,
-          userOutput,
-          force,
-          codeReviewVote);
+          git, changeRepository, userInput, userOutput, force, codeReviewVote);
     }
   }
 }

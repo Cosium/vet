@@ -1,10 +1,12 @@
 package com.cosium.vet.command.checkout;
 
 import com.cosium.vet.command.VetCommand;
-import com.cosium.vet.gerrit.*;
+import com.cosium.vet.gerrit.Change;
+import com.cosium.vet.gerrit.ChangeCheckoutBranchName;
+import com.cosium.vet.gerrit.ChangeNumericId;
+import com.cosium.vet.gerrit.ChangeRepository;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitClient;
-import com.cosium.vet.git.GitProvider;
 import com.cosium.vet.runtime.UserInput;
 import com.cosium.vet.runtime.UserOutput;
 import com.cosium.vet.thirdparty.apache_commons_lang3.BooleanUtils;
@@ -108,23 +110,24 @@ public class CheckoutCommand implements VetCommand {
             () ->
                 ChangeCheckoutBranchName.of(
                     userInput.askNonBlank(
-                        "Checkout branch", ChangeCheckoutBranchName.defaults(numericId).toString())));
+                        "Checkout branch",
+                        ChangeCheckoutBranchName.defaults(numericId).toString())));
   }
 
   public static class Factory implements CheckoutCommandFactory {
 
-    private final GitProvider gitProvider;
-    private final ChangeRepositoryFactory changeRepositoryFactory;
+    private final GitClient git;
+    private final ChangeRepository changeRepository;
     private final UserInput userInput;
     private final UserOutput userOutput;
 
     public Factory(
-        GitProvider gitProvider,
-        ChangeRepositoryFactory changeRepositoryFactory,
+        GitClient git,
+        ChangeRepository changeRepository,
         UserInput userInput,
         UserOutput userOutput) {
-      this.gitProvider = requireNonNull(gitProvider);
-      this.changeRepositoryFactory = requireNonNull(changeRepositoryFactory);
+      this.git = requireNonNull(git);
+      this.changeRepository = requireNonNull(changeRepository);
       this.userInput = requireNonNull(userInput);
       this.userOutput = requireNonNull(userOutput);
     }
@@ -136,8 +139,8 @@ public class CheckoutCommand implements VetCommand {
         ChangeNumericId numericId,
         BranchShortName targetBranch) {
       return new CheckoutCommand(
-          gitProvider.build(),
-          changeRepositoryFactory.build(),
+          git,
+          changeRepository,
           userInput,
           userOutput,
           force,

@@ -4,7 +4,6 @@ import com.cosium.vet.command.VetCommand;
 import com.cosium.vet.gerrit.Change;
 import com.cosium.vet.gerrit.ChangeNumericId;
 import com.cosium.vet.gerrit.ChangeRepository;
-import com.cosium.vet.gerrit.ChangeRepositoryFactory;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.log.Logger;
 import com.cosium.vet.log.LoggerFactory;
@@ -98,15 +97,12 @@ public class TrackCommand implements VetCommand {
 
   public static class Factory implements TrackCommandFactory {
 
-    private final ChangeRepositoryFactory changeRepositoryFactory;
+    private final ChangeRepository changeRepository;
     private final UserInput userInput;
     private final UserOutput userOutput;
 
-    public Factory(
-        ChangeRepositoryFactory changeRepositoryFactory,
-        UserInput userInput,
-        UserOutput userOutput) {
-      this.changeRepositoryFactory = requireNonNull(changeRepositoryFactory);
+    public Factory(ChangeRepository changeRepository, UserInput userInput, UserOutput userOutput) {
+      this.changeRepository = requireNonNull(changeRepository);
       this.userInput = requireNonNull(userInput);
       this.userOutput = requireNonNull(userOutput);
     }
@@ -115,7 +111,7 @@ public class TrackCommand implements VetCommand {
     public TrackCommand build(
         Boolean force, ChangeNumericId numericId, BranchShortName targetBranch) {
       return new TrackCommand(
-          changeRepositoryFactory.build(), userInput, userOutput, force, numericId, targetBranch);
+          changeRepository, userInput, userOutput, force, numericId, targetBranch);
     }
   }
 }

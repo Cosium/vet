@@ -82,15 +82,15 @@ public class NewCommand implements VetCommand {
 
   public static class Factory implements NewCommandFactory {
 
-    private final ChangeRepositoryFactory changeRepositoryFactory;
+    private final ChangeRepository changeRepository;
     private final UserInput userInput;
     private final UserOutput userOutput;
 
     public Factory(
-        ChangeRepositoryFactory changeRepositoryFactory,
+        ChangeRepository changeRepository,
         UserInput userInput,
         UserOutput userOutput) {
-      this.changeRepositoryFactory = requireNonNull(changeRepositoryFactory);
+      this.changeRepository = requireNonNull(changeRepository);
       this.userInput = requireNonNull(userInput);
       this.userOutput = requireNonNull(userOutput);
     }
@@ -98,7 +98,7 @@ public class NewCommand implements VetCommand {
     @Override
     public NewCommand build(Boolean force, BranchShortName targetBranch) {
       return new NewCommand(
-          changeRepositoryFactory.build(), userInput, userOutput, force, targetBranch);
+          changeRepository, userInput, userOutput, force, targetBranch);
     }
   }
 }

@@ -2,7 +2,6 @@ package com.cosium.vet.command.push;
 
 import com.cosium.vet.gerrit.Change;
 import com.cosium.vet.gerrit.ChangeRepository;
-import com.cosium.vet.gerrit.ChangeRepositoryFactory;
 import com.cosium.vet.runtime.UserOutput;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,10 +30,7 @@ public class PushCommandUnitTest {
 
     userOutput = mock(UserOutput.class);
 
-    ChangeRepositoryFactory gerritClientFactory = mock(ChangeRepositoryFactory.class);
-    when(gerritClientFactory.build()).thenReturn(changeRepository);
-
-    factory = new PushCommand.Factory(gerritClientFactory, userOutput);
+    factory = new PushCommand.Factory(changeRepository, userOutput);
   }
 
   @Test

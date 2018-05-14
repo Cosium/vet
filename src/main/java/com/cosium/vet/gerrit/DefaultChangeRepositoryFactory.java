@@ -3,7 +3,10 @@ package com.cosium.vet.gerrit;
 import com.cosium.vet.gerrit.config.DefaultGerritConfigurationRepositoryFactory;
 import com.cosium.vet.gerrit.config.GerritConfigurationRepository;
 import com.cosium.vet.gerrit.config.GerritConfigurationRepositoryFactory;
-import com.cosium.vet.git.*;
+import com.cosium.vet.git.GitClient;
+import com.cosium.vet.git.GitConfigRepositoryFactory;
+import com.cosium.vet.git.RemoteName;
+import com.cosium.vet.git.RemoteUrl;
 import com.cosium.vet.log.Logger;
 import com.cosium.vet.log.LoggerFactory;
 
@@ -21,31 +24,26 @@ public class DefaultChangeRepositoryFactory implements ChangeRepositoryFactory {
   private static final Logger LOG = LoggerFactory.getLogger(DefaultChangeRepositoryFactory.class);
 
   private final GerritConfigurationRepositoryFactory configurationRepositoryFactory;
-  private final GitClientFactory gitClientFactory;
+  private final GitClient git;
 
   public DefaultChangeRepositoryFactory(
-      GitConfigRepositoryFactory gitConfigRepositoryfactory, GitClientFactory gitClientFactory) {
-    this(
-        new DefaultGerritConfigurationRepositoryFactory(gitConfigRepositoryfactory),
-        gitClientFactory);
+      GitConfigRepositoryFactory gitConfigRepositoryfactory, GitClient git) {
+    this(new DefaultGerritConfigurationRepositoryFactory(gitConfigRepositoryfactory), git);
   }
 
   public DefaultChangeRepositoryFactory(
-      GerritConfigurationRepositoryFactory configurationRepositoryFactory,
-      GitClientFactory gitClientFactory) {
+      GerritConfigurationRepositoryFactory configurationRepositoryFactory, GitClient git) {
     this.configurationRepositoryFactory = requireNonNull(configurationRepositoryFactory);
-    this.gitClientFactory = requireNonNull(gitClientFactory);
+    this.git = requireNonNull(git);
   }
 
   @Override
   public ChangeRepository build() {
-    GitClient gitClient = gitClientFactory.build();
     GerritConfigurationRepository configurationRepository = configurationRepositoryFactory.build();
 
     RemoteName remote = RemoteName.ORIGIN;
     URL remoteUrl =
-        gitClient
-            .getRemoteUrl(remote)
+        git.getRemoteUrl(remote)
             .map(RemoteUrl::toURL)
             .orElseThrow(
                 () ->
@@ -60,12 +58,12 @@ public class DefaultChangeRepositoryFactory implements ChangeRepositoryFactory {
     LOG.debug("Gerrit project is '{}'", projectName);
 
     PatchSetCommitMessageFactory commitMessageFactory =
-        new DefaultPatchSetCommitMessageFactory(gitClient);
+        new DefaultPatchSetCommitMessageFactory(git);
     PatchSetRepository patchSetRepository =
-        new DefaultPatchSetRepository(gitClient, pushUrl, commitMessageFactory);
+        new DefaultPatchSetRepository(git, pushUrl, commitMessageFactory);
     ChangeFactory changeFactory = new DefaultChange.Factory(patchSetRepository, pushUrl);
 
     return new DefaultChangeRepository(
-        configurationRepository, changeFactory, patchSetRepository, gitClient);
+        configurationRepository, changeFactory, patchSetRepository, git);
   }
 }

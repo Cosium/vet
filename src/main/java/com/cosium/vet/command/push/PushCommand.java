@@ -73,11 +73,11 @@ public class PushCommand implements VetCommand {
 
   public static class Factory implements PushCommandFactory {
 
-    private final ChangeRepositoryFactory gerritChangeRepositoryFactory;
+    private final ChangeRepository changeRepository;
     private final UserOutput userOutput;
 
-    public Factory(ChangeRepositoryFactory gerritChangeRepositoryFactory, UserOutput userOutput) {
-      this.gerritChangeRepositoryFactory = requireNonNull(gerritChangeRepositoryFactory);
+    public Factory(ChangeRepository changeRepository, UserOutput userOutput) {
+      this.changeRepository = requireNonNull(changeRepository);
       this.userOutput = requireNonNull(userOutput);
     }
 
@@ -89,7 +89,7 @@ public class PushCommand implements VetCommand {
         Boolean bypassReview,
         CodeReviewVote codeReviewVote) {
       return new PushCommand(
-          gerritChangeRepositoryFactory.build(),
+          changeRepository,
           userOutput,
           publishDraftedComments,
           workInProgress,
