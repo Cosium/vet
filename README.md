@@ -13,6 +13,7 @@ Vet allows to review code on Gerrit using a pull-request workflow similar to Git
 wget https://github.com/Cosium/vet/releases/download/3.10/vet-linux_x64.deb.zip -O vet.deb.zip \
 && unzip vet.deb.zip \
 && sudo dpkg -i vet.deb \
+&& source /etc/bash_completion.d/vet_completion.sh
 && rm vet.deb.zip vet.deb
 ```
 

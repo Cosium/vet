@@ -28,12 +28,6 @@ Maintainer: Réda Housni Alaoui <reda.housnialaoui@cosium.com>
 Description: Gerrit client using pull request review workflow
 
 EOF
-cat > ${DEB_DIR}/DEBIAN/postinst <<EOF
-#!/bin/bash
-source /etc/bash_completion.d/vet_completion.sh
-
-EOF
-chmod 775 ${DEB_DIR}/DEBIAN/postinst
 
 dpkg-deb --build ${DEB_DIR}
 
