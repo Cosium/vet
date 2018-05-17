@@ -34,6 +34,7 @@ import com.cosium.vet.command.untrack.UntrackCommand;
 import com.cosium.vet.command.untrack.UntrackCommandArgParser;
 import com.cosium.vet.command.untrack.UntrackCommandFactory;
 import com.cosium.vet.gerrit.Change;
+import com.cosium.vet.gerrit.ChangeNumericId;
 import com.cosium.vet.gerrit.ChangeRepository;
 import com.cosium.vet.gerrit.DefaultChangeRepositoryFactory;
 import com.cosium.vet.git.GitClient;
@@ -157,6 +158,10 @@ public class Vet {
 
   public Optional<Change> getTrackedChange() {
     return changeRepository.getTrackedChange();
+  }
+
+  public boolean isChangeExist(ChangeNumericId changeNumericId) {
+    return changeRepository.exists(changeNumericId);
   }
 
   public PushCommandFactory pushCommandFactory() {
