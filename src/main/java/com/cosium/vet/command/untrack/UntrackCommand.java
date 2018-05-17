@@ -15,7 +15,7 @@ import static java.util.Objects.requireNonNull;
  *
  * @author Reda.Housni-Alaoui
  */
-public class UntrackCommand implements VetCommand {
+public class UntrackCommand implements VetCommand<Void> {
 
   private static final Logger LOG = LoggerFactory.getLogger(UntrackCommand.class);
 
@@ -36,11 +36,12 @@ public class UntrackCommand implements VetCommand {
   }
 
   @Override
-  public void execute() {
+  public Void execute() {
     if (preserveCurrentChange()) {
-      return;
+      throw new RuntimeException("Answered no to the confirmation. Aborted.");
     }
     changeRepository.untrack();
+    return null;
   }
 
   private boolean preserveCurrentChange() {

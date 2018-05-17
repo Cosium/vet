@@ -19,7 +19,7 @@ import static java.util.Optional.ofNullable;
  *
  * @author Reda.Housni-Alaoui
  */
-public class TrackCommand implements VetCommand {
+public class TrackCommand implements VetCommand<Change> {
 
   private static final Logger LOG = LoggerFactory.getLogger(TrackCommand.class);
 
@@ -49,21 +49,20 @@ public class TrackCommand implements VetCommand {
   }
 
   @Override
-  public void execute() {
+  public Change execute() {
     if (preserveCurrentChange()) {
-      return;
+      throw new RuntimeException("Answered no to the confirmation. Aborted.");
     }
     LOG.debug("Untrack any tracked change");
     changeRepository.untrack();
     ChangeNumericId numericId = getNumericId();
     if (!changeRepository.exists(numericId)) {
-      LOG.debug("Could not find any change having numeric id {} on Gerrit", numericId);
-      userOutput.display(
-          "Could not find any change identified by " + numericId + " on Gerrit. Aborting.");
-      return;
+      throw new RuntimeException(
+          "Could not find any change identified by " + numericId + " on Gerrit. Aborted.");
     }
     Change change = changeRepository.trackChange(numericId, getTargetBranch());
     userOutput.display("Now tracking change " + change);
+    return change;
   }
 
   private boolean preserveCurrentChange() {

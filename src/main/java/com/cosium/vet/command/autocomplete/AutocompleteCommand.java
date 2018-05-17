@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
  *
  * @author Reda.Housni-Alaoui
  */
-public class AutocompleteCommand implements VetCommand {
+public class AutocompleteCommand implements VetCommand<Void> {
 
   private static final Logger LOG = LoggerFactory.getLogger(AutocompleteCommand.class);
 
@@ -45,13 +45,13 @@ public class AutocompleteCommand implements VetCommand {
   }
 
   @Override
-  public void execute() {
+  public Void execute() {
     LOG.debug("Typed word array is {}", typedWordList);
     LOG.debug("Current word is '{}'", currentWord);
 
     if (typedWordList.isEmpty()) {
       LOG.debug("There should be at least the command name");
-      return;
+      return null;
     }
 
     if (typedWordList.size() == 1) {
@@ -62,7 +62,7 @@ public class AutocompleteCommand implements VetCommand {
               .map(VetAdvancedCommandArgParser::getCommandArgName)
               .collect(Collectors.joining(StringUtils.LF));
       userOutput.display(possibilities, true);
-      return;
+      return null;
     }
 
     String firstWord = typedWordList.get(1);
@@ -76,7 +76,7 @@ public class AutocompleteCommand implements VetCommand {
               .filter(commandName -> commandName.startsWith(firstWord))
               .collect(Collectors.joining(StringUtils.LF));
       userOutput.display(possibilities, true);
-      return;
+      return null;
     }
 
     VetAdvancedCommandArgParser parser =
@@ -87,7 +87,7 @@ public class AutocompleteCommand implements VetCommand {
             .orElse(null);
     if (parser == null) {
       LOG.debug("No parser found for command '{}'", firstWord);
-      return;
+      return null;
     }
 
     String possibilities =
@@ -97,6 +97,7 @@ public class AutocompleteCommand implements VetCommand {
             .filter(opt -> !typedWordList.contains(opt))
             .collect(Collectors.joining(StringUtils.LF));
     userOutput.display(possibilities);
+    return null;
   }
 
   public static class Factory implements AutocompleteCommandFactory {

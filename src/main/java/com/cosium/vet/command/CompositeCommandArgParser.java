@@ -46,7 +46,10 @@ public class CompositeCommandArgParser implements VetCommandArgParser {
     LOG.debug("Parsing arguments {}", Arrays.asList(args));
 
     if (Arrays.stream(args).anyMatch(VERSION_OPT::equals)) {
-      return () -> System.out.println(VetVersion.VALUE);
+      return () -> {
+        System.out.println(VetVersion.VALUE);
+        return null;
+      };
     }
 
     boolean isHelp = Arrays.stream(args).anyMatch(HELP_OPT::equals);
@@ -60,7 +63,10 @@ public class CompositeCommandArgParser implements VetCommandArgParser {
 
     if (isHelp && parser.isPresent()) {
       LOG.debug("Building help display command using {}", parser.get());
-      return () -> parser.get().displayHelp(executableName);
+      return () -> {
+        parser.get().displayHelp(executableName);
+        return null;
+      };
     }
 
     LOG.debug("Building global help command");
@@ -78,7 +84,7 @@ public class CompositeCommandArgParser implements VetCommandArgParser {
    *
    * @author Reda.Housni-Alaoui
    */
-  private static class GlobalHelpCommand implements VetCommand {
+  private static class GlobalHelpCommand implements VetCommand<Void> {
 
     private final String executableName;
     private final List<String> availableCommands;
@@ -101,7 +107,7 @@ public class CompositeCommandArgParser implements VetCommandArgParser {
     }
 
     @Override
-    public void execute() {
+    public Void execute() {
       LOG.debug("Displaying global help");
       System.out.println(
           "usage: "
@@ -118,6 +124,7 @@ public class CompositeCommandArgParser implements VetCommandArgParser {
               + "\n\n"
               + debugOptions.buildHelp()
               + "Vet: The Gerrit client using pull request review workflow");
+      return null;
     }
   }
 }

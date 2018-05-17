@@ -1,7 +1,10 @@
 package com.cosium.vet.command.new_;
 
 import com.cosium.vet.command.VetCommand;
-import com.cosium.vet.gerrit.*;
+import com.cosium.vet.gerrit.Change;
+import com.cosium.vet.gerrit.ChangeRepository;
+import com.cosium.vet.gerrit.CreatedChange;
+import com.cosium.vet.gerrit.PatchOptions;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.log.Logger;
 import com.cosium.vet.log.LoggerFactory;
@@ -17,7 +20,7 @@ import static java.util.Optional.ofNullable;
  *
  * @author Reda.Housni-Alaoui
  */
-public class NewCommand implements VetCommand {
+public class NewCommand implements VetCommand<Change> {
 
   private static final Logger LOG = LoggerFactory.getLogger(NewCommand.class);
 
@@ -44,16 +47,18 @@ public class NewCommand implements VetCommand {
   }
 
   @Override
-  public void execute() {
+  public Change execute() {
     if (preserveCurrentChange()) {
-      return;
+      throw new RuntimeException("Answered no to the confirmation. Aborted.");
     }
     changeRepository.untrack();
 
     BranchShortName targetBranch = getTargetBranch();
-    CreatedChange change = changeRepository.createAndTrackChange(targetBranch, PatchOptions.DEFAULT);
+    CreatedChange change =
+        changeRepository.createAndTrackChange(targetBranch, PatchOptions.DEFAULT);
     userOutput.display(change.getCreationLog());
     userOutput.display("Now tracking new change " + change);
+    return change;
   }
 
   private boolean preserveCurrentChange() {
@@ -86,10 +91,7 @@ public class NewCommand implements VetCommand {
     private final UserInput userInput;
     private final UserOutput userOutput;
 
-    public Factory(
-        ChangeRepository changeRepository,
-        UserInput userInput,
-        UserOutput userOutput) {
+    public Factory(ChangeRepository changeRepository, UserInput userInput, UserOutput userOutput) {
       this.changeRepository = requireNonNull(changeRepository);
       this.userInput = requireNonNull(userInput);
       this.userOutput = requireNonNull(userOutput);
@@ -97,8 +99,7 @@ public class NewCommand implements VetCommand {
 
     @Override
     public NewCommand build(Boolean force, BranchShortName targetBranch) {
-      return new NewCommand(
-          changeRepository, userInput, userOutput, force, targetBranch);
+      return new NewCommand(changeRepository, userInput, userOutput, force, targetBranch);
     }
   }
 }

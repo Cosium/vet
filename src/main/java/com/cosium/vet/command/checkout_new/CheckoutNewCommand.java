@@ -19,7 +19,7 @@ import static java.util.Optional.ofNullable;
  *
  * @author Reda.Housni-Alaoui
  */
-public class CheckoutNewCommand implements VetCommand {
+public class CheckoutNewCommand implements VetCommand<Change> {
 
   private static final Logger LOG = LoggerFactory.getLogger(CheckoutNewCommand.class);
 
@@ -49,11 +49,10 @@ public class CheckoutNewCommand implements VetCommand {
   }
 
   @Override
-  public void execute() {
+  public Change execute() {
     BranchShortName targetBranch = git.getBranch();
     if (!confirm(targetBranch)) {
-      LOG.debug("Confirmation not ok. Aborted.");
-      return;
+      throw new RuntimeException("Answered no to the confirmation. Aborted.");
     }
 
     LOG.debug("Creating change with target branch '{}'", targetBranch);
@@ -70,6 +69,8 @@ public class CheckoutNewCommand implements VetCommand {
     changeRepository.checkoutAndTrackChange(checkoutBranch, numericId, targetBranch);
     userOutput.display(git.status());
     userOutput.display("Now tracking new change " + change);
+
+    return change;
   }
 
   private boolean confirm(BranchShortName targetBranch) {

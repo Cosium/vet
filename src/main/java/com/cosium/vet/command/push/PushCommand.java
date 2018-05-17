@@ -14,7 +14,7 @@ import static java.util.Objects.requireNonNull;
  *
  * @author Reda.Housni-Alaoui
  */
-public class PushCommand implements VetCommand {
+public class PushCommand implements VetCommand<Void> {
 
   private static final Logger LOG = LoggerFactory.getLogger(PushCommand.class);
 
@@ -47,7 +47,7 @@ public class PushCommand implements VetCommand {
   }
 
   @Override
-  public void execute() {
+  public Void execute() {
     Change change =
         changeRepository
             .getTrackedChange()
@@ -69,6 +69,7 @@ public class PushCommand implements VetCommand {
 
     userOutput.display(output);
     userOutput.display("Pushed to " + change);
+    return null;
   }
 
   public static class Factory implements PushCommandFactory {

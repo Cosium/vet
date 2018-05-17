@@ -162,4 +162,20 @@ public class Vet {
   public PushCommandFactory pushCommandFactory() {
     return pushCommandFactory;
   }
+
+  public NewCommandFactory newCommandFactory() {
+    return newCommandFactory;
+  }
+
+  public CheckoutNewCommandFactory checkoutNewCommandFactory() {
+    return checkoutNewCommandFactory;
+  }
+
+  public FireAndForgetCommandFactory fireAndForgetCommandFactory() {
+    return fireAndForgetCommandFactory;
+  }
+
+  public TrackCommandFactory trackCommandFactory() {
+    return trackCommandFactory;
+  }
 }

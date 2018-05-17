@@ -19,7 +19,7 @@ import static java.util.Optional.ofNullable;
  *
  * @author Reda.Housni-Alaoui
  */
-public class CheckoutCommand implements VetCommand {
+public class CheckoutCommand implements VetCommand<Change> {
 
   private final GitClient git;
   private final ChangeRepository changeRepository;
@@ -53,17 +53,16 @@ public class CheckoutCommand implements VetCommand {
   }
 
   @Override
-  public void execute() {
+  public Change execute() {
     ChangeNumericId numericId = getNumericId();
     if (!changeRepository.exists(numericId)) {
-      userOutput.display(
-          "Could not find any change identified by " + numericId + " on Gerrit. Aborting.");
-      return;
+      throw new RuntimeException(
+          "Could not find any change identified by " + numericId + " on Gerrit. Aborted.");
     }
     BranchShortName targetBranch = getTargetBranch();
     ChangeCheckoutBranchName checkoutBranch = getCheckoutBranch(numericId);
     if (!confirm(numericId, targetBranch, checkoutBranch)) {
-      return;
+      throw new RuntimeException("Answered no to the confirmation. Aborted.");
     }
 
     Change change =
@@ -71,6 +70,7 @@ public class CheckoutCommand implements VetCommand {
 
     userOutput.display(git.status());
     userOutput.display("Now tracking change " + change);
+    return change;
   }
 
   private boolean confirm(

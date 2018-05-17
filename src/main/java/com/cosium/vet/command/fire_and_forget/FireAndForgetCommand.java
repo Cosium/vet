@@ -18,7 +18,7 @@ import static java.util.Objects.requireNonNull;
  *
  * @author Reda.Housni-Alaoui
  */
-public class FireAndForgetCommand implements VetCommand {
+public class FireAndForgetCommand implements VetCommand<Change> {
 
   private static final Logger LOG = LoggerFactory.getLogger(FireAndForgetCommand.class);
 
@@ -48,7 +48,7 @@ public class FireAndForgetCommand implements VetCommand {
   }
 
   @Override
-  public void execute() {
+  public Change execute() {
     changeRepository
         .getTrackedChange()
         .ifPresent(
@@ -62,7 +62,7 @@ public class FireAndForgetCommand implements VetCommand {
 
     BranchShortName targetBranch = git.getBranch();
     if (!confirm(targetBranch)) {
-      return;
+      throw new RuntimeException("Answered no to the confirmation. Aborted.");
     }
 
     LOG.debug("Creating change targeting {}", targetBranch);
@@ -80,6 +80,8 @@ public class FireAndForgetCommand implements VetCommand {
     LOG.debug("Resetting current branch to {}", parent);
     userOutput.display(git.resetKeep(parent));
     userOutput.display("Change " + change + " has been created.");
+
+    return change;
   }
 
   private boolean confirm(BranchShortName targetBranch) {

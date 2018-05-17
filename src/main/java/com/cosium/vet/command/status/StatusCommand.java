@@ -15,7 +15,7 @@ import static java.util.Objects.requireNonNull;
  *
  * @author Reda.Housni-Alaoui
  */
-public class StatusCommand implements VetCommand {
+public class StatusCommand implements VetCommand<Void> {
 
   private final GitClient git;
   private final ChangeRepository changeRepository;
@@ -28,7 +28,7 @@ public class StatusCommand implements VetCommand {
   }
 
   @Override
-  public void execute() {
+  public Void execute() {
     Optional<Change> change = changeRepository.getTrackedChange();
     userOutput.display(git.status());
     if (change.isPresent()) {
@@ -36,6 +36,7 @@ public class StatusCommand implements VetCommand {
     } else {
       userOutput.display("No tracked change.");
     }
+    return null;
   }
 
   public static class Factory implements StatusCommandFactory {

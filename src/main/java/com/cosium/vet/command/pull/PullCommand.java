@@ -11,7 +11,7 @@ import static java.util.Objects.requireNonNull;
  *
  * @author Reda.Housni-Alaoui
  */
-public class PullCommand implements VetCommand {
+public class PullCommand implements VetCommand<Void> {
 
   private final ChangeRepository changeRepository;
   private final UserOutput userOutput;
@@ -22,8 +22,9 @@ public class PullCommand implements VetCommand {
   }
 
   @Override
-  public void execute() {
+  public Void execute() {
     userOutput.display(changeRepository.pull());
+    return null;
   }
 
   public static class Factory implements PullCommandFactory {

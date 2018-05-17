@@ -6,8 +6,8 @@ package com.cosium.vet.command;
  * @author Reda.Housni-Alaoui
  */
 @FunctionalInterface
-public interface VetCommand {
+public interface VetCommand<T> {
 
   /** Executes the command */
-  void execute();
+  T execute();
 }
