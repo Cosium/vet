@@ -144,7 +144,7 @@ $ vet --help new
 usage: vet new [-f] [-t <branch>]
  -f,--force                    Forces the execution of the command,
                                bypassing any confirmation prompt.
- -t,--target-branch <branch>   The id of the change.
+ -t,--target-branch <branch>   The change target branch.
 Creates a new change and tracks it from the current branch.
 ```
 

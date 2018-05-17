@@ -39,7 +39,7 @@ public class NewCommandArgParser extends AbstractVetAdvancedCommandArgParser {
                     .argName("branch")
                     .longOpt("target-branch")
                     .hasArg()
-                    .desc("The id of the change.")
+                    .desc("The change target branch.")
                     .build()));
     this.factory = requireNonNull(factory);
   }
