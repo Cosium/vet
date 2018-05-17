@@ -33,6 +33,7 @@ import com.cosium.vet.command.track.TrackCommandFactory;
 import com.cosium.vet.command.untrack.UntrackCommand;
 import com.cosium.vet.command.untrack.UntrackCommandArgParser;
 import com.cosium.vet.command.untrack.UntrackCommandFactory;
+import com.cosium.vet.gerrit.Change;
 import com.cosium.vet.gerrit.ChangeRepository;
 import com.cosium.vet.gerrit.DefaultChangeRepositoryFactory;
 import com.cosium.vet.git.GitClient;
@@ -43,6 +44,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -153,8 +155,8 @@ public class Vet {
     commandParser.parse(args).execute();
   }
 
-  public boolean isTrackingChange() {
-    return changeRepository.getTrackedChange().isPresent();
+  public Optional<Change> getTrackedChange() {
+    return changeRepository.getTrackedChange();
   }
 
   public PushCommandFactory pushCommandFactory() {

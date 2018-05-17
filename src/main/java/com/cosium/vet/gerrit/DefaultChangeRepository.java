@@ -153,6 +153,11 @@ class DefaultChangeRepository implements ChangeRepository {
     }
 
     @Override
+    public String getWebUrl() {
+      return change.getWebUrl();
+    }
+
+    @Override
     public String toString() {
       return change.toString();
     }

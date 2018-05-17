@@ -12,8 +12,6 @@ import java.util.regex.Pattern;
  */
 public class CodeReviewVote extends NonBlankString {
 
-  public static final CodeReviewVote PLUS_2 = CodeReviewVote.of("+2");
-
   private CodeReviewVote(String value) {
     super(value);
     Matcher matcher = Pattern.compile("[+|\\-]\\d").matcher(value);

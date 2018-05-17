@@ -22,4 +22,7 @@ public interface Change {
    * @return The creationg log output
    */
   String createPatch(PatchOptions options);
+
+  /** @return The change web url */
+  String getWebUrl();
 }

@@ -44,8 +44,13 @@ class DefaultChange implements Change {
   }
 
   @Override
+  public String getWebUrl() {
+    return pushUrl.computeChangeWebUrl(numericId);
+  }
+
+  @Override
   public String toString() {
-    return pushUrl.computeChangeWebUrl(numericId) + " ";
+    return getWebUrl() + " ";
   }
 
   /**
