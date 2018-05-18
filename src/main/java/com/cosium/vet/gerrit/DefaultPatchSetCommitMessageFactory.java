@@ -51,7 +51,7 @@ class DefaultPatchSetCommitMessageFactory implements PatchSetCommitMessageFactor
     String footer =
         String.join(
             "\n",
-            COMMIT_MESSAGE_VET_VERSION_PREFIX + VetVersion.VALUE,
+            COMMIT_MESSAGE_VET_VERSION_PREFIX + VetVersion.getValue(),
             COMMIT_MESSAGE_CHANGE_ID_PREFIX + changeChangeId);
 
     return CommitMessage.of(body + "\n\n" + footer);

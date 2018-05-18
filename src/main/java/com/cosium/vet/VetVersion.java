@@ -12,10 +12,18 @@ import java.io.InputStream;
  */
 public class VetVersion {
 
-  public static final String VALUE;
+  private static String value;
 
   static {
-    VALUE = loadVersion();
+    value = loadVersion();
+  }
+
+  public static String getValue() {
+    return value;
+  }
+
+  public static void setValue(String value) {
+    VetVersion.value = value;
   }
 
   private static String loadVersion() {

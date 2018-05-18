@@ -47,7 +47,7 @@ public class CompositeCommandArgParser implements VetCommandArgParser {
 
     if (Arrays.stream(args).anyMatch(VERSION_OPT::equals)) {
       return () -> {
-        System.out.println(VetVersion.VALUE);
+        System.out.println(VetVersion.getValue());
         return null;
       };
     }
