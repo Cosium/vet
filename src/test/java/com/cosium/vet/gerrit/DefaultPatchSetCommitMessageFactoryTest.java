@@ -69,6 +69,6 @@ public class DefaultPatchSetCommitMessageFactoryTest {
     when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
 
     CommitMessage commitMessage = tested.build(null);
-    assertThat(commitMessage.toString()).contains("\nVet-Version: " + VetVersion.VALUE);
+    assertThat(commitMessage.toString()).contains("\nVet-Version: " + VetVersion.getValue());
   }
 }
