@@ -149,6 +149,8 @@ class DefaultGitClient implements GitClient {
 
   @Override
   public String resetKeep(RevisionId revisionId) {
-    return commandRunner.run(repositoryDirectory, GIT, "reset", "--keep", revisionId.toString());
+    return commandRunner.run(repositoryDirectory, GIT, "update-index", "--really-refresh")
+        + "\n"
+        + commandRunner.run(repositoryDirectory, GIT, "reset", "--keep", revisionId.toString());
   }
 }
