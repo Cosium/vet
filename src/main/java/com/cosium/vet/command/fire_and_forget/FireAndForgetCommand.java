@@ -100,17 +100,17 @@ public class FireAndForgetCommand implements VetCommand<Change> {
 
   public static class Factory implements FireAndForgetCommandFactory {
 
-    private final ChangeRepository changeRepository;
+    private final ChangeRepositoryFactory changeRepositoryFactory;
     private final GitClient git;
     private final UserInput userInput;
     private final UserOutput userOutput;
 
     public Factory(
         GitClient git,
-        ChangeRepository changeRepository,
+        ChangeRepositoryFactory changeRepositoryFactory,
         UserInput userInput,
         UserOutput userOutput) {
-      this.changeRepository = requireNonNull(changeRepository);
+      this.changeRepositoryFactory = requireNonNull(changeRepositoryFactory);
       this.git = requireNonNull(git);
       this.userInput = requireNonNull(userInput);
       this.userOutput = requireNonNull(userOutput);
@@ -119,7 +119,7 @@ public class FireAndForgetCommand implements VetCommand<Change> {
     @Override
     public FireAndForgetCommand build(Boolean force, CodeReviewVote codeReviewVote) {
       return new FireAndForgetCommand(
-          git, changeRepository, userInput, userOutput, force, codeReviewVote);
+          git, changeRepositoryFactory.build(), userInput, userOutput, force, codeReviewVote);
     }
   }
 }

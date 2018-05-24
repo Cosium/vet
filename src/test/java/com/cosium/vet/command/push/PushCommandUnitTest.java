@@ -2,6 +2,7 @@ package com.cosium.vet.command.push;
 
 import com.cosium.vet.gerrit.Change;
 import com.cosium.vet.gerrit.ChangeRepository;
+import com.cosium.vet.gerrit.ChangeRepositoryFactory;
 import com.cosium.vet.runtime.UserOutput;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,13 +25,15 @@ public class PushCommandUnitTest {
 
   @Before
   public void before() {
+    ChangeRepositoryFactory changeRepositoryFactory = mock(ChangeRepositoryFactory.class);
     changeRepository = mock(ChangeRepository.class);
+    when(changeRepositoryFactory.build()).thenReturn(changeRepository);
     Change change = mock(Change.class);
     when(changeRepository.getTrackedChange()).thenReturn(Optional.of(change));
 
     userOutput = mock(UserOutput.class);
 
-    factory = new PushCommand.Factory(changeRepository, userOutput);
+    factory = new PushCommand.Factory(changeRepositoryFactory, userOutput);
   }
 
   @Test

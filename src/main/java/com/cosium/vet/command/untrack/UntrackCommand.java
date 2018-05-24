@@ -3,6 +3,7 @@ package com.cosium.vet.command.untrack;
 import com.cosium.vet.command.VetCommand;
 import com.cosium.vet.gerrit.Change;
 import com.cosium.vet.gerrit.ChangeRepository;
+import com.cosium.vet.gerrit.ChangeRepositoryFactory;
 import com.cosium.vet.log.Logger;
 import com.cosium.vet.log.LoggerFactory;
 import com.cosium.vet.runtime.UserInput;
@@ -62,17 +63,17 @@ public class UntrackCommand implements VetCommand<Void> {
 
   public static class Factory implements UntrackCommandFactory {
 
-    private final ChangeRepository changeRepository;
+    private final ChangeRepositoryFactory changeRepositoryFactory;
     private final UserInput userInput;
 
-    public Factory(ChangeRepository changeRepository, UserInput userInput) {
-      this.changeRepository = requireNonNull(changeRepository);
+    public Factory(ChangeRepositoryFactory changeRepositoryFactory, UserInput userInput) {
+      this.changeRepositoryFactory = requireNonNull(changeRepositoryFactory);
       this.userInput = requireNonNull(userInput);
     }
 
     @Override
     public UntrackCommand build(Boolean force) {
-      return new UntrackCommand(changeRepository, userInput, force);
+      return new UntrackCommand(changeRepositoryFactory.build(), userInput, force);
     }
   }
 }

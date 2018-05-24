@@ -1,10 +1,7 @@
 package com.cosium.vet.command.new_;
 
 import com.cosium.vet.command.VetCommand;
-import com.cosium.vet.gerrit.Change;
-import com.cosium.vet.gerrit.ChangeRepository;
-import com.cosium.vet.gerrit.CreatedChange;
-import com.cosium.vet.gerrit.PatchOptions;
+import com.cosium.vet.gerrit.*;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.log.Logger;
 import com.cosium.vet.log.LoggerFactory;
@@ -87,19 +84,23 @@ public class NewCommand implements VetCommand<Change> {
 
   public static class Factory implements NewCommandFactory {
 
-    private final ChangeRepository changeRepository;
+    private final ChangeRepositoryFactory changeRepositoryFactory;
     private final UserInput userInput;
     private final UserOutput userOutput;
 
-    public Factory(ChangeRepository changeRepository, UserInput userInput, UserOutput userOutput) {
-      this.changeRepository = requireNonNull(changeRepository);
+    public Factory(
+        ChangeRepositoryFactory changeRepositoryFactory,
+        UserInput userInput,
+        UserOutput userOutput) {
+      this.changeRepositoryFactory = requireNonNull(changeRepositoryFactory);
       this.userInput = requireNonNull(userInput);
       this.userOutput = requireNonNull(userOutput);
     }
 
     @Override
     public NewCommand build(Boolean force, BranchShortName targetBranch) {
-      return new NewCommand(changeRepository, userInput, userOutput, force, targetBranch);
+      return new NewCommand(
+          changeRepositoryFactory.build(), userInput, userOutput, force, targetBranch);
     }
   }
 }

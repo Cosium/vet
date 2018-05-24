@@ -100,17 +100,17 @@ public class CheckoutNewCommand implements VetCommand<Change> {
   public static class Factory implements CheckoutNewCommandFactory {
 
     private final GitClient git;
-    private final ChangeRepository changeRepository;
+    private final ChangeRepositoryFactory changeRepositoryFactory;
     private final UserInput userInput;
     private final UserOutput userOutput;
 
     public Factory(
         GitClient git,
-        ChangeRepository changeRepository,
+        ChangeRepositoryFactory changeRepositoryFactory,
         UserInput userInput,
         UserOutput userOutput) {
       this.git = requireNonNull(git);
-      this.changeRepository = requireNonNull(changeRepository);
+      this.changeRepositoryFactory = requireNonNull(changeRepositoryFactory);
       this.userInput = requireNonNull(userInput);
       this.userOutput = requireNonNull(userOutput);
     }
@@ -118,7 +118,7 @@ public class CheckoutNewCommand implements VetCommand<Change> {
     @Override
     public CheckoutNewCommand build(Boolean force, ChangeCheckoutBranchName checkoutBranch) {
       return new CheckoutNewCommand(
-          git, changeRepository, userInput, userOutput, force, checkoutBranch);
+          git, changeRepositoryFactory.build(), userInput, userOutput, force, checkoutBranch);
     }
   }
 }

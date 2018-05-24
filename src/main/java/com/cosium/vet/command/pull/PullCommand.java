@@ -2,6 +2,7 @@ package com.cosium.vet.command.pull;
 
 import com.cosium.vet.command.VetCommand;
 import com.cosium.vet.gerrit.ChangeRepository;
+import com.cosium.vet.gerrit.ChangeRepositoryFactory;
 import com.cosium.vet.runtime.UserOutput;
 
 import static java.util.Objects.requireNonNull;
@@ -29,17 +30,17 @@ public class PullCommand implements VetCommand<Void> {
 
   public static class Factory implements PullCommandFactory {
 
-    private final ChangeRepository changeRepository;
+    private final ChangeRepositoryFactory changeRepositoryFactory;
     private final UserOutput userOutput;
 
-    public Factory(ChangeRepository changeRepository, UserOutput userOutput) {
-      this.changeRepository = requireNonNull(changeRepository);
+    public Factory(ChangeRepositoryFactory changeRepositoryFactory, UserOutput userOutput) {
+      this.changeRepositoryFactory = requireNonNull(changeRepositoryFactory);
       this.userOutput = requireNonNull(userOutput);
     }
 
     @Override
     public PullCommand build() {
-      return new PullCommand(changeRepository, userOutput);
+      return new PullCommand(changeRepositoryFactory.build(), userOutput);
     }
   }
 }

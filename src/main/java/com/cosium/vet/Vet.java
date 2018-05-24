@@ -35,7 +35,7 @@ import com.cosium.vet.command.untrack.UntrackCommandArgParser;
 import com.cosium.vet.command.untrack.UntrackCommandFactory;
 import com.cosium.vet.gerrit.Change;
 import com.cosium.vet.gerrit.ChangeNumericId;
-import com.cosium.vet.gerrit.ChangeRepository;
+import com.cosium.vet.gerrit.ChangeRepositoryFactory;
 import com.cosium.vet.gerrit.DefaultChangeRepositoryFactory;
 import com.cosium.vet.git.GitClient;
 import com.cosium.vet.git.GitProvider;
@@ -61,7 +61,7 @@ public class Vet {
   private static final String APP_NAME = "vet";
 
   private final GitClient git;
-  private final ChangeRepository changeRepository;
+  private final ChangeRepositoryFactory changeRepositoryFactory;
 
   private final NewCommandFactory newCommandFactory;
   private final CheckoutCommandFactory checkoutCommandFactory;
@@ -114,20 +114,21 @@ public class Vet {
 
     GitProvider gitProvider = new GitProvider(workingDir, commandRunner);
     git = gitProvider.build();
-    changeRepository = new DefaultChangeRepositoryFactory(gitProvider, git).build();
+    changeRepositoryFactory = new DefaultChangeRepositoryFactory(gitProvider, git);
 
-    this.newCommandFactory = new NewCommand.Factory(changeRepository, userInput, userOutput);
+    this.newCommandFactory = new NewCommand.Factory(changeRepositoryFactory, userInput, userOutput);
     this.checkoutCommandFactory =
-        new CheckoutCommand.Factory(git, changeRepository, userInput, userOutput);
+        new CheckoutCommand.Factory(git, changeRepositoryFactory, userInput, userOutput);
     this.checkoutNewCommandFactory =
-        new CheckoutNewCommand.Factory(git, changeRepository, userInput, userOutput);
-    this.pushCommandFactory = new PushCommand.Factory(changeRepository, userOutput);
-    this.untrackCommandFactory = new UntrackCommand.Factory(changeRepository, userInput);
-    this.statusCommandFactory = new StatusCommand.Factory(git, changeRepository, userOutput);
-    this.pullCommandFactory = new PullCommand.Factory(changeRepository, userOutput);
+        new CheckoutNewCommand.Factory(git, changeRepositoryFactory, userInput, userOutput);
+    this.pushCommandFactory = new PushCommand.Factory(changeRepositoryFactory, userOutput);
+    this.untrackCommandFactory = new UntrackCommand.Factory(changeRepositoryFactory, userInput);
+    this.statusCommandFactory = new StatusCommand.Factory(git, changeRepositoryFactory, userOutput);
+    this.pullCommandFactory = new PullCommand.Factory(changeRepositoryFactory, userOutput);
     this.fireAndForgetCommandFactory =
-        new FireAndForgetCommand.Factory(git, changeRepository, userInput, userOutput);
-    this.trackCommandFactory = new TrackCommand.Factory(changeRepository, userInput, userOutput);
+        new FireAndForgetCommand.Factory(git, changeRepositoryFactory, userInput, userOutput);
+    this.trackCommandFactory =
+        new TrackCommand.Factory(changeRepositoryFactory, userInput, userOutput);
 
     List<VetAdvancedCommandArgParser> normalParsers =
         Arrays.asList(
@@ -157,11 +158,11 @@ public class Vet {
   }
 
   public Optional<Change> getTrackedChange() {
-    return changeRepository.getTrackedChange();
+    return changeRepositoryFactory.build().getTrackedChange();
   }
 
   public boolean isChangeExist(ChangeNumericId changeNumericId) {
-    return changeRepository.exists(changeNumericId);
+    return changeRepositoryFactory.build().exists(changeNumericId);
   }
 
   public PushCommandFactory pushCommandFactory() {

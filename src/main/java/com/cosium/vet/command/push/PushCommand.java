@@ -74,11 +74,11 @@ public class PushCommand implements VetCommand<Void> {
 
   public static class Factory implements PushCommandFactory {
 
-    private final ChangeRepository changeRepository;
+    private final ChangeRepositoryFactory changeRepositoryFactory;
     private final UserOutput userOutput;
 
-    public Factory(ChangeRepository changeRepository, UserOutput userOutput) {
-      this.changeRepository = requireNonNull(changeRepository);
+    public Factory(ChangeRepositoryFactory changeRepositoryFactory, UserOutput userOutput) {
+      this.changeRepositoryFactory = requireNonNull(changeRepositoryFactory);
       this.userOutput = requireNonNull(userOutput);
     }
 
@@ -90,7 +90,7 @@ public class PushCommand implements VetCommand<Void> {
         Boolean bypassReview,
         CodeReviewVote codeReviewVote) {
       return new PushCommand(
-          changeRepository,
+          changeRepositoryFactory.build(),
           userOutput,
           publishDraftedComments,
           workInProgress,

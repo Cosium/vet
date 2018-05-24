@@ -1,10 +1,7 @@
 package com.cosium.vet.command.checkout;
 
 import com.cosium.vet.command.VetCommand;
-import com.cosium.vet.gerrit.Change;
-import com.cosium.vet.gerrit.ChangeCheckoutBranchName;
-import com.cosium.vet.gerrit.ChangeNumericId;
-import com.cosium.vet.gerrit.ChangeRepository;
+import com.cosium.vet.gerrit.*;
 import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.GitClient;
 import com.cosium.vet.runtime.UserInput;
@@ -117,17 +114,17 @@ public class CheckoutCommand implements VetCommand<Change> {
   public static class Factory implements CheckoutCommandFactory {
 
     private final GitClient git;
-    private final ChangeRepository changeRepository;
+    private final ChangeRepositoryFactory changeRepositoryFactory;
     private final UserInput userInput;
     private final UserOutput userOutput;
 
     public Factory(
         GitClient git,
-        ChangeRepository changeRepository,
+        ChangeRepositoryFactory changeRepositoryFactory,
         UserInput userInput,
         UserOutput userOutput) {
       this.git = requireNonNull(git);
-      this.changeRepository = requireNonNull(changeRepository);
+      this.changeRepositoryFactory = requireNonNull(changeRepositoryFactory);
       this.userInput = requireNonNull(userInput);
       this.userOutput = requireNonNull(userOutput);
     }
@@ -140,7 +137,7 @@ public class CheckoutCommand implements VetCommand<Change> {
         BranchShortName targetBranch) {
       return new CheckoutCommand(
           git,
-          changeRepository,
+          changeRepositoryFactory.build(),
           userInput,
           userOutput,
           force,
