@@ -33,7 +33,7 @@ git add README.md
 echo "Bumped README.md"
 
 echo "Cleaning"
-./gradlew -Pproject-version=${NEW_VERSION} clean
+./gradlew clean
 echo "Cleaned"
 
 echo "Buiding binaries"
