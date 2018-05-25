@@ -28,7 +28,7 @@ public class LoggerFactory {
   }
 
   public static void setBuilder(Function<Class<?>, Logger> builder){
-    LoggerFactory.builder.set(builder);
+    LoggerFactory.builder.set(requireNonNull(builder));
   }
 
   static Level getLevel() {
@@ -36,8 +36,7 @@ public class LoggerFactory {
   }
 
   public static void setLevel(Level level) {
-    requireNonNull(level);
-    LoggerFactory.level.set(level);
+    LoggerFactory.level.set(requireNonNull(level));
   }
 
   static boolean isPrintStackTrace() {
