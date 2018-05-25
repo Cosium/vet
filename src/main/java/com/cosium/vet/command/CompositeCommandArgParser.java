@@ -74,6 +74,7 @@ public class CompositeCommandArgParser implements VetCommandArgParser {
         executableName,
         availableParsers
             .stream()
+            .filter(commandParser -> !VetHiddenCommandArgParser.class.isInstance(commandParser))
             .map(VetAdvancedCommandArgParser::getCommandArgName)
             .collect(Collectors.toList()),
         debugOptions);

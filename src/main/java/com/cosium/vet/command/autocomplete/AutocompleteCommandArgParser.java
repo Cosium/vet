@@ -2,6 +2,7 @@ package com.cosium.vet.command.autocomplete;
 
 import com.cosium.vet.command.AbstractVetAdvancedCommandArgParser;
 import com.cosium.vet.command.VetCommand;
+import com.cosium.vet.command.VetHiddenCommandArgParser;
 import com.cosium.vet.thirdparty.apache_commons_cli.*;
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 
@@ -15,7 +16,8 @@ import static java.util.Optional.ofNullable;
  *
  * @author Reda.Housni-Alaoui
  */
-public class AutocompleteCommandArgParser extends AbstractVetAdvancedCommandArgParser {
+public class AutocompleteCommandArgParser extends AbstractVetAdvancedCommandArgParser
+    implements VetHiddenCommandArgParser {
 
   private static final String COMMAND_NAME = "autocomplete";
 
