@@ -58,7 +58,7 @@ public class DefaultPatchSetRepository implements PatchSetRepository {
     String endRevision = git.getTree();
     LOG.debug(
         "Creating patch set for change '{}' between start revision '{}' and end revision '{}'",
-        this,
+        numericId,
         startRevision,
         endRevision);
     Patch lastestPatch = findLastestPatch(numericId).orElse(null);
@@ -154,8 +154,7 @@ public class DefaultPatchSetRepository implements PatchSetRepository {
       String creationLog) {
     numericId =
         ofNullable(numericId)
-            .orElseGet(
-                () -> ChangeNumericId.parseFromPushToRefForOutput(pushUrl, creationLog));
+            .orElseGet(() -> ChangeNumericId.parseFromPushToRefForOutput(pushUrl, creationLog));
     return new DefaultCreatedPatch(id, numericId, parent, commitMessage, creationLog);
   }
 

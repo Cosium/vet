@@ -72,6 +72,9 @@ class DefaultLogger implements Logger {
     int consumedParamIndex = -1;
     while (matcher.find()) {
       consumedParamIndex++;
+      if (consumedParamIndex >= parameters.length) {
+        break;
+      }
       matcher.appendReplacement(log, String.valueOf(parameters[consumedParamIndex]));
     }
     matcher.appendTail(log);
@@ -81,7 +84,7 @@ class DefaultLogger implements Logger {
     if (!LoggerFactory.isPrintStackTrace()) {
       return;
     }
-    if (consumedParamIndex == parameters.length - 1) {
+    if (consumedParamIndex >= parameters.length - 1) {
       return;
     }
 
