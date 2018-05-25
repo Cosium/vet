@@ -2,6 +2,7 @@ package com.cosium.vet.log;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 import static java.util.Objects.requireNonNull;
 
@@ -16,12 +17,18 @@ import static java.util.Objects.requireNonNull;
  */
 public class LoggerFactory {
 
+  private static final AtomicReference<Function<Class<?>, Logger>> builder =
+      new AtomicReference<>(DefaultLogger::new);
   private static final AtomicReference<Level> level = new AtomicReference<>(Level.INFO);
   private static final AtomicBoolean printStackTrace = new AtomicBoolean(true);
   private static final AtomicBoolean printContext = new AtomicBoolean(true);
 
   public static Logger getLogger(Class<?> clazz) {
-    return new DefaultLogger(clazz);
+    return builder.get().apply(clazz);
+  }
+
+  public static void setBuilder(Function<Class<?>, Logger> builder){
+    LoggerFactory.builder.set(builder);
   }
 
   static Level getLevel() {
