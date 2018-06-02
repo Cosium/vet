@@ -22,6 +22,8 @@ public class DefaultPatchSetCommitMessageFactoryTest {
 
   private static final String HELLO_WORLD = "Hello World";
 
+  private static final String HELLO_WORLD_MULTI_LINES = "Hello\n\nWorld\n!";
+
   private GitClient git;
 
   private DefaultPatchSetCommitMessageFactory tested;
@@ -56,6 +58,14 @@ public class DefaultPatchSetCommitMessageFactoryTest {
   }
 
   @Test
+  public void GIVEN_existing_change_WHEN_existing_message_contains_blank_lines_THEN_the_new_message_should_preserve_them() {
+    when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD_MULTI_LINES));
+
+    CommitMessage commitMessage = tested.build(null);
+    assertThat(commitMessage.toString()).contains(HELLO_WORLD_MULTI_LINES);
+  }
+
+  @Test
   public void WHEN_changeid_I1234_THEN_commit_message_should_end_with_I1234() {
     Patch patch = mock(Patch.class);
     when(patch.getCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD + "\nChange-Id: I1234"));
@@ -71,4 +81,5 @@ public class DefaultPatchSetCommitMessageFactoryTest {
     CommitMessage commitMessage = tested.build(null);
     assertThat(commitMessage.toString()).contains("\nVet-Version: " + VetVersion.getValue());
   }
+
 }

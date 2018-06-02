@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class CommitMessageTest {
 
   @Test
-  public void testremoveLinesContaining() {
+  public void testRemoveLinesContaining() {
     String message =
         CommitMessage.of(
                 "Merge remote-tracking branch 'origin/master' into feature/postgres-unsafe\n"

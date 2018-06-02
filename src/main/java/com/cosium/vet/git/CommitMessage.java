@@ -21,20 +21,21 @@ public class CommitMessage extends NonBlankString {
   }
 
   public String removeLinesStartingWith(String... prefixes) {
-    return Arrays.stream(toString().split("\n"))
-        .filter(
-            line -> {
-              if (StringUtils.isBlank(line)) {
-                return false;
-              }
-              for (String prefix : prefixes) {
-                if (line.startsWith(prefix)) {
-                  return false;
-                }
-              }
-              return true;
-            })
-        .collect(Collectors.joining("\n"));
+    String filtered =
+        Arrays.stream(toString().split("\n"))
+            .filter(
+                line -> {
+                  if (StringUtils.isBlank(line)) {
+                    return true;
+                  }
+                  for (String prefix : prefixes) {
+                    if (line.startsWith(prefix)) {
+                      return false;
+                    }
+                  }
+                  return true;
+                })
+            .collect(Collectors.joining("\n"));
+    return StringUtils.stripEnd(filtered, "\n");
   }
-
 }
