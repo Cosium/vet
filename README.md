@@ -5,7 +5,7 @@
 
 Vet allows to review code on Gerrit using a pull-request workflow similar to GitHub, GitLab, Bitbucket and others.
 
-## Install
+## CLI installation
 
 ### Linux - Debian based distributions
 
@@ -32,6 +32,12 @@ choco install gerrit-vet
 ### Manual
 
 Download the binaries from https://github.com/Cosium/vet/releases
+
+## JetBrains IDE plugin
+
+Compatible with: IntelliJ IDEA, PhpStorm, WebStorm, PyCharm, RubyMine, AppCode, CLion, GoLand, DataGrip, Rider, MPS, Android Studio.
+
+https://plugins.jetbrains.com/plugin/10748-vet
 
 ## Benefits
 
