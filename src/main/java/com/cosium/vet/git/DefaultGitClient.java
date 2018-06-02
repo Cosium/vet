@@ -1,5 +1,7 @@
 package com.cosium.vet.git;
 
+import com.cosium.vet.log.Logger;
+import com.cosium.vet.log.LoggerFactory;
 import com.cosium.vet.runtime.CommandRunner;
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 
@@ -20,6 +22,8 @@ import static java.util.Optional.ofNullable;
  * @author Reda.Housni-Alaoui
  */
 class DefaultGitClient implements GitClient {
+
+  private static final Logger LOG = LoggerFactory.getLogger(DefaultGitClient.class);
 
   private static final String GIT = "git";
 
@@ -52,9 +56,15 @@ class DefaultGitClient implements GitClient {
         .map(RemoteName::of);
   }
 
-  public Optional<RemoteUrl> getRemoteUrl(RemoteName remoteName) {
-    return Optional.ofNullable(
-            gitConfigRepository.getValue(String.format("remote.%s.url", remoteName)))
+  public Optional<RemoteUrl> getRemotePushUrl(RemoteName remoteName) {
+    String pushUrlConfigKey = String.format("remote.%s.pushurl", remoteName);
+    String pushUrl = gitConfigRepository.getValue(pushUrlConfigKey);
+    if (!StringUtils.isBlank(pushUrl)) {
+      return Optional.of(RemoteUrl.of(pushUrl));
+    }
+    String urlConfigKey = String.format("remote.%s.url", remoteName);
+    LOG.debug("No value found for '{}'. Falling back on '{}'", pushUrlConfigKey, urlConfigKey);
+    return Optional.ofNullable(gitConfigRepository.getValue(urlConfigKey))
         .filter(StringUtils::isNotBlank)
         .map(RemoteUrl::of);
   }

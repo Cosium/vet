@@ -23,7 +23,7 @@ public interface GitClient {
    * @param remoteName The remote name
    * @return The url of the remote
    */
-  Optional<RemoteUrl> getRemoteUrl(RemoteName remoteName);
+  Optional<RemoteUrl> getRemotePushUrl(RemoteName remoteName);
 
   /**
    * @param otherBranch The other branch

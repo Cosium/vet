@@ -43,7 +43,7 @@ public class DefaultChangeRepositoryFactory implements ChangeRepositoryFactory {
 
     RemoteName remote = RemoteName.ORIGIN;
     URL remoteUrl =
-        git.getRemoteUrl(remote)
+        git.getRemotePushUrl(remote)
             .map(RemoteUrl::toURL)
             .orElseThrow(
                 () ->

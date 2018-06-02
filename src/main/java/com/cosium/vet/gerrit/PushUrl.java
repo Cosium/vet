@@ -22,17 +22,17 @@ public class PushUrl extends NonBlankString {
   }
 
   public ProjectName parseProjectName() {
-    Pattern pattern = Pattern.compile("[^/]+(?=/$|$)");
+    Pattern pattern = Pattern.compile(".*?://.*?/(.*?)/?$");
     Matcher matcher = pattern.matcher(toString());
     if (!matcher.find()) {
-      throw new RuntimeException("WTF?");
+      throw new RuntimeException("Could not parse the project name from '" + this + "'");
     }
-    return ProjectName.of(matcher.group(0));
+    return ProjectName.of(matcher.group(1));
   }
 
   public String computeChangeWebUrl(ChangeNumericId numericId) {
     ProjectName projectName = parseProjectName();
-    String fullUrl = toString();
+    String fullUrl = StringUtils.stripEnd(toString(), "/");
     String gerritBaseUrl =
         StringUtils.substring(fullUrl, 0, fullUrl.length() - projectName.toString().length());
     return gerritBaseUrl + "c/" + projectName.toString() + "/+/" + numericId;
