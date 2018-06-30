@@ -26,7 +26,7 @@ public class DefaultGitClientTest {
   private CommandRunner commandRunner;
   private GitConfigRepository gitConfigRepository;
 
-  private DefaultGitClient tested;
+  private BasicGitClient tested;
 
   @Before
   public void before() {
@@ -34,7 +34,7 @@ public class DefaultGitClientTest {
     commandRunner = mock(CommandRunner.class);
     gitConfigRepository = mock(GitConfigRepository.class);
 
-    tested = new DefaultGitClient(repositoryDirectory, commandRunner, gitConfigRepository);
+    tested = new BasicGitClient(repositoryDirectory, commandRunner, gitConfigRepository);
   }
 
   @Test

@@ -38,4 +38,8 @@ public class CommitMessage extends NonBlankString {
             .collect(Collectors.joining("\n"));
     return StringUtils.stripEnd(filtered, "\n");
   }
+
+  public CommitMessage escapeQuotes() {
+    return CommitMessage.of(StringUtils.replaceAll(toString(), "\"", "\\\\\""));
+  }
 }

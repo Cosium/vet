@@ -73,7 +73,7 @@ public class GitClientTest {
         tested.commitTree(
             tested.getTree(),
             tested.getMostRecentCommonCommit("origin/master"),
-            "Create a new commit tree");
+            CommitMessage.of("Create a new commit tree"));
 
     assertThat(commit).isNotBlank();
 

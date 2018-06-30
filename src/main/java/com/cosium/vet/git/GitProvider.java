@@ -1,6 +1,7 @@
 package com.cosium.vet.git;
 
 import com.cosium.vet.runtime.CommandRunner;
+import com.cosium.vet.utils.OperatingSystem;
 
 import java.nio.file.Path;
 
@@ -13,19 +14,29 @@ import static java.util.Objects.requireNonNull;
  */
 public class GitProvider implements GitClientFactory, GitConfigRepositoryFactory {
 
+  private final OperatingSystem operatingSystem;
   private final Path repositoryDirectory;
   private final CommandRunner commandRunner;
 
   public GitProvider(Path repositoryDirectory, CommandRunner commandRunner) {
-    requireNonNull(repositoryDirectory);
-    requireNonNull(commandRunner);
-    this.repositoryDirectory = repositoryDirectory;
-    this.commandRunner = commandRunner;
+    this(new OperatingSystem(), repositoryDirectory, commandRunner);
+  }
+
+  public GitProvider(
+      OperatingSystem operatingSystem, Path repositoryDirectory, CommandRunner commandRunner) {
+    this.operatingSystem = requireNonNull(operatingSystem);
+    this.repositoryDirectory = requireNonNull(repositoryDirectory);
+    this.commandRunner = requireNonNull(commandRunner);
   }
 
   @Override
   public GitClient build() {
-    return new DefaultGitClient(repositoryDirectory, commandRunner, buildRepository());
+    GitClient basicGitClient =
+        new BasicGitClient(repositoryDirectory, commandRunner, buildRepository());
+    if (!operatingSystem.isWindows()) {
+      return basicGitClient;
+    }
+    return new WindowsGitClient(basicGitClient);
   }
 
   @Override

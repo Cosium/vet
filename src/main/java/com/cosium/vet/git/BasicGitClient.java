@@ -21,9 +21,9 @@ import static java.util.Optional.ofNullable;
  *
  * @author Reda.Housni-Alaoui
  */
-class DefaultGitClient implements GitClient {
+class BasicGitClient implements GitClient {
 
-  private static final Logger LOG = LoggerFactory.getLogger(DefaultGitClient.class);
+  private static final Logger LOG = LoggerFactory.getLogger(BasicGitClient.class);
 
   private static final String GIT = "git";
 
@@ -31,16 +31,13 @@ class DefaultGitClient implements GitClient {
   private final CommandRunner commandRunner;
   private final GitConfigRepository gitConfigRepository;
 
-  DefaultGitClient(
+  BasicGitClient(
       Path repositoryDirectory,
       CommandRunner commandRunner,
       GitConfigRepository gitConfigRepository) {
-    requireNonNull(repositoryDirectory);
-    requireNonNull(commandRunner);
-    requireNonNull(gitConfigRepository);
-    this.repositoryDirectory = repositoryDirectory;
-    this.commandRunner = commandRunner;
-    this.gitConfigRepository = gitConfigRepository;
+    this.repositoryDirectory = requireNonNull(repositoryDirectory);
+    this.commandRunner = requireNonNull(commandRunner);
+    this.gitConfigRepository = requireNonNull(gitConfigRepository);
   }
 
   @Override
@@ -80,9 +77,16 @@ class DefaultGitClient implements GitClient {
   }
 
   @Override
-  public String commitTree(String tree, String parent, String commitMessage) {
+  public String commitTree(String tree, String parent, CommitMessage commitMessage) {
     return commandRunner.run(
-        repositoryDirectory, GIT, "commit-tree", tree, "-p", parent, "-m", commitMessage);
+        repositoryDirectory,
+        GIT,
+        "commit-tree",
+        tree,
+        "-p",
+        parent,
+        "-m",
+        commitMessage.toString());
   }
 
   @Override

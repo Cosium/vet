@@ -65,7 +65,7 @@ public class DefaultPatchSetRepository implements PatchSetRepository {
     CommitMessage commitMessage = commitMessageFactory.build(lastestPatch);
 
     LOG.debug("Creating commit tree with message '{}'", commitMessage);
-    String commitId = git.commitTree(endRevision, startRevision, commitMessage.toString());
+    String commitId = git.commitTree(endRevision, startRevision, commitMessage);
     LOG.debug("Commit tree id is '{}'", commitId);
 
     LOG.debug("Pushing '{}' to '{}', with options '{}'", commitId, targetBranch, options);

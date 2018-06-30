@@ -40,7 +40,7 @@ public interface GitClient {
    * @param commitMessage The message of the created commit
    * @return The id of the created commit
    */
-  String commitTree(String tree, String parent, String commitMessage);
+  String commitTree(String tree, String parent, CommitMessage commitMessage);
 
   /** @return The last commit message */
   CommitMessage getLastCommitMessage();
