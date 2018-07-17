@@ -22,7 +22,6 @@ class DefaultPatchSetCommitMessageFactory implements PatchSetCommitMessageFactor
   private static final Logger LOG =
       LoggerFactory.getLogger(DefaultPatchSetCommitMessageFactory.class);
 
-  private static final String COMMIT_MESSAGE_VET_VERSION_PREFIX = "Vet-Version: ";
   private static final String COMMIT_MESSAGE_CHANGE_ID_PREFIX = "Change-Id: ";
 
   private final GitClient git;
@@ -43,9 +42,7 @@ class DefaultPatchSetCommitMessageFactory implements PatchSetCommitMessageFactor
       changeChangeId = parseChangeChangeId(commitMessage);
     }
 
-    String body =
-        commitMessage.removeLinesStartingWith(
-            COMMIT_MESSAGE_VET_VERSION_PREFIX, COMMIT_MESSAGE_CHANGE_ID_PREFIX);
+    String body = commitMessage.removeLinesStartingWith(COMMIT_MESSAGE_CHANGE_ID_PREFIX);
 
     String footer = String.join("\n", COMMIT_MESSAGE_CHANGE_ID_PREFIX + changeChangeId);
 
