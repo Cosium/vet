@@ -1,6 +1,5 @@
 package com.cosium.vet.gerrit;
 
-import com.cosium.vet.VetVersion;
 import com.cosium.vet.git.CommitMessage;
 import com.cosium.vet.git.GitClient;
 import com.cosium.vet.log.Logger;
@@ -48,11 +47,7 @@ class DefaultPatchSetCommitMessageFactory implements PatchSetCommitMessageFactor
         commitMessage.removeLinesStartingWith(
             COMMIT_MESSAGE_VET_VERSION_PREFIX, COMMIT_MESSAGE_CHANGE_ID_PREFIX);
 
-    String footer =
-        String.join(
-            "\n",
-            COMMIT_MESSAGE_VET_VERSION_PREFIX + VetVersion.getValue(),
-            COMMIT_MESSAGE_CHANGE_ID_PREFIX + changeChangeId);
+    String footer = String.join("\n", COMMIT_MESSAGE_CHANGE_ID_PREFIX + changeChangeId);
 
     return CommitMessage.of(body + "\n\n" + footer);
   }

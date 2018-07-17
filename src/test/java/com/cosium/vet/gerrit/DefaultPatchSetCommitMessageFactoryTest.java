@@ -74,12 +74,4 @@ public class DefaultPatchSetCommitMessageFactoryTest {
     assertThat(commitMessage.toString()).endsWith("\nChange-Id: I1234");
   }
 
-  @Test
-  public void WHEN_existing_change_THEN_commit_message_contains_VET_VERSION() {
-    when(git.getLastCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD));
-
-    CommitMessage commitMessage = tested.build(null);
-    assertThat(commitMessage.toString()).contains("\nVet-Version: " + VetVersion.getValue());
-  }
-
 }
