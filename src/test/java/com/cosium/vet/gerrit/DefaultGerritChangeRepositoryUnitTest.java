@@ -85,4 +85,12 @@ public class DefaultGerritChangeRepositoryUnitTest {
     verify(lastSavedConfiguration.get()).setTrackedChangeNumericId(_1234);
     verify(lastSavedConfiguration.get()).setTrackedChangeTargetBranch(BranchShortName.MASTER);
   }
+
+  @Test
+  public void WHEN_untrack_THEN_it_clears_the_gerrit_conf() {
+    tested.untrack();
+
+    verify(gerritConfiguration).setTrackedChangeTargetBranch(null);
+    verify(gerritConfiguration).setTrackedChangeNumericId(null);
+  }
 }
