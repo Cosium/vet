@@ -12,17 +12,17 @@ import static java.util.Objects.requireNonNull;
  */
 class DefaultChange implements Change {
 
-  private final PatchSetRepository patchSetRepository;
+  private final PatchsetRepository patchsetRepository;
   private final PushUrl pushUrl;
   private final BranchShortName targetBranch;
   private final ChangeNumericId numericId;
 
   private DefaultChange(
-      PatchSetRepository patchSetRepository,
+      PatchsetRepository patchsetRepository,
       PushUrl pushUrl,
       BranchShortName targetBranch,
       ChangeNumericId numericId) {
-    this.patchSetRepository = requireNonNull(patchSetRepository);
+    this.patchsetRepository = requireNonNull(patchsetRepository);
     this.pushUrl = requireNonNull(pushUrl);
     this.targetBranch = requireNonNull(targetBranch);
     this.numericId = requireNonNull(numericId);
@@ -35,12 +35,12 @@ class DefaultChange implements Change {
 
   @Override
   public RevisionId fetchParent() {
-    return patchSetRepository.findPatch(numericId, 1).getParent();
+    return patchsetRepository.findPatchset(numericId, 1).getParent();
   }
 
   @Override
-  public String createPatch(PatchOptions options) {
-    return patchSetRepository.createPatch(targetBranch, numericId, options).getCreationLog();
+  public String createPatchset(PatchsetOptions options) {
+    return patchsetRepository.createPatchset(targetBranch, numericId, options).getCreationLog();
   }
 
   @Override
@@ -60,17 +60,17 @@ class DefaultChange implements Change {
    */
   static class Factory implements ChangeFactory {
 
-    private final PatchSetRepository patchSetRepository;
+    private final PatchsetRepository patchsetRepository;
     private final PushUrl pushUrl;
 
-    Factory(PatchSetRepository patchSetRepository, PushUrl pushUrl) {
-      this.patchSetRepository = requireNonNull(patchSetRepository);
+    Factory(PatchsetRepository patchsetRepository, PushUrl pushUrl) {
+      this.patchsetRepository = requireNonNull(patchsetRepository);
       this.pushUrl = requireNonNull(pushUrl);
     }
 
     @Override
     public Change build(BranchShortName targetBranch, ChangeNumericId changeNumericId) {
-      return new DefaultChange(patchSetRepository, pushUrl, targetBranch, changeNumericId);
+      return new DefaultChange(patchsetRepository, pushUrl, targetBranch, changeNumericId);
     }
   }
 }

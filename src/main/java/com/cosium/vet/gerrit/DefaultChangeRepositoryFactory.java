@@ -57,10 +57,10 @@ public class DefaultChangeRepositoryFactory implements ChangeRepositoryFactory {
     ProjectName projectName = pushUrl.parseProjectName();
     LOG.debug("Gerrit project is '{}'", projectName);
 
-    PatchSetCommitMessageFactory commitMessageFactory =
-        new DefaultPatchSetCommitMessageFactory(git);
-    PatchSetRepository patchSetRepository =
-        new DefaultPatchSetRepository(git, pushUrl, commitMessageFactory);
+    PatchsetCommitMessageFactory commitMessageFactory =
+        new DefaultPatchsetCommitMessageFactory(git);
+    PatchsetRepository patchSetRepository =
+        new DefaultPatchsetRepository(git, pushUrl, commitMessageFactory);
     ChangeFactory changeFactory = new DefaultChange.Factory(patchSetRepository, pushUrl);
 
     return new DefaultChangeRepository(

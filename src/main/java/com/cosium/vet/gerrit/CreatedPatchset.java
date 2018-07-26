@@ -5,8 +5,8 @@ package com.cosium.vet.gerrit;
  *
  * @author Reda.Housni-Alaoui
  */
-public interface CreatedPatch extends Patch {
+public interface CreatedPatchset extends Patchset {
 
-  /** @return The log produced while creating the patch */
+  /** @return The log produced while creating the patchset */
   String getCreationLog();
 }

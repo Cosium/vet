@@ -16,12 +16,12 @@ public interface Change {
   RevisionId fetchParent();
 
   /**
-   * Creates a patch based on the diff between the HEAD and target branch
+   * Creates a patchset based on the diff between the HEAD and target branch
    *
-   * @param options The patch options
+   * @param options The patchset options
    * @return The creationg log output
    */
-  String createPatch(PatchOptions options);
+  String createPatchset(PatchsetOptions options);
 
   /** @return The change web url */
   String getWebUrl();

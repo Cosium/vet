@@ -36,11 +36,11 @@ public class ChangeNumericId {
     return ChangeNumericId.of(Long.parseLong(matcher.group(1)));
   }
 
-  public BranchRefName branchRefName(Patch patch) {
+  public BranchRefName branchRefName(Patchset patchset) {
     String numericIdStr = toString();
     String numericIdSuffix = StringUtils.substring(numericIdStr, numericIdStr.length() - 2);
     return BranchRefName.of(
-        "refs/changes/" + numericIdSuffix + "/" + numericIdStr + "/" + patch.getNumber());
+        "refs/changes/" + numericIdSuffix + "/" + numericIdStr + "/" + patchset.getNumber());
   }
 
   @Override

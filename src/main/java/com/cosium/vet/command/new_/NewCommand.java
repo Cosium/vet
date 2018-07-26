@@ -52,7 +52,7 @@ public class NewCommand implements VetCommand<Change> {
 
     BranchShortName targetBranch = getTargetBranch();
     CreatedChange change =
-        changeRepository.createAndTrackChange(targetBranch, PatchOptions.DEFAULT);
+        changeRepository.createAndTrackChange(targetBranch, PatchsetOptions.DEFAULT);
     userOutput.display(change.getCreationLog());
     userOutput.display("Now tracking new change " + change);
     return change;

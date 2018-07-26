@@ -1,7 +1,7 @@
 package com.cosium.vet.command.push;
 
 import com.cosium.vet.gerrit.CodeReviewVote;
-import com.cosium.vet.gerrit.PatchSubject;
+import com.cosium.vet.gerrit.PatchsetSubject;
 
 /**
  * Created on 23/02/18.
@@ -13,7 +13,7 @@ public interface PushCommandFactory {
   PushCommand build(
       Boolean publishDraftedComments,
       Boolean workInProgress,
-      PatchSubject patchSetSubject,
+      PatchsetSubject patchsetSubject,
       Boolean bypassReview,
       CodeReviewVote codeReviewVote);
 }

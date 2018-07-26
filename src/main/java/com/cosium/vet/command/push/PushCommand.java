@@ -23,7 +23,7 @@ public class PushCommand implements VetCommand<Void> {
 
   private final Boolean publishDraftedComments;
   private final Boolean workInProgress;
-  private final PatchSubject patchSetSubject;
+  private final PatchsetSubject patchsetSubject;
   private final Boolean bypassReview;
   private final CodeReviewVote codeReviewVote;
 
@@ -33,7 +33,7 @@ public class PushCommand implements VetCommand<Void> {
       // Optionals
       Boolean publishDraftedComments,
       Boolean workInProgress,
-      PatchSubject patchSetSubject,
+      PatchsetSubject patchsetSubject,
       Boolean bypassReview,
       CodeReviewVote codeReviewVote) {
     this.changeRepository = requireNonNull(changeRepository);
@@ -41,7 +41,7 @@ public class PushCommand implements VetCommand<Void> {
 
     this.publishDraftedComments = publishDraftedComments;
     this.workInProgress = workInProgress;
-    this.patchSetSubject = patchSetSubject;
+    this.patchsetSubject = patchsetSubject;
     this.bypassReview = bypassReview;
     this.codeReviewVote = codeReviewVote;
   }
@@ -56,16 +56,16 @@ public class PushCommand implements VetCommand<Void> {
 
     LOG.debug("Found tracked change {}", change);
 
-    PatchOptions patchOptions =
-        PatchOptions.builder()
+    PatchsetOptions patchOptions =
+        PatchsetOptions.builder()
             .publishDraftComments(BooleanUtils.toBoolean(publishDraftedComments))
             .workInProgress(BooleanUtils.toBoolean(workInProgress))
-            .subject(patchSetSubject)
+            .subject(patchsetSubject)
             .bypassReview(BooleanUtils.toBoolean(bypassReview))
             .codeReviewVote(codeReviewVote)
             .build();
 
-    String output = change.createPatch(patchOptions);
+    String output = change.createPatchset(patchOptions);
 
     userOutput.display(output);
     userOutput.display("Pushed to " + change);
@@ -86,7 +86,7 @@ public class PushCommand implements VetCommand<Void> {
     public PushCommand build(
         Boolean publishDraftedComments,
         Boolean workInProgress,
-        PatchSubject patchSetSubject,
+        PatchsetSubject patchsetSubject,
         Boolean bypassReview,
         CodeReviewVote codeReviewVote) {
       return new PushCommand(
@@ -94,7 +94,7 @@ public class PushCommand implements VetCommand<Void> {
           userOutput,
           publishDraftedComments,
           workInProgress,
-          patchSetSubject,
+          patchsetSubject,
           bypassReview,
           codeReviewVote);
     }

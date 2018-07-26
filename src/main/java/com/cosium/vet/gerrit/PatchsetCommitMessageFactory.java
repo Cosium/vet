@@ -7,7 +7,7 @@ import com.cosium.vet.git.CommitMessage;
  *
  * @author Reda.Housni-Alaoui
  */
-public interface PatchSetCommitMessageFactory {
+public interface PatchsetCommitMessageFactory {
 
-  CommitMessage build(Patch latestPatch);
+  CommitMessage build(Patchset latestPatchset);
 }

@@ -30,7 +30,7 @@ public class ChangeNumericIdTest {
   @Test
   public void testBranchRefName() {
     ChangeNumericId numericId = ChangeNumericId.of(1234);
-    Patch patch = mock(Patch.class);
+    Patchset patch = mock(Patchset.class);
     when(patch.getNumber()).thenReturn(5);
 
     assertThat(numericId.branchRefName(patch))

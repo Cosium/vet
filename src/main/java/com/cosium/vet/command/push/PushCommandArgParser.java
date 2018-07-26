@@ -3,7 +3,7 @@ package com.cosium.vet.command.push;
 import com.cosium.vet.command.AbstractVetAdvancedCommandArgParser;
 import com.cosium.vet.command.VetCommand;
 import com.cosium.vet.gerrit.CodeReviewVote;
-import com.cosium.vet.gerrit.PatchSubject;
+import com.cosium.vet.gerrit.PatchsetSubject;
 import com.cosium.vet.thirdparty.apache_commons_cli.*;
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 
@@ -23,7 +23,7 @@ public class PushCommandArgParser extends AbstractVetAdvancedCommandArgParser {
 
   private static final String PUBLISH_DRAFTED_COMMENTS = "p";
   private static final String WORK_IN_PROGRESS = "w";
-  private static final String PATCH_SET_SUBJECT = "s";
+  private static final String PATCHSET_SUBJECT = "s";
   private static final String BYPASS_REVIEW = "f";
   private static final String CODE_REVIEW_VOTE = "v";
 
@@ -45,11 +45,11 @@ public class PushCommandArgParser extends AbstractVetAdvancedCommandArgParser {
                     .desc("Turn the change to work in progress (e.g. wip).")
                     .build())
             .addOption(
-                Option.builder(PATCH_SET_SUBJECT)
+                Option.builder(PATCHSET_SUBJECT)
                     .argName("subject")
-                    .longOpt("patch-set-subject")
+                    .longOpt("patchset-subject")
                     .hasArg()
-                    .desc("The subject of the patch set.")
+                    .desc("The subject of the patchset.")
                     .build())
             .addOption(
                 Option.builder(BYPASS_REVIEW)
@@ -101,10 +101,10 @@ public class PushCommandArgParser extends AbstractVetAdvancedCommandArgParser {
 
     Boolean publishDraftedComments = commandLine.hasOption(PUBLISH_DRAFTED_COMMENTS) ? true : null;
     Boolean workInProgress = commandLine.hasOption(WORK_IN_PROGRESS) ? true : null;
-    PatchSubject patchSetSubject =
-        ofNullable(commandLine.getOptionValue(PATCH_SET_SUBJECT))
+    PatchsetSubject patchsetSubject =
+        ofNullable(commandLine.getOptionValue(PATCHSET_SUBJECT))
             .filter(StringUtils::isNotBlank)
-            .map(PatchSubject::of)
+            .map(PatchsetSubject::of)
             .orElse(null);
     Boolean bypassReview = commandLine.hasOption(BYPASS_REVIEW) ? true : null;
     CodeReviewVote reviewVote =
@@ -114,6 +114,6 @@ public class PushCommandArgParser extends AbstractVetAdvancedCommandArgParser {
             .orElse(null);
 
     return pushCommandFactory.build(
-        publishDraftedComments, workInProgress, patchSetSubject, bypassReview, reviewVote);
+        publishDraftedComments, workInProgress, patchsetSubject, bypassReview, reviewVote);
   }
 }

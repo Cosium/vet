@@ -123,7 +123,7 @@ usage: vet push [-f] [-p] [-s <subject>] [-v <vote>] [-w]
                                     rules are checked.
  -p,--publish-drafted-comments      Publish currently drafted comments of
                                     the change if any.
- -s,--patch-set-subject <subject>   The subject of the patch set.
+ -s,--patchset-subject <subject>   The subject of the patchset.
  -v,--code-review-vote <vote>       Vote on code review. i.e. +1 is a
                                     valid vote value.
  -w,--work-in-progress              Turn the change to work in progress

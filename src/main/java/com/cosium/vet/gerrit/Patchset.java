@@ -10,9 +10,9 @@ import java.util.Optional;
  *
  * @author Reda.Housni-Alaoui
  */
-public interface Patch {
+public interface Patchset {
 
-  /** @return The patch number in the change */
+  /** @return The patchset number in the change */
   int getNumber();
 
   /** @return The change numeric id */

@@ -16,20 +16,20 @@ import static java.util.Optional.ofNullable;
  *
  * @author Reda.Housni-Alaoui
  */
-public class PatchOptions {
+public class PatchsetOptions {
 
-  public static final PatchOptions DEFAULT = PatchOptions.builder().build();
+  public static final PatchsetOptions DEFAULT = PatchsetOptions.builder().build();
 
   private final boolean publishDraftComments;
   private final boolean workInProgress;
-  private final PatchSubject subject;
+  private final PatchsetSubject subject;
   private final boolean bypassReview;
   private final CodeReviewVote codeReviewVote;
 
-  private PatchOptions(
+  private PatchsetOptions(
       boolean publishDraftComments,
       boolean workInProgress,
-      PatchSubject subject,
+      PatchsetSubject subject,
       boolean bypassReview,
       CodeReviewVote codeReviewVote) {
     this.publishDraftComments = publishDraftComments;
@@ -75,7 +75,7 @@ public class PatchOptions {
   public static class Builder {
     private boolean publishDraftComments;
     private boolean workInProgress;
-    private PatchSubject subject;
+    private PatchsetSubject subject;
     private boolean bypassReview;
     private CodeReviewVote codeReviewVote;
 
@@ -99,7 +99,7 @@ public class PatchOptions {
       return this;
     }
 
-    public Builder subject(PatchSubject subject) {
+    public Builder subject(PatchsetSubject subject) {
       this.subject = subject;
       return this;
     }
@@ -118,8 +118,8 @@ public class PatchOptions {
       return this;
     }
 
-    public PatchOptions build() {
-      return new PatchOptions(
+    public PatchsetOptions build() {
+      return new PatchsetOptions(
           publishDraftComments, workInProgress, subject, bypassReview, codeReviewVote);
     }
   }

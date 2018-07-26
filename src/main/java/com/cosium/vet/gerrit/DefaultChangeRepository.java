@@ -24,17 +24,17 @@ class DefaultChangeRepository implements ChangeRepository {
 
   private final GerritConfigurationRepository configurationRepository;
   private final ChangeFactory changeFactory;
-  private final PatchSetRepository patchSetRepository;
+  private final PatchsetRepository patchsetRepository;
   private final GitClient git;
 
   DefaultChangeRepository(
       GerritConfigurationRepository configurationRepository,
       ChangeFactory changeFactory,
-      PatchSetRepository patchSetRepository,
+      PatchsetRepository patchsetRepository,
       GitClient git) {
     this.configurationRepository = requireNonNull(configurationRepository);
     this.changeFactory = requireNonNull(changeFactory);
-    this.patchSetRepository = requireNonNull(patchSetRepository);
+    this.patchsetRepository = requireNonNull(patchsetRepository);
     this.git = requireNonNull(git);
   }
 
@@ -83,12 +83,12 @@ class DefaultChangeRepository implements ChangeRepository {
       ChangeCheckoutBranchName checkoutBranch,
       ChangeNumericId numericId,
       BranchShortName branchShortName) {
-    Patch latestPatch =
-        patchSetRepository
-            .findLastestPatch(numericId)
+    Patchset latestPatchset =
+        patchsetRepository
+            .findLastestPatchset(numericId)
             .orElseThrow(
-                () -> new RuntimeException("No patch found for change with id " + numericId));
-    git.fetch(RemoteName.ORIGIN, numericId.branchRefName(latestPatch));
+                () -> new RuntimeException("No patchset found for change with id " + numericId));
+    git.fetch(RemoteName.ORIGIN, numericId.branchRefName(latestPatchset));
     git.checkoutFetchHead();
     git.checkoutNewBranch(checkoutBranch.toBranchShortName());
     return trackChange(numericId, branchShortName);
@@ -96,22 +96,22 @@ class DefaultChangeRepository implements ChangeRepository {
 
   @Override
   public CreatedChange createAndTrackChange(
-      BranchShortName targetBranch, PatchOptions firstPatchOptions) {
-    CreatedPatch patch = patchSetRepository.createPatch(targetBranch, firstPatchOptions);
+      BranchShortName targetBranch, PatchsetOptions firstPatchsetOptions) {
+    CreatedPatchset patch = patchsetRepository.createPatchset(targetBranch, firstPatchsetOptions);
     Change change = trackChange(patch.getChangeNumericId(), targetBranch);
     return new DefaultCreatedChange(change, patch.getCreationLog());
   }
 
   @Override
-  public CreatedChange createChange(BranchShortName targetBranch, PatchOptions firstPatchOptions) {
-    CreatedPatch patch = patchSetRepository.createPatch(targetBranch, firstPatchOptions);
+  public CreatedChange createChange(BranchShortName targetBranch, PatchsetOptions firstPatchsetOptions) {
+    CreatedPatchset patch = patchsetRepository.createPatchset(targetBranch, firstPatchsetOptions);
     Change change = changeFactory.build(targetBranch, patch.getChangeNumericId());
     return new DefaultCreatedChange(change, patch.getCreationLog());
   }
 
   @Override
   public boolean exists(ChangeNumericId numericId) {
-    return patchSetRepository.findLastestPatch(numericId).isPresent();
+    return patchsetRepository.findLastestPatchset(numericId).isPresent();
   }
 
   @Override
@@ -119,7 +119,7 @@ class DefaultChangeRepository implements ChangeRepository {
     Change change =
         getTrackedChange()
             .orElseThrow(() -> new RuntimeException("There is no currently tracked change"));
-    return patchSetRepository.pullLatest(change.getNumericId());
+    return patchsetRepository.pullLatestPatchset(change.getNumericId());
   }
 
   private class DefaultCreatedChange implements CreatedChange {
@@ -148,8 +148,8 @@ class DefaultChangeRepository implements ChangeRepository {
     }
 
     @Override
-    public String createPatch(PatchOptions options) {
-      return change.createPatch(options);
+    public String createPatchset(PatchsetOptions options) {
+      return change.createPatchset(options);
     }
 
     @Override

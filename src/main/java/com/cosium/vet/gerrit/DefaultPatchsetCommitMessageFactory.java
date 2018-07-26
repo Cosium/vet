@@ -17,28 +17,28 @@ import static java.util.Objects.requireNonNull;
  *
  * @author Reda.Housni-Alaoui
  */
-class DefaultPatchSetCommitMessageFactory implements PatchSetCommitMessageFactory {
+class DefaultPatchsetCommitMessageFactory implements PatchsetCommitMessageFactory {
 
   private static final Logger LOG =
-      LoggerFactory.getLogger(DefaultPatchSetCommitMessageFactory.class);
+      LoggerFactory.getLogger(DefaultPatchsetCommitMessageFactory.class);
 
   private static final String COMMIT_MESSAGE_CHANGE_ID_PREFIX = "Change-Id: ";
 
   private final GitClient git;
 
-  DefaultPatchSetCommitMessageFactory(GitClient git) {
+  DefaultPatchsetCommitMessageFactory(GitClient git) {
     this.git = requireNonNull(git);
   }
 
   @Override
-  public CommitMessage build(Patch latestPatch) {
+  public CommitMessage build(Patchset latestPatchset) {
     String changeChangeId;
     CommitMessage commitMessage;
-    if (latestPatch == null) {
+    if (latestPatchset == null) {
       commitMessage = git.getLastCommitMessage();
       changeChangeId = generateChangeChangeId(commitMessage);
     } else {
-      commitMessage = latestPatch.getCommitMessage();
+      commitMessage = latestPatchset.getCommitMessage();
       changeChangeId = parseChangeChangeId(commitMessage);
     }
 

@@ -1,6 +1,5 @@
 package com.cosium.vet.gerrit;
 
-import com.cosium.vet.VetVersion;
 import com.cosium.vet.git.CommitMessage;
 import com.cosium.vet.git.GitClient;
 import org.junit.Before;
@@ -18,7 +17,7 @@ import static org.mockito.Mockito.when;
  *
  * @author Reda.Housni-Alaoui
  */
-public class DefaultPatchSetCommitMessageFactoryTest {
+public class DefaultPatchsetCommitMessageFactoryTest {
 
   private static final String HELLO_WORLD = "Hello World";
 
@@ -26,12 +25,12 @@ public class DefaultPatchSetCommitMessageFactoryTest {
 
   private GitClient git;
 
-  private DefaultPatchSetCommitMessageFactory tested;
+  private DefaultPatchsetCommitMessageFactory tested;
 
   @Before
   public void before() {
     git = mock(GitClient.class);
-    tested = new DefaultPatchSetCommitMessageFactory(git);
+    tested = new DefaultPatchsetCommitMessageFactory(git);
   }
 
   @Test
@@ -67,7 +66,7 @@ public class DefaultPatchSetCommitMessageFactoryTest {
 
   @Test
   public void WHEN_changeid_I1234_THEN_commit_message_should_end_with_I1234() {
-    Patch patch = mock(Patch.class);
+    Patchset patch = mock(Patchset.class);
     when(patch.getCommitMessage()).thenReturn(CommitMessage.of(HELLO_WORLD + "\nChange-Id: I1234"));
 
     CommitMessage commitMessage = tested.build(patch);
