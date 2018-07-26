@@ -82,7 +82,7 @@ class DefaultChangeRepository implements ChangeRepository {
   public Change checkoutAndTrackChange(
       ChangeCheckoutBranchName checkoutBranch,
       ChangeNumericId numericId,
-      BranchShortName branchShortName) {
+      BranchShortName targetBranch) {
     Patchset latestPatchset =
         patchsetRepository
             .findLastestPatchset(numericId)
@@ -91,7 +91,7 @@ class DefaultChangeRepository implements ChangeRepository {
     git.fetch(RemoteName.ORIGIN, numericId.branchRefName(latestPatchset));
     git.checkoutFetchHead();
     git.checkoutNewBranch(checkoutBranch.toBranchShortName());
-    return trackChange(numericId, branchShortName);
+    return trackChange(numericId, targetBranch);
   }
 
   @Override
