@@ -12,7 +12,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
-import static java.util.Optional.ofNullable;
 
 /**
  * Created on 27/02/18.
@@ -38,31 +37,23 @@ public class DefaultPatchsetRepository implements PatchsetRepository {
   }
 
   @Override
-  public CreatedPatchset createPatchset(BranchShortName targetBranch, PatchsetOptions options) {
-    return createPatchset(targetBranch, null, options);
-  }
-
-  @Override
-  public CreatedPatchset createPatchset(
-      BranchShortName targetBranch, ChangeNumericId numericId, PatchsetOptions options) {
+  public CreatedPatchset createChangeFirstPatchset(
+      BranchShortName targetBranch, PatchsetOptions options) {
     RemoteName remote =
         git.getRemote(targetBranch)
             .orElseThrow(
                 () ->
                     new RuntimeException(
                         String.format("No remote found for branch '%s'", targetBranch)));
-    git.fetch(remote, targetBranch);
     String startRevision =
         git.getMostRecentCommonCommit(String.format("%s/%s", remote, targetBranch));
 
     String endRevision = git.getTree();
     LOG.debug(
-        "Creating patchset set for change '{}' between start revision '{}' and end revision '{}'",
-        numericId,
+        "Creating first patchset for new change between start revision '{}' and end revision '{}'",
         startRevision,
         endRevision);
-    Patchset lastestPatchset = findLastestPatchset(numericId).orElse(null);
-    CommitMessage commitMessage = commitMessageFactory.build(lastestPatchset);
+    CommitMessage commitMessage = commitMessageFactory.build();
 
     LOG.debug("Creating commit tree with message '{}'", commitMessage);
     String commitId = git.commitTree(endRevision, startRevision, commitMessage);
@@ -72,19 +63,50 @@ public class DefaultPatchsetRepository implements PatchsetRepository {
 
     String creationLog =
         git.push(pushUrl.toString(), options.buildGitPushTarget(commitId, targetBranch));
-    return buildCreatedPatchset(
-        lastestPatchset == null ? 1 : lastestPatchset.getNumber(),
-        numericId,
-        commitMessage,
-        RevisionId.of(startRevision),
-        creationLog);
+
+    ChangeNumericId changeNumericId =
+        ChangeNumericId.parseFromPushToRefForOutput(pushUrl, creationLog);
+
+    return new DefaultCreatedPatchset(
+        1, changeNumericId, RevisionId.of(startRevision), commitMessage, creationLog);
   }
 
   @Override
-  public Optional<Patchset> findLastestPatchset(ChangeNumericId changeNumericId) {
-    if (changeNumericId == null) {
-      return Optional.empty();
-    }
+  public CreatedPatchset createPatchset(
+      BranchShortName targetBranch, ChangeNumericId numericId, PatchsetOptions options) {
+    requireNonNull(numericId);
+
+    Patchset latestPatchset =
+        findLatestPatchset(numericId)
+            .orElseThrow(
+                () -> new RuntimeException("No patchset found for change numeric id " + numericId));
+
+    RevisionId startRevision = latestPatchset.getParent();
+
+    String endRevision = git.getTree();
+    LOG.debug(
+        "Creating patchset for change '{}' between start revision '{}' and end revision '{}'",
+        numericId,
+        startRevision,
+        endRevision);
+
+    CommitMessage commitMessage = commitMessageFactory.build(latestPatchset);
+
+    LOG.debug("Creating commit tree with message '{}'", commitMessage);
+    String commitId = git.commitTree(endRevision, startRevision.toString(), commitMessage);
+    LOG.debug("Commit tree id is '{}'", commitId);
+
+    LOG.debug("Pushing '{}' to '{}', with options '{}'", commitId, targetBranch, options);
+
+    String creationLog =
+        git.push(pushUrl.toString(), options.buildGitPushTarget(commitId, targetBranch));
+    return new DefaultCreatedPatchset(
+        latestPatchset.getNumber(), numericId, startRevision, commitMessage, creationLog);
+  }
+
+  @Override
+  public Optional<Patchset> findLatestPatchset(ChangeNumericId changeNumericId) {
+    requireNonNull(changeNumericId);
 
     PatchsetRef latestPatchsetRef = getLatestPatchsetRef(changeNumericId).orElse(null);
     if (latestPatchsetRef == null) {
@@ -111,9 +133,11 @@ public class DefaultPatchsetRepository implements PatchsetRepository {
   @Override
   public String pullLatestPatchset(ChangeNumericId changeNumericId) {
     Patchset latestPatchset =
-        findLastestPatchset(changeNumericId)
+        findLatestPatchset(changeNumericId)
             .orElseThrow(
-                () -> new RuntimeException("No patchset found for change with id " + changeNumericId));
+                () ->
+                    new RuntimeException(
+                        "No patchset found for change with id " + changeNumericId));
     BranchRefName refName = changeNumericId.branchRefName(latestPatchset);
     return git.pull(RemoteName.ORIGIN, refName);
   }
@@ -128,7 +152,8 @@ public class DefaultPatchsetRepository implements PatchsetRepository {
         .max(Comparator.comparingInt(PatchsetRef::getNumber));
   }
 
-  private Optional<PatchsetRef> getPatchsetRef(ChangeNumericId changeNumericId, int patchsetNumber) {
+  private Optional<PatchsetRef> getPatchsetRef(
+      ChangeNumericId changeNumericId, int patchsetNumber) {
     return getPatchsetRefs(changeNumericId)
         .stream()
         .filter(patchsetRef -> patchsetRef.getNumber() == patchsetNumber)
@@ -144,18 +169,6 @@ public class DefaultPatchsetRepository implements PatchsetRepository {
         .map(Optional::get)
         .filter(patchsetRef -> patchsetRef.getChangeNumericId().equals(changeNumericId))
         .collect(Collectors.toList());
-  }
-
-  private CreatedPatchset buildCreatedPatchset(
-      int id,
-      ChangeNumericId numericId,
-      CommitMessage commitMessage,
-      RevisionId parent,
-      String creationLog) {
-    numericId =
-        ofNullable(numericId)
-            .orElseGet(() -> ChangeNumericId.parseFromPushToRefForOutput(pushUrl, creationLog));
-    return new DefaultCreatedPatchset(id, numericId, parent, commitMessage, creationLog);
   }
 
   private Patchset buildPatchset(PatchsetRef patchsetRef) {

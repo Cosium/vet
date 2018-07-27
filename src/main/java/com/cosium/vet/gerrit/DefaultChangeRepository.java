@@ -85,7 +85,7 @@ class DefaultChangeRepository implements ChangeRepository {
       BranchShortName targetBranch) {
     Patchset latestPatchset =
         patchsetRepository
-            .findLastestPatchset(numericId)
+            .findLatestPatchset(numericId)
             .orElseThrow(
                 () -> new RuntimeException("No patchset found for change with id " + numericId));
     git.fetch(RemoteName.ORIGIN, numericId.branchRefName(latestPatchset));
@@ -97,21 +97,21 @@ class DefaultChangeRepository implements ChangeRepository {
   @Override
   public CreatedChange createAndTrackChange(
       BranchShortName targetBranch, PatchsetOptions firstPatchsetOptions) {
-    CreatedPatchset patch = patchsetRepository.createPatchset(targetBranch, firstPatchsetOptions);
+    CreatedPatchset patch = patchsetRepository.createChangeFirstPatchset(targetBranch, firstPatchsetOptions);
     Change change = trackChange(patch.getChangeNumericId(), targetBranch);
     return new DefaultCreatedChange(change, patch.getCreationLog());
   }
 
   @Override
   public CreatedChange createChange(BranchShortName targetBranch, PatchsetOptions firstPatchsetOptions) {
-    CreatedPatchset patch = patchsetRepository.createPatchset(targetBranch, firstPatchsetOptions);
+    CreatedPatchset patch = patchsetRepository.createChangeFirstPatchset(targetBranch, firstPatchsetOptions);
     Change change = changeFactory.build(targetBranch, patch.getChangeNumericId());
     return new DefaultCreatedChange(change, patch.getCreationLog());
   }
 
   @Override
   public boolean exists(ChangeNumericId numericId) {
-    return patchsetRepository.findLastestPatchset(numericId).isPresent();
+    return patchsetRepository.findLatestPatchset(numericId).isPresent();
   }
 
   @Override

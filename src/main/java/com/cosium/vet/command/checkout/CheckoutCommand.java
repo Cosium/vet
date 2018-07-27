@@ -57,7 +57,7 @@ public class CheckoutCommand implements VetCommand<Change> {
           "Could not find any change identified by " + numericId + " on Gerrit. Aborted.");
     }
     BranchShortName targetBranch = getTargetBranch();
-    ChangeCheckoutBranchName checkoutBranch = getCheckoutBranch(numericId);
+    ChangeCheckoutBranchName checkoutBranch = getCheckoutBranchName(numericId);
     if (!confirm(numericId, targetBranch, checkoutBranch)) {
       throw new RuntimeException("Answered no to the confirmation. Aborted.");
     }
@@ -101,14 +101,19 @@ public class CheckoutCommand implements VetCommand<Change> {
                     userInput.askNonBlank("Target branch", BranchShortName.MASTER.toString())));
   }
 
-  private ChangeCheckoutBranchName getCheckoutBranch(ChangeNumericId numericId) {
-    return ofNullable(checkoutBranch)
-        .orElseGet(
-            () ->
-                ChangeCheckoutBranchName.of(
-                    userInput.askNonBlank(
-                        "Checkout branch",
-                        ChangeCheckoutBranchName.defaults(numericId).toString())));
+  private ChangeCheckoutBranchName getCheckoutBranchName(ChangeNumericId numericId) {
+    return ofNullable(checkoutBranch).orElseGet(() -> askCheckoutBranch(numericId));
+  }
+
+  private ChangeCheckoutBranchName askCheckoutBranch(ChangeNumericId numericId) {
+    ChangeCheckoutBranchName defaultCheckoutBranchName =
+        ChangeCheckoutBranchName.defaults(numericId);
+    if (force) {
+      return defaultCheckoutBranchName;
+    }
+
+    return ChangeCheckoutBranchName.of(
+        userInput.askNonBlank("Checkout branch", defaultCheckoutBranchName.toString()));
   }
 
   public static class Factory implements CheckoutCommandFactory {

@@ -118,9 +118,6 @@ Tracks an existing change from a new branch
 ```bash
 $ vet --help push
 usage: vet push [-f] [-p] [-s <subject>] [-v <vote>] [-w]
- -f,--bypass-review                 Submit directly the change bypassing
-                                    the review. Neither labels nor submit
-                                    rules are checked.
  -p,--publish-drafted-comments      Publish currently drafted comments of
                                     the change if any.
  -s,--patchset-subject <subject>   The subject of the patchset.

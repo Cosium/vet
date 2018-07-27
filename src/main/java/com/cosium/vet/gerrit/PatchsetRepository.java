@@ -14,15 +14,16 @@ public interface PatchsetRepository {
   /**
    * @param targetBranch The target of the change
    * @param options The options for the push.
-   * @return The created patchset
+   * @return The first patchset of a new change
    */
-  CreatedPatchset createPatchset(BranchShortName targetBranch, PatchsetOptions options);
+  CreatedPatchset createChangeFirstPatchset(
+      BranchShortName targetBranch, PatchsetOptions options);
 
   /**
    * @param targetBranch The target of the change
    * @param numericId The numeric id of the change. Can be null.
    * @param options The options for the push.
-   * @return The created patchset
+   * @return The created patchset of an existing change
    */
   CreatedPatchset createPatchset(
       BranchShortName targetBranch, ChangeNumericId numericId, PatchsetOptions options);
@@ -31,7 +32,7 @@ public interface PatchsetRepository {
    * @param changeNumericId The change numeric id
    * @return The latest patchset of the provided change numeric id.
    */
-  Optional<Patchset> findLastestPatchset(ChangeNumericId changeNumericId);
+  Optional<Patchset> findLatestPatchset(ChangeNumericId changeNumericId);
 
   /**
    * @param changeNumericId The change numeric id

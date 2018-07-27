@@ -23,19 +23,16 @@ public class PatchsetOptions {
   private final boolean publishDraftComments;
   private final boolean workInProgress;
   private final PatchsetSubject subject;
-  private final boolean bypassReview;
   private final CodeReviewVote codeReviewVote;
 
   private PatchsetOptions(
       boolean publishDraftComments,
       boolean workInProgress,
       PatchsetSubject subject,
-      boolean bypassReview,
       CodeReviewVote codeReviewVote) {
     this.publishDraftComments = publishDraftComments;
     this.workInProgress = workInProgress;
     this.subject = subject;
-    this.bypassReview = bypassReview;
     this.codeReviewVote = codeReviewVote;
   }
 
@@ -64,7 +61,6 @@ public class PatchsetOptions {
             .map(vote -> "Code-Review" + vote)
             .map(code -> String.format("l=%s", code))
             .orElse(null));
-    options.add(bypassReview ? "submit" : null);
 
     String rawOptions =
         options.stream().filter(StringUtils::isNotBlank).collect(Collectors.joining(","));
@@ -76,7 +72,6 @@ public class PatchsetOptions {
     private boolean publishDraftComments;
     private boolean workInProgress;
     private PatchsetSubject subject;
-    private boolean bypassReview;
     private CodeReviewVote codeReviewVote;
 
     private Builder() {}
@@ -104,15 +99,6 @@ public class PatchsetOptions {
       return this;
     }
 
-    public Builder bypassReview() {
-      return bypassReview(true);
-    }
-
-    public Builder bypassReview(boolean bypassReview) {
-      this.bypassReview = bypassReview;
-      return this;
-    }
-
     public Builder codeReviewVote(CodeReviewVote codeReviewVote) {
       this.codeReviewVote = codeReviewVote;
       return this;
@@ -120,7 +106,7 @@ public class PatchsetOptions {
 
     public PatchsetOptions build() {
       return new PatchsetOptions(
-          publishDraftComments, workInProgress, subject, bypassReview, codeReviewVote);
+          publishDraftComments, workInProgress, subject, codeReviewVote);
     }
   }
 }

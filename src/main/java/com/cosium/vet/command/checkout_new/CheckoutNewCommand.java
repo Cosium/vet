@@ -64,7 +64,7 @@ public class CheckoutNewCommand implements VetCommand<Change> {
     LOG.debug("Resetting to '{}'", parent);
     userOutput.display(git.resetKeep(parent));
 
-    ChangeCheckoutBranchName checkoutBranch = getCheckoutBranch(numericId);
+    ChangeCheckoutBranchName checkoutBranch = getCheckoutBranchName(numericId);
     LOG.debug("Checking out new local branch '{}' to track {}", checkoutBranch, change);
     changeRepository.checkoutAndTrackChange(checkoutBranch, numericId, targetBranch);
     userOutput.display(git.status());
@@ -87,14 +87,19 @@ public class CheckoutNewCommand implements VetCommand<Change> {
         false);
   }
 
-  private ChangeCheckoutBranchName getCheckoutBranch(ChangeNumericId numericId) {
-    return ofNullable(checkoutBranch)
-        .orElseGet(
-            () ->
-                ChangeCheckoutBranchName.of(
-                    userInput.askNonBlank(
-                        "Checkout branch",
-                        ChangeCheckoutBranchName.defaults(numericId).toString())));
+  private ChangeCheckoutBranchName getCheckoutBranchName(ChangeNumericId numericId) {
+    return ofNullable(checkoutBranch).orElseGet(() -> askCheckoutBranchName(numericId));
+  }
+
+  private ChangeCheckoutBranchName askCheckoutBranchName(ChangeNumericId numericId) {
+    ChangeCheckoutBranchName defaultCheckoutBranchName =
+        ChangeCheckoutBranchName.defaults(numericId);
+    if (force) {
+      return defaultCheckoutBranchName;
+    }
+
+    return ChangeCheckoutBranchName.of(
+        userInput.askNonBlank("Checkout branch", defaultCheckoutBranchName.toString()));
   }
 
   public static class Factory implements CheckoutNewCommandFactory {

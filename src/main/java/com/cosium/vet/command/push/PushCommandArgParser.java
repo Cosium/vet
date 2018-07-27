@@ -24,7 +24,6 @@ public class PushCommandArgParser extends AbstractVetAdvancedCommandArgParser {
   private static final String PUBLISH_DRAFTED_COMMENTS = "p";
   private static final String WORK_IN_PROGRESS = "w";
   private static final String PATCHSET_SUBJECT = "s";
-  private static final String BYPASS_REVIEW = "f";
   private static final String CODE_REVIEW_VOTE = "v";
 
   private final PushCommandFactory pushCommandFactory;
@@ -50,13 +49,6 @@ public class PushCommandArgParser extends AbstractVetAdvancedCommandArgParser {
                     .longOpt("patchset-subject")
                     .hasArg()
                     .desc("The subject of the patchset.")
-                    .build())
-            .addOption(
-                Option.builder(BYPASS_REVIEW)
-                    .numberOfArgs(0)
-                    .longOpt("bypass-review")
-                    .desc(
-                        "Submit directly the change bypassing the review. Neither labels nor submit rules are checked.")
                     .build())
             .addOption(
                 Option.builder(CODE_REVIEW_VOTE)
@@ -106,7 +98,6 @@ public class PushCommandArgParser extends AbstractVetAdvancedCommandArgParser {
             .filter(StringUtils::isNotBlank)
             .map(PatchsetSubject::of)
             .orElse(null);
-    Boolean bypassReview = commandLine.hasOption(BYPASS_REVIEW) ? true : null;
     CodeReviewVote reviewVote =
         ofNullable(commandLine.getOptionValue(CODE_REVIEW_VOTE))
             .filter(StringUtils::isNotBlank)
@@ -114,6 +105,6 @@ public class PushCommandArgParser extends AbstractVetAdvancedCommandArgParser {
             .orElse(null);
 
     return pushCommandFactory.build(
-        publishDraftedComments, workInProgress, patchsetSubject, bypassReview, reviewVote);
+        publishDraftedComments, workInProgress, patchsetSubject, reviewVote);
   }
 }

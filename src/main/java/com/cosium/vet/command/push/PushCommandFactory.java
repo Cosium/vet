@@ -14,6 +14,5 @@ public interface PushCommandFactory {
       Boolean publishDraftedComments,
       Boolean workInProgress,
       PatchsetSubject patchsetSubject,
-      Boolean bypassReview,
       CodeReviewVote codeReviewVote);
 }

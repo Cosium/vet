@@ -49,6 +49,11 @@ class DefaultPatchsetCommitMessageFactory implements PatchsetCommitMessageFactor
     return CommitMessage.of(body + "\n\n" + footer);
   }
 
+  @Override
+  public CommitMessage build() {
+    return build(null);
+  }
+
   private String generateChangeChangeId(CommitMessage commitMessage) {
     String changeId =
         "I"

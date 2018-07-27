@@ -10,4 +10,6 @@ import com.cosium.vet.git.CommitMessage;
 public interface PatchsetCommitMessageFactory {
 
   CommitMessage build(Patchset latestPatchset);
+
+  CommitMessage build();
 }
