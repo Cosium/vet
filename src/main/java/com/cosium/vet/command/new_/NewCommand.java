@@ -21,7 +21,6 @@ public class NewCommand implements VetCommand<Change> {
 
   private static final Logger LOG = LoggerFactory.getLogger(NewCommand.class);
 
-  private final ChangeParentBranchFactory changeParentBranchFactory;
   private final ChangeRepository changeRepository;
   private final UserInput userInput;
   private final UserOutput userOutput;
@@ -30,14 +29,12 @@ public class NewCommand implements VetCommand<Change> {
   private final BranchShortName targetBranch;
 
   private NewCommand(
-      ChangeParentBranchFactory changeParentBranchFactory,
       ChangeRepository changeRepository,
       UserInput userInput,
       UserOutput userOutput,
       // Optionals
       Boolean force,
       BranchShortName targetBranch) {
-    this.changeParentBranchFactory = requireNonNull(changeParentBranchFactory);
     this.changeRepository = requireNonNull(changeRepository);
     this.userInput = requireNonNull(userInput);
     this.userOutput = requireNonNull(userOutput);
@@ -54,9 +51,8 @@ public class NewCommand implements VetCommand<Change> {
     changeRepository.untrack();
 
     BranchShortName targetBranch = getTargetBranch();
-    ChangeParent changeParent = changeParentBranchFactory.build(targetBranch);
     CreatedChange change =
-        changeRepository.createAndTrackChange(changeParent, targetBranch, PatchsetOptions.DEFAULT);
+        changeRepository.createAndTrackChange(targetBranch, PatchsetOptions.DEFAULT);
     userOutput.display(change.getCreationLog());
     userOutput.display("Now tracking new change " + change);
     return change;
@@ -88,17 +84,14 @@ public class NewCommand implements VetCommand<Change> {
 
   public static class Factory implements NewCommandFactory {
 
-    private final ChangeParentBranchFactory changeParentBranchFactory;
     private final ChangeRepositoryFactory changeRepositoryFactory;
     private final UserInput userInput;
     private final UserOutput userOutput;
 
     public Factory(
-        ChangeParentBranchFactory changeParentBranchFactory,
         ChangeRepositoryFactory changeRepositoryFactory,
         UserInput userInput,
         UserOutput userOutput) {
-      this.changeParentBranchFactory = requireNonNull(changeParentBranchFactory);
       this.changeRepositoryFactory = requireNonNull(changeRepositoryFactory);
       this.userInput = requireNonNull(userInput);
       this.userOutput = requireNonNull(userOutput);
@@ -107,12 +100,7 @@ public class NewCommand implements VetCommand<Change> {
     @Override
     public NewCommand build(Boolean force, BranchShortName targetBranch) {
       return new NewCommand(
-          changeParentBranchFactory,
-          changeRepositoryFactory.build(),
-          userInput,
-          userOutput,
-          force,
-          targetBranch);
+          changeRepositoryFactory.build(), userInput, userOutput, force, targetBranch);
     }
   }
 }

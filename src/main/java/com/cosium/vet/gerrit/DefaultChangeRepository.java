@@ -98,19 +98,17 @@ class DefaultChangeRepository implements ChangeRepository {
   }
 
   @Override
-  public CreatedChange createAndTrackChange(
-      ChangeParent parent, BranchShortName targetBranch, PatchsetOptions firstPatchsetOptions) {
+  public CreatedChange createAndTrackChange(BranchShortName targetBranch, PatchsetOptions firstPatchsetOptions) {
     CreatedPatchset patch =
-        patchsetRepository.createChangeFirstPatchset(parent, targetBranch, firstPatchsetOptions);
+        patchsetRepository.createChangeFirstPatchset(targetBranch, firstPatchsetOptions);
     AlterableChange change = trackChange(patch.getChangeNumericId(), targetBranch);
     return new DefaultCreatedChange(change, patch.getCreationLog());
   }
 
   @Override
-  public CreatedChange createChange(
-      ChangeParent parent, BranchShortName targetBranch, PatchsetOptions firstPatchsetOptions) {
+  public CreatedChange createChange(BranchShortName targetBranch, PatchsetOptions firstPatchsetOptions) {
     CreatedPatchset patch =
-        patchsetRepository.createChangeFirstPatchset(parent, targetBranch, firstPatchsetOptions);
+        patchsetRepository.createChangeFirstPatchset(targetBranch, firstPatchsetOptions);
     AlterableChange change = alterableChangeFactory.build(targetBranch, patch.getChangeNumericId());
     return new DefaultCreatedChange(change, patch.getCreationLog());
   }

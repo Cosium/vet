@@ -24,7 +24,6 @@ public class CheckoutNewCommand implements VetCommand<Change> {
   private static final Logger LOG = LoggerFactory.getLogger(CheckoutNewCommand.class);
 
   private final GitClient git;
-  private final ChangeParentBranchFactory changeParentBranchFactory;
   private final ChangeRepository changeRepository;
   private final UserInput userInput;
   private final UserOutput userOutput;
@@ -34,7 +33,6 @@ public class CheckoutNewCommand implements VetCommand<Change> {
 
   private CheckoutNewCommand(
       GitClient git,
-      ChangeParentBranchFactory changeParentBranchFactory,
       ChangeRepository changeRepository,
       UserInput userInput,
       UserOutput userOutput,
@@ -42,7 +40,6 @@ public class CheckoutNewCommand implements VetCommand<Change> {
       Boolean force,
       ChangeCheckoutBranchName checkoutBranch) {
     this.git = requireNonNull(git);
-    this.changeParentBranchFactory = requireNonNull(changeParentBranchFactory);
     this.changeRepository = requireNonNull(changeRepository);
     this.userInput = requireNonNull(userInput);
     this.userOutput = requireNonNull(userOutput);
@@ -59,9 +56,8 @@ public class CheckoutNewCommand implements VetCommand<Change> {
     }
 
     LOG.debug("Creating change with target branch '{}'", targetBranch);
-    ChangeParent changeParent = changeParentBranchFactory.build(targetBranch);
     Change change =
-        changeRepository.createChange(changeParent, targetBranch, PatchsetOptions.DEFAULT);
+        changeRepository.createChange(targetBranch, PatchsetOptions.DEFAULT);
     ChangeNumericId numericId = change.getNumericId();
     userOutput.display("Change " + change + " created");
 
@@ -110,19 +106,16 @@ public class CheckoutNewCommand implements VetCommand<Change> {
   public static class Factory implements CheckoutNewCommandFactory {
 
     private final GitClient git;
-    private final ChangeParentBranchFactory changeParentBranchFactory;
     private final ChangeRepositoryFactory changeRepositoryFactory;
     private final UserInput userInput;
     private final UserOutput userOutput;
 
     public Factory(
         GitClient git,
-        ChangeParentBranchFactory changeParentBranchFactory,
         ChangeRepositoryFactory changeRepositoryFactory,
         UserInput userInput,
         UserOutput userOutput) {
       this.git = requireNonNull(git);
-      this.changeParentBranchFactory = requireNonNull(changeParentBranchFactory);
       this.changeRepositoryFactory = requireNonNull(changeRepositoryFactory);
       this.userInput = requireNonNull(userInput);
       this.userOutput = requireNonNull(userOutput);
@@ -131,13 +124,7 @@ public class CheckoutNewCommand implements VetCommand<Change> {
     @Override
     public CheckoutNewCommand build(Boolean force, ChangeCheckoutBranchName checkoutBranch) {
       return new CheckoutNewCommand(
-          git,
-          changeParentBranchFactory,
-          changeRepositoryFactory.build(),
-          userInput,
-          userOutput,
-          force,
-          checkoutBranch);
+          git, changeRepositoryFactory.build(), userInput, userOutput, force, checkoutBranch);
     }
   }
 }

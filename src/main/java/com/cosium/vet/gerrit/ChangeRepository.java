@@ -38,24 +38,20 @@ public interface ChangeRepository {
   /**
    * Creates a new change on Gerrit and track it
    *
-   * @param parent The parent of the change to create
    * @param targetBranch The target branch
    * @param firstPatchsetOptions The options to apply to the first patchset
    * @return The new tracked change
    */
-  CreatedChange createAndTrackChange(
-      ChangeParent parent, BranchShortName targetBranch, PatchsetOptions firstPatchsetOptions);
+  CreatedChange createAndTrackChange(BranchShortName targetBranch, PatchsetOptions firstPatchsetOptions);
 
   /**
    * Creates a new change
    *
-   * @param parent The parent of the change to create
    * @param targetBranch The target branch
    * @param firstPatchsetOptions The options to apply to the first patchset
    * @return The new tracked change
    */
-  CreatedChange createChange(
-      ChangeParent parent, BranchShortName targetBranch, PatchsetOptions firstPatchsetOptions);
+  CreatedChange createChange(BranchShortName targetBranch, PatchsetOptions firstPatchsetOptions);
 
   /**
    * @param numericId The change numeric id

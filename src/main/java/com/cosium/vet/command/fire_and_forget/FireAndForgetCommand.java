@@ -23,7 +23,6 @@ public class FireAndForgetCommand implements VetCommand<Change> {
   private static final Logger LOG = LoggerFactory.getLogger(FireAndForgetCommand.class);
 
   private final GitClient git;
-  private final ChangeParentBranchFactory changeParentBranchFactory;
   private final ChangeRepository changeRepository;
   private final UserInput userInput;
   private final UserOutput userOutput;
@@ -33,7 +32,6 @@ public class FireAndForgetCommand implements VetCommand<Change> {
 
   private FireAndForgetCommand(
       GitClient git,
-      ChangeParentBranchFactory changeParentBranchFactory,
       ChangeRepository changeRepository,
       UserInput userInput,
       UserOutput userOutput,
@@ -41,7 +39,6 @@ public class FireAndForgetCommand implements VetCommand<Change> {
       Boolean force,
       CodeReviewVote codeReviewVote) {
     this.git = requireNonNull(git);
-    this.changeParentBranchFactory = requireNonNull(changeParentBranchFactory);
     this.changeRepository = requireNonNull(changeRepository);
     this.userInput = requireNonNull(userInput);
     this.userOutput = requireNonNull(userOutput);
@@ -75,9 +72,7 @@ public class FireAndForgetCommand implements VetCommand<Change> {
             .codeReviewVote(codeReviewVote)
             .build();
 
-    ChangeParent changeParent = changeParentBranchFactory.build(targetBranch);
-    CreatedChange change =
-        changeRepository.createChange(changeParent, targetBranch, patchsetOptions);
+    CreatedChange change = changeRepository.createChange(targetBranch, patchsetOptions);
     LOG.debug("Change {} created", change);
     userOutput.display(change.getCreationLog());
 
@@ -106,19 +101,16 @@ public class FireAndForgetCommand implements VetCommand<Change> {
   public static class Factory implements FireAndForgetCommandFactory {
 
     private final GitClient git;
-    private final ChangeParentBranchFactory changeParentBranchFactory;
     private final ChangeRepositoryFactory changeRepositoryFactory;
     private final UserInput userInput;
     private final UserOutput userOutput;
 
     public Factory(
         GitClient git,
-        ChangeParentBranchFactory changeParentBranchFactory,
         ChangeRepositoryFactory changeRepositoryFactory,
         UserInput userInput,
         UserOutput userOutput) {
       this.git = requireNonNull(git);
-      this.changeParentBranchFactory = requireNonNull(changeParentBranchFactory);
       this.changeRepositoryFactory = requireNonNull(changeRepositoryFactory);
       this.userInput = requireNonNull(userInput);
       this.userOutput = requireNonNull(userOutput);
@@ -127,13 +119,7 @@ public class FireAndForgetCommand implements VetCommand<Change> {
     @Override
     public FireAndForgetCommand build(Boolean force, CodeReviewVote codeReviewVote) {
       return new FireAndForgetCommand(
-          git,
-          changeParentBranchFactory,
-          changeRepositoryFactory.build(),
-          userInput,
-          userOutput,
-          force,
-          codeReviewVote);
+          git, changeRepositoryFactory.build(), userInput, userOutput, force, codeReviewVote);
     }
   }
 }

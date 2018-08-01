@@ -38,8 +38,15 @@ public class DefaultPatchsetRepository implements PatchsetRepository {
 
   @Override
   public CreatedPatchset createChangeFirstPatchset(
-      ChangeParent parent, BranchShortName targetBranch, PatchsetOptions options) {
-    String startRevision = parent.getRevision().toString();
+      BranchShortName targetBranch, PatchsetOptions options) {
+    RemoteName remote =
+        git.getRemote(targetBranch)
+            .orElseThrow(
+                () ->
+                    new RuntimeException(
+                        String.format("No remote found for branch '%s'", targetBranch)));
+    String startRevision =
+        git.getMostRecentCommonCommit(String.format("%s/%s", remote, targetBranch));
 
     String endRevision = git.getTree();
     LOG.debug(

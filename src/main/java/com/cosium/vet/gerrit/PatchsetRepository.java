@@ -12,13 +12,11 @@ import java.util.Optional;
 public interface PatchsetRepository {
 
   /**
-   * @param parent The parent of the new change
    * @param targetBranch The target of the change
    * @param options The options for the push.
    * @return The first patchset of a new change
    */
-  CreatedPatchset createChangeFirstPatchset(
-      ChangeParent parent, BranchShortName targetBranch, PatchsetOptions options);
+  CreatedPatchset createChangeFirstPatchset(BranchShortName targetBranch, PatchsetOptions options);
 
   /**
    * @param targetBranch The target of the change
