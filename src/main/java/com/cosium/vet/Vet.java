@@ -33,10 +33,7 @@ import com.cosium.vet.command.track.TrackCommandFactory;
 import com.cosium.vet.command.untrack.UntrackCommand;
 import com.cosium.vet.command.untrack.UntrackCommandArgParser;
 import com.cosium.vet.command.untrack.UntrackCommandFactory;
-import com.cosium.vet.gerrit.Change;
-import com.cosium.vet.gerrit.ChangeNumericId;
-import com.cosium.vet.gerrit.ChangeRepositoryFactory;
-import com.cosium.vet.gerrit.DefaultChangeRepositoryFactory;
+import com.cosium.vet.gerrit.*;
 import com.cosium.vet.git.GitClient;
 import com.cosium.vet.git.GitProvider;
 import com.cosium.vet.runtime.*;
@@ -61,6 +58,7 @@ public class Vet {
   private static final String APP_NAME = "vet";
 
   private final GitClient git;
+  private final ChangeParentBranchFactory changeParentBranchFactory;
   private final ChangeRepositoryFactory changeRepositoryFactory;
 
   private final NewCommandFactory newCommandFactory;
@@ -114,19 +112,24 @@ public class Vet {
 
     GitProvider gitProvider = new GitProvider(workingDir, commandRunner);
     git = gitProvider.build();
+    changeParentBranchFactory = new ChangeParentBranch.Factory(git);
     changeRepositoryFactory = new DefaultChangeRepositoryFactory(gitProvider, git);
 
-    this.newCommandFactory = new NewCommand.Factory(changeRepositoryFactory, userInput, userOutput);
+    this.newCommandFactory =
+        new NewCommand.Factory(
+            changeParentBranchFactory, changeRepositoryFactory, userInput, userOutput);
     this.checkoutCommandFactory =
         new CheckoutCommand.Factory(git, changeRepositoryFactory, userInput, userOutput);
     this.checkoutNewCommandFactory =
-        new CheckoutNewCommand.Factory(git, changeRepositoryFactory, userInput, userOutput);
+        new CheckoutNewCommand.Factory(
+            git, changeParentBranchFactory, changeRepositoryFactory, userInput, userOutput);
     this.pushCommandFactory = new PushCommand.Factory(changeRepositoryFactory, userOutput);
     this.untrackCommandFactory = new UntrackCommand.Factory(changeRepositoryFactory, userInput);
     this.statusCommandFactory = new StatusCommand.Factory(git, changeRepositoryFactory, userOutput);
     this.pullCommandFactory = new PullCommand.Factory(changeRepositoryFactory, userOutput);
     this.fireAndForgetCommandFactory =
-        new FireAndForgetCommand.Factory(git, changeRepositoryFactory, userInput, userOutput);
+        new FireAndForgetCommand.Factory(
+            git, changeParentBranchFactory, changeRepositoryFactory, userInput, userOutput);
     this.trackCommandFactory =
         new TrackCommand.Factory(changeRepositoryFactory, userInput, userOutput);
 

@@ -167,7 +167,9 @@ public class GerritPatchsetRepositoryUnitTest {
   @Test
   public void
       WHEN_createChangeFirstPatchset_THEN_it_push_a_diff_between_the_target_branch_and_the_tree() {
-    tested.createChangeFirstPatchset(BAR_BRANCH, PatchsetOptions.DEFAULT);
+    ChangeParent parent = mock(ChangeParent.class);
+    when(parent.getRevision()).thenReturn(RevisionId.of("foo"));
+    tested.createChangeFirstPatchset(parent, BAR_BRANCH, PatchsetOptions.DEFAULT);
 
     verify(git).push(eq(PUSH_URL.toString()), any());
   }
