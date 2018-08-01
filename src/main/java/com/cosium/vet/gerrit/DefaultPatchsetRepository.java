@@ -81,12 +81,14 @@ public class DefaultPatchsetRepository implements PatchsetRepository {
       BranchShortName targetBranch, ChangeNumericId numericId, PatchsetOptions options) {
     requireNonNull(numericId);
 
-    Patchset latestPatchset =
-        findLatestPatchset(numericId)
+    RemoteName remote =
+        git.getRemote(targetBranch)
             .orElseThrow(
-                () -> new RuntimeException("No patchset found for change numeric id " + numericId));
-
-    RevisionId startRevision = latestPatchset.getParent();
+                () ->
+                    new RuntimeException(
+                        String.format("No remote found for branch '%s'", targetBranch)));
+    String startRevision =
+        git.getMostRecentCommonCommit(String.format("%s/%s", remote, targetBranch));
 
     String endRevision = git.getTree();
     LOG.debug(
@@ -95,10 +97,14 @@ public class DefaultPatchsetRepository implements PatchsetRepository {
         startRevision,
         endRevision);
 
+    Patchset latestPatchset =
+            findLatestPatchset(numericId)
+                    .orElseThrow(
+                            () -> new RuntimeException("No patchset found for change numeric id " + numericId));
     CommitMessage commitMessage = commitMessageFactory.build(latestPatchset);
 
     LOG.debug("Creating commit tree with message '{}'", commitMessage);
-    String commitId = git.commitTree(endRevision, startRevision.toString(), commitMessage);
+    String commitId = git.commitTree(endRevision, startRevision, commitMessage);
     LOG.debug("Commit tree id is '{}'", commitId);
 
     LOG.debug("Pushing '{}' to '{}', with options '{}'", commitId, targetBranch, options);
@@ -109,7 +115,7 @@ public class DefaultPatchsetRepository implements PatchsetRepository {
         latestPatchset.getNumber(),
         numericId,
         RevisionId.of(commitId),
-        startRevision,
+        RevisionId.of(startRevision),
         commitMessage,
         creationLog);
   }
