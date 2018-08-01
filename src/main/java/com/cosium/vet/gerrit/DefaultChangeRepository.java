@@ -24,16 +24,19 @@ class DefaultChangeRepository implements ChangeRepository {
 
   private final GerritConfigurationRepository configurationRepository;
   private final ChangeFactory changeFactory;
+  private final AlterableChangeFactory alterableChangeFactory;
   private final PatchsetRepository patchsetRepository;
   private final GitClient git;
 
   DefaultChangeRepository(
       GerritConfigurationRepository configurationRepository,
       ChangeFactory changeFactory,
+      AlterableChangeFactory alterableChangeFactory,
       PatchsetRepository patchsetRepository,
       GitClient git) {
     this.configurationRepository = requireNonNull(configurationRepository);
     this.changeFactory = requireNonNull(changeFactory);
+    this.alterableChangeFactory = requireNonNull(alterableChangeFactory);
     this.patchsetRepository = requireNonNull(patchsetRepository);
     this.git = requireNonNull(git);
   }
@@ -50,7 +53,7 @@ class DefaultChangeRepository implements ChangeRepository {
 
   /** @return The current change */
   @Override
-  public Optional<Change> getTrackedChange() {
+  public Optional<AlterableChange> getTrackedChange() {
     GerritConfiguration gerritConfiguration = configurationRepository.read();
 
     ChangeNumericId changeNumericId = gerritConfiguration.getTrackedChangeNumericId().orElse(null);
@@ -64,22 +67,22 @@ class DefaultChangeRepository implements ChangeRepository {
       return Optional.empty();
     }
 
-    return Optional.of(changeFactory.build(changeTargetBranch, changeNumericId));
+    return Optional.of(alterableChangeFactory.build(changeTargetBranch, changeNumericId));
   }
 
   @Override
-  public Change trackChange(ChangeNumericId numericId, BranchShortName targetBranch) {
+  public AlterableChange trackChange(ChangeNumericId numericId, BranchShortName targetBranch) {
     LOG.debug("Enabling change for numeric id {}", numericId);
     return configurationRepository.readAndWrite(
         conf -> {
           conf.setTrackedChangeNumericId(numericId);
           conf.setTrackedChangeTargetBranch(targetBranch);
-          return changeFactory.build(targetBranch, numericId);
+          return alterableChangeFactory.build(targetBranch, numericId);
         });
   }
 
   @Override
-  public Change checkoutAndTrackChange(
+  public AlterableChange checkoutAndTrackChange(
       ChangeCheckoutBranchName checkoutBranch,
       ChangeNumericId numericId,
       BranchShortName targetBranch) {
@@ -96,19 +99,19 @@ class DefaultChangeRepository implements ChangeRepository {
 
   @Override
   public CreatedChange createAndTrackChange(
-          ChangeParent parent, BranchShortName targetBranch, PatchsetOptions firstPatchsetOptions) {
+      ChangeParent parent, BranchShortName targetBranch, PatchsetOptions firstPatchsetOptions) {
     CreatedPatchset patch =
         patchsetRepository.createChangeFirstPatchset(parent, targetBranch, firstPatchsetOptions);
-    Change change = trackChange(patch.getChangeNumericId(), targetBranch);
+    AlterableChange change = trackChange(patch.getChangeNumericId(), targetBranch);
     return new DefaultCreatedChange(change, patch.getCreationLog());
   }
 
   @Override
   public CreatedChange createChange(
-          ChangeParent parent, BranchShortName targetBranch, PatchsetOptions firstPatchsetOptions) {
+      ChangeParent parent, BranchShortName targetBranch, PatchsetOptions firstPatchsetOptions) {
     CreatedPatchset patch =
         patchsetRepository.createChangeFirstPatchset(parent, targetBranch, firstPatchsetOptions);
-    Change change = changeFactory.build(targetBranch, patch.getChangeNumericId());
+    AlterableChange change = alterableChangeFactory.build(targetBranch, patch.getChangeNumericId());
     return new DefaultCreatedChange(change, patch.getCreationLog());
   }
 
@@ -125,12 +128,20 @@ class DefaultChangeRepository implements ChangeRepository {
     return patchsetRepository.pullLatestPatchset(change.getNumericId());
   }
 
+  @Override
+  public Optional<Change> findChange(ChangeNumericId numericId) {
+    if (!exists(numericId)) {
+      return Optional.empty();
+    }
+    return Optional.of(changeFactory.build(numericId));
+  }
+
   private class DefaultCreatedChange implements CreatedChange {
 
-    private final Change change;
+    private final AlterableChange change;
     private final String creationLog;
 
-    private DefaultCreatedChange(Change change, String creationLog) {
+    private DefaultCreatedChange(AlterableChange change, String creationLog) {
       this.change = requireNonNull(change);
       this.creationLog = requireNonNull(creationLog);
     }
@@ -143,6 +154,11 @@ class DefaultChangeRepository implements ChangeRepository {
     @Override
     public ChangeNumericId getNumericId() {
       return change.getNumericId();
+    }
+
+    @Override
+    public RevisionId fetchRevision() {
+      return change.fetchRevision();
     }
 
     @Override

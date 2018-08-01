@@ -60,6 +60,7 @@ public class Vet {
   private final GitClient git;
   private final ChangeParentBranchFactory changeParentBranchFactory;
   private final ChangeRepositoryFactory changeRepositoryFactory;
+  private final ChangeParentChangeFactory changeParentChangeFactory;
 
   private final NewCommandFactory newCommandFactory;
   private final CheckoutCommandFactory checkoutCommandFactory;
@@ -114,6 +115,7 @@ public class Vet {
     git = gitProvider.build();
     changeParentBranchFactory = new ChangeParentBranch.Factory(git);
     changeRepositoryFactory = new DefaultChangeRepositoryFactory(gitProvider, git);
+    changeParentChangeFactory = new ChangeParentChange.Factory(changeRepositoryFactory);
 
     this.newCommandFactory =
         new NewCommand.Factory(
@@ -160,7 +162,7 @@ public class Vet {
     commandParser.parse(args).execute();
   }
 
-  public Optional<Change> getTrackedChange() {
+  public Optional<AlterableChange> getTrackedChange() {
     return changeRepositoryFactory.build().getTrackedChange();
   }
 

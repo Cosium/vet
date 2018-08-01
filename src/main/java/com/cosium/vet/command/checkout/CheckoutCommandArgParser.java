@@ -81,7 +81,7 @@ public class CheckoutCommandArgParser extends AbstractVetAdvancedCommandArgParse
 
   @Override
   public boolean canParse(String... args) {
-    return Arrays.stream(args).anyMatch(COMMAND_NAME::equals);
+    return Arrays.asList(args).contains(COMMAND_NAME);
   }
 
   @Override

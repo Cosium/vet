@@ -5,11 +5,8 @@ package com.cosium.vet.gerrit;
  *
  * @author Reda.Housni-Alaoui
  */
-public interface CreatedChange extends Change {
+public interface CreatedChange extends AlterableChange {
 
-    /**
-     * @return The log produced while creating the change
-     */
-    String getCreationLog();
-
+  /** @return The log produced while creating the change */
+  String getCreationLog();
 }

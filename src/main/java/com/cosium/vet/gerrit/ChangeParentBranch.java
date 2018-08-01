@@ -8,7 +8,9 @@ import com.cosium.vet.git.RevisionId;
 import static java.util.Objects.requireNonNull;
 
 /**
- * Created on 01/08/18.
+ * Used when the parent of a change is a branch.
+ *
+ * <p>Created on 01/08/18.
  *
  * @author Reda.Housni-Alaoui
  */

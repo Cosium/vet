@@ -38,7 +38,7 @@ public class DefaultPatchsetRepository implements PatchsetRepository {
 
   @Override
   public CreatedPatchset createChangeFirstPatchset(
-          ChangeParent parent, BranchShortName targetBranch, PatchsetOptions options) {
+      ChangeParent parent, BranchShortName targetBranch, PatchsetOptions options) {
     String startRevision = parent.getRevision().toString();
 
     String endRevision = git.getTree();
@@ -61,7 +61,12 @@ public class DefaultPatchsetRepository implements PatchsetRepository {
         ChangeNumericId.parseFromPushToRefForOutput(pushUrl, creationLog);
 
     return new DefaultCreatedPatchset(
-        1, changeNumericId, RevisionId.of(startRevision), commitMessage, creationLog);
+        1,
+        changeNumericId,
+        RevisionId.of(commitId),
+        RevisionId.of(startRevision),
+        commitMessage,
+        creationLog);
   }
 
   @Override
@@ -94,7 +99,12 @@ public class DefaultPatchsetRepository implements PatchsetRepository {
     String creationLog =
         git.push(pushUrl.toString(), options.buildGitPushTarget(commitId, targetBranch));
     return new DefaultCreatedPatchset(
-        latestPatchset.getNumber(), numericId, startRevision, commitMessage, creationLog);
+        latestPatchset.getNumber(),
+        numericId,
+        RevisionId.of(commitId),
+        startRevision,
+        commitMessage,
+        creationLog);
   }
 
   @Override
@@ -170,6 +180,7 @@ public class DefaultPatchsetRepository implements PatchsetRepository {
     return new DefaultPatchset(
         patchsetRef.getNumber(),
         patchsetRef.getChangeNumericId(),
+        revisionId,
         git.getParent(revisionId),
         git.getCommitMessage(revisionId));
   }
@@ -178,15 +189,18 @@ public class DefaultPatchsetRepository implements PatchsetRepository {
     private final int number;
     private final ChangeNumericId changeNumericId;
     private final CommitMessage commitMessage;
+    private final RevisionId revision;
     private final RevisionId parent;
 
     private DefaultPatchset(
         int number,
         ChangeNumericId changeNumericId,
+        RevisionId revision,
         RevisionId parent,
         CommitMessage commitMessage) {
       this.number = number;
       this.changeNumericId = requireNonNull(changeNumericId);
+      this.revision = requireNonNull(revision);
       this.parent = requireNonNull(parent);
       this.commitMessage = requireNonNull(commitMessage);
     }
@@ -210,6 +224,11 @@ public class DefaultPatchsetRepository implements PatchsetRepository {
     public RevisionId getParent() {
       return parent;
     }
+
+    @Override
+    public RevisionId getRevision() {
+      return revision;
+    }
   }
 
   private class DefaultCreatedPatchset extends DefaultPatchset implements CreatedPatchset {
@@ -218,10 +237,11 @@ public class DefaultPatchsetRepository implements PatchsetRepository {
     private DefaultCreatedPatchset(
         int number,
         ChangeNumericId changeNumericId,
+        RevisionId revision,
         RevisionId parent,
         CommitMessage commitMessage,
         String creationLog) {
-      super(number, changeNumericId, parent, commitMessage);
+      super(number, changeNumericId, revision, parent, commitMessage);
       this.creationLog = requireNonNull(creationLog);
     }
 

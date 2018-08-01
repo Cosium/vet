@@ -1,6 +1,6 @@
 package com.cosium.vet.command.push;
 
-import com.cosium.vet.gerrit.Change;
+import com.cosium.vet.gerrit.AlterableChange;
 import com.cosium.vet.gerrit.ChangeRepository;
 import com.cosium.vet.gerrit.ChangeRepositoryFactory;
 import com.cosium.vet.runtime.UserOutput;
@@ -28,7 +28,7 @@ public class PushCommandUnitTest {
     ChangeRepositoryFactory changeRepositoryFactory = mock(ChangeRepositoryFactory.class);
     changeRepository = mock(ChangeRepository.class);
     when(changeRepositoryFactory.build()).thenReturn(changeRepository);
-    Change change = mock(Change.class);
+    AlterableChange change = mock(AlterableChange.class);
     when(changeRepository.getTrackedChange()).thenReturn(Optional.of(change));
 
     userOutput = mock(UserOutput.class);

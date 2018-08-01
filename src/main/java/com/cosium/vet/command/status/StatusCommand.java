@@ -1,7 +1,7 @@
 package com.cosium.vet.command.status;
 
 import com.cosium.vet.command.VetCommand;
-import com.cosium.vet.gerrit.Change;
+import com.cosium.vet.gerrit.AlterableChange;
 import com.cosium.vet.gerrit.ChangeRepository;
 import com.cosium.vet.gerrit.ChangeRepositoryFactory;
 import com.cosium.vet.git.GitClient;
@@ -30,7 +30,7 @@ public class StatusCommand implements VetCommand<Void> {
 
   @Override
   public Void execute() {
-    Optional<Change> change = changeRepository.getTrackedChange();
+    Optional<AlterableChange> change = changeRepository.getTrackedChange();
     userOutput.display(git.status());
     if (change.isPresent()) {
       userOutput.display("Tracking change " + change.get());

@@ -25,7 +25,8 @@ public class DefaultGerritChangeRepositoryUnitTest {
   private AtomicReference<GerritConfiguration> lastSavedConfiguration;
 
   private GerritConfiguration gerritConfiguration;
-  private ChangeFactory gerritChangeFactory;
+  private ChangeFactory changeFactory;
+  private AlterableChangeFactory alterableChangeFactory;
   private PatchsetRepository patchSetRepository;
   private GitClient git;
 
@@ -48,12 +49,17 @@ public class DefaultGerritChangeRepositoryUnitTest {
               return res;
             });
 
-    gerritChangeFactory = mock(ChangeFactory.class);
+    changeFactory = mock(ChangeFactory.class);
+    alterableChangeFactory = mock(AlterableChangeFactory.class);
     patchSetRepository = mock(PatchsetRepository.class);
     git = mock(GitClient.class);
     tested =
         new DefaultChangeRepository(
-            configurationRepository, gerritChangeFactory, patchSetRepository, git);
+            configurationRepository,
+            changeFactory,
+            alterableChangeFactory,
+            patchSetRepository,
+            git);
   }
 
   @Test
@@ -69,8 +75,8 @@ public class DefaultGerritChangeRepositoryUnitTest {
     when(gerritConfiguration.getTrackedChangeNumericId()).thenReturn(Optional.of(_1234));
     when(gerritConfiguration.getTrackedChangeTargetBranch()).thenReturn(Optional.of(feature));
 
-    Change gerritChange = mock(Change.class);
-    when(gerritChangeFactory.build(feature, _1234)).thenReturn(gerritChange);
+    AlterableChange gerritChange = mock(AlterableChange.class);
+    when(alterableChangeFactory.build(feature, _1234)).thenReturn(gerritChange);
 
     assertThat(tested.getTrackedChange()).contains(gerritChange);
   }
@@ -92,5 +98,21 @@ public class DefaultGerritChangeRepositoryUnitTest {
 
     verify(gerritConfiguration).setTrackedChangeTargetBranch(null);
     verify(gerritConfiguration).setTrackedChangeNumericId(null);
+  }
+
+  @Test
+  public void GIVEN_no_patchset_for_change_1234_WHEN_findChange_1234_THEN_it_returns_empty() {
+    assertThat(tested.findChange(ChangeNumericId.of(1234))).isEmpty();
+  }
+
+  @Test
+  public void GIVEN_existing_patchset_for_change_1234_WHEN_findchange_1234_THEN_it_returns_it() {
+    Change expectedChange = mock(Change.class);
+    ChangeNumericId numericId = ChangeNumericId.of(1234);
+    when(patchSetRepository.findLatestPatchset(numericId))
+        .thenReturn(Optional.of(mock(Patchset.class)));
+    when(changeFactory.build(numericId)).thenReturn(expectedChange);
+
+    assertThat(tested.findChange(numericId)).contains(expectedChange);
   }
 }

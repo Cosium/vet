@@ -45,7 +45,7 @@ public class PushCommand implements VetCommand<Void> {
 
   @Override
   public Void execute() {
-    Change change =
+    AlterableChange change =
         changeRepository
             .getTrackedChange()
             .orElseThrow(

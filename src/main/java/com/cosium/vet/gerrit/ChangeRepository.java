@@ -15,14 +15,14 @@ public interface ChangeRepository {
   void untrack();
 
   /** @return The tracked change if any */
-  Optional<Change> getTrackedChange();
+  Optional<AlterableChange> getTrackedChange();
 
   /**
    * @param numericId The change numeric ID
    * @param branchShortName The target branch short name
    * @return The tracked change
    */
-  Change trackChange(ChangeNumericId numericId, BranchShortName branchShortName);
+  AlterableChange trackChange(ChangeNumericId numericId, BranchShortName branchShortName);
 
   /**
    * @param checkoutBranch The branch that will track the change
@@ -30,7 +30,7 @@ public interface ChangeRepository {
    * @param targetBranch The target branch short name
    * @return The tracked change
    */
-  Change checkoutAndTrackChange(
+  AlterableChange checkoutAndTrackChange(
       ChangeCheckoutBranchName checkoutBranch,
       ChangeNumericId numericId,
       BranchShortName targetBranch);
@@ -44,7 +44,7 @@ public interface ChangeRepository {
    * @return The new tracked change
    */
   CreatedChange createAndTrackChange(
-          ChangeParent parent, BranchShortName targetBranch, PatchsetOptions firstPatchsetOptions);
+      ChangeParent parent, BranchShortName targetBranch, PatchsetOptions firstPatchsetOptions);
 
   /**
    * Creates a new change
@@ -55,7 +55,7 @@ public interface ChangeRepository {
    * @return The new tracked change
    */
   CreatedChange createChange(
-          ChangeParent parent, BranchShortName targetBranch, PatchsetOptions firstPatchsetOptions);
+      ChangeParent parent, BranchShortName targetBranch, PatchsetOptions firstPatchsetOptions);
 
   /**
    * @param numericId The change numeric id
@@ -69,4 +69,10 @@ public interface ChangeRepository {
    * @return The command output
    */
   String pull();
+
+  /**
+   * @param numericId The numeric id of the change
+   * @return The found change
+   */
+  Optional<Change> findChange(ChangeNumericId numericId);
 }

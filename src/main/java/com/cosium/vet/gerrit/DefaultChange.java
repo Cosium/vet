@@ -1,30 +1,24 @@
 package com.cosium.vet.gerrit;
 
-import com.cosium.vet.git.BranchShortName;
 import com.cosium.vet.git.RevisionId;
 
 import static java.util.Objects.requireNonNull;
 
 /**
- * Created on 21/02/18.
+ * Created on 01/08/18.
  *
  * @author Reda.Housni-Alaoui
  */
-class DefaultChange implements Change {
+public class DefaultChange implements Change {
 
   private final PatchsetRepository patchsetRepository;
   private final PushUrl pushUrl;
-  private final BranchShortName targetBranch;
   private final ChangeNumericId numericId;
 
   private DefaultChange(
-      PatchsetRepository patchsetRepository,
-      PushUrl pushUrl,
-      BranchShortName targetBranch,
-      ChangeNumericId numericId) {
+      PatchsetRepository patchsetRepository, PushUrl pushUrl, ChangeNumericId numericId) {
     this.patchsetRepository = requireNonNull(patchsetRepository);
     this.pushUrl = requireNonNull(pushUrl);
-    this.targetBranch = requireNonNull(targetBranch);
     this.numericId = requireNonNull(numericId);
   }
 
@@ -34,13 +28,17 @@ class DefaultChange implements Change {
   }
 
   @Override
-  public RevisionId fetchParent() {
-    return patchsetRepository.findPatchset(numericId, 1).getParent();
+  public RevisionId fetchRevision() {
+    return patchsetRepository
+        .findLatestPatchset(numericId)
+        .map(Patchset::getRevision)
+        .orElseThrow(
+            () -> new RuntimeException("Could not find latest patchset of change " + numericId));
   }
 
   @Override
-  public String createPatchset(PatchsetOptions options) {
-    return patchsetRepository.createPatchset(targetBranch, numericId, options).getCreationLog();
+  public RevisionId fetchParent() {
+    return patchsetRepository.findPatchset(numericId, 1).getParent();
   }
 
   @Override
@@ -53,12 +51,7 @@ class DefaultChange implements Change {
     return getWebUrl() + " ";
   }
 
-  /**
-   * Created on 08/05/18.
-   *
-   * @author Reda.Housni-Alaoui
-   */
-  static class Factory implements ChangeFactory {
+  public static class Factory implements ChangeFactory {
 
     private final PatchsetRepository patchsetRepository;
     private final PushUrl pushUrl;
@@ -69,8 +62,8 @@ class DefaultChange implements Change {
     }
 
     @Override
-    public Change build(BranchShortName targetBranch, ChangeNumericId changeNumericId) {
-      return new DefaultChange(patchsetRepository, pushUrl, targetBranch, changeNumericId);
+    public Change build(ChangeNumericId changeNumericId) {
+      return new DefaultChange(patchsetRepository, pushUrl, changeNumericId);
     }
   }
 }
