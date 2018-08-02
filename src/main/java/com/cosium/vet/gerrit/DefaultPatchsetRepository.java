@@ -39,14 +39,9 @@ public class DefaultPatchsetRepository implements PatchsetRepository {
   @Override
   public CreatedPatchset createChangeFirstPatchset(
       BranchShortName targetBranch, PatchsetOptions options) {
-    RemoteName remote =
-        git.getRemote(targetBranch)
-            .orElseThrow(
-                () ->
-                    new RuntimeException(
-                        String.format("No remote found for branch '%s'", targetBranch)));
-    String startRevision =
-        git.getMostRecentCommonCommit(String.format("%s/%s", remote, targetBranch));
+
+    RevisionId startRevision =
+        getMostRecentCommonCommitBetweenCurrentBranchAndRemoteOf(targetBranch);
 
     String endRevision = git.getTree();
     LOG.debug(
@@ -56,7 +51,7 @@ public class DefaultPatchsetRepository implements PatchsetRepository {
     CommitMessage commitMessage = commitMessageFactory.build();
 
     LOG.debug("Creating commit tree with message '{}'", commitMessage);
-    String commitId = git.commitTree(endRevision, startRevision, commitMessage);
+    String commitId = git.commitTree(endRevision, startRevision.toString(), commitMessage);
     LOG.debug("Commit tree id is '{}'", commitId);
 
     LOG.debug("Pushing '{}' to '{}', with options '{}'", commitId, targetBranch, options);
@@ -68,27 +63,15 @@ public class DefaultPatchsetRepository implements PatchsetRepository {
         ChangeNumericId.parseFromPushToRefForOutput(pushUrl, creationLog);
 
     return new DefaultCreatedPatchset(
-        1,
-        changeNumericId,
-        RevisionId.of(commitId),
-        RevisionId.of(startRevision),
-        commitMessage,
-        creationLog);
+        1, changeNumericId, RevisionId.of(commitId), startRevision, commitMessage, creationLog);
   }
 
   @Override
   public CreatedPatchset createPatchset(
       BranchShortName targetBranch, ChangeNumericId numericId, PatchsetOptions options) {
-    requireNonNull(numericId);
 
-    RemoteName remote =
-        git.getRemote(targetBranch)
-            .orElseThrow(
-                () ->
-                    new RuntimeException(
-                        String.format("No remote found for branch '%s'", targetBranch)));
-    String startRevision =
-        git.getMostRecentCommonCommit(String.format("%s/%s", remote, targetBranch));
+    RevisionId startRevision =
+        getMostRecentCommonCommitBetweenCurrentBranchAndRemoteOf(targetBranch);
 
     String endRevision = git.getTree();
     LOG.debug(
@@ -98,13 +81,13 @@ public class DefaultPatchsetRepository implements PatchsetRepository {
         endRevision);
 
     Patchset latestPatchset =
-            findLatestPatchset(numericId)
-                    .orElseThrow(
-                            () -> new RuntimeException("No patchset found for change numeric id " + numericId));
+        findLatestPatchset(numericId)
+            .orElseThrow(
+                () -> new RuntimeException("No patchset found for change numeric id " + numericId));
     CommitMessage commitMessage = commitMessageFactory.build(latestPatchset);
 
     LOG.debug("Creating commit tree with message '{}'", commitMessage);
-    String commitId = git.commitTree(endRevision, startRevision, commitMessage);
+    String commitId = git.commitTree(endRevision, startRevision.toString(), commitMessage);
     LOG.debug("Commit tree id is '{}'", commitId);
 
     LOG.debug("Pushing '{}' to '{}', with options '{}'", commitId, targetBranch, options);
@@ -115,9 +98,19 @@ public class DefaultPatchsetRepository implements PatchsetRepository {
         latestPatchset.getNumber(),
         numericId,
         RevisionId.of(commitId),
-        RevisionId.of(startRevision),
+        startRevision,
         commitMessage,
         creationLog);
+  }
+
+  private RevisionId getMostRecentCommonCommitBetweenCurrentBranchAndRemoteOf(
+      BranchShortName branch) {
+    RemoteName remote =
+        git.getRemote(branch)
+            .orElseThrow(
+                () ->
+                    new RuntimeException(String.format("No remote found for branch '%s'", branch)));
+    return RevisionId.of(git.getMostRecentCommonCommit(String.format("%s/%s", remote, branch)));
   }
 
   @Override
