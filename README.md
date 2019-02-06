@@ -193,6 +193,10 @@ Tracks an existing change from the current branch
 
 You will need JDK 9+.
 
+Currently with OpenJDK 11 there is a need for a newer version of gradle, which causes issues with the buildscript, and with OpenJDK 10 I came across a certificate issue when the buildscript tried to download the Azul JRE 9 to build the binary.
+
+It works perfectly with Azul JDK 9.0.7
+
 ```xml
 <dependency>
    <groupId>com.cosium.vet</groupId>

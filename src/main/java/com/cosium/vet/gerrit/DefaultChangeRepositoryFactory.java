@@ -10,6 +10,7 @@ import com.cosium.vet.git.RemoteUrl;
 import com.cosium.vet.log.Logger;
 import com.cosium.vet.log.LoggerFactory;
 
+import java.net.URI;
 import java.net.URL;
 
 import static java.util.Objects.requireNonNull;
@@ -42,9 +43,9 @@ public class DefaultChangeRepositoryFactory implements ChangeRepositoryFactory {
     GerritConfigurationRepository configurationRepository = configurationRepositoryFactory.build();
 
     RemoteName remote = RemoteName.ORIGIN;
-    URL remoteUrl =
+    String remoteUrl =
         git.getRemotePushUrl(remote)
-            .map(RemoteUrl::toURL)
+            .map(RemoteUrl::toString)
             .orElseThrow(
                 () ->
                     new RuntimeException(
@@ -52,7 +53,7 @@ public class DefaultChangeRepositoryFactory implements ChangeRepositoryFactory {
                             "Could not find url of remote '%s'. Please verify that you are in a valid git repository.",
                             remote)));
 
-    PushUrl pushUrl = PushUrl.of(remoteUrl.toString());
+    PushUrl pushUrl = PushUrl.of(remoteUrl);
     LOG.debug("Gerrit push url is {}", pushUrl);
     ProjectName projectName = pushUrl.parseProjectName();
     LOG.debug("Gerrit project is '{}'", projectName);
