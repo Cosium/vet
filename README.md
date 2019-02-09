@@ -7,6 +7,9 @@ Vet allows to review code on Gerrit using a pull-request workflow similar to Git
 
 ## CLI installation
 
+Vet CLI is self sufficient.
+There is no need to deploy a separate java runtime to make it work.
+
 ### Linux - Debian based distributions
 
 ```
