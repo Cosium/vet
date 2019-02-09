@@ -12,8 +12,8 @@ There is no need to deploy a separate java runtime to make it work.
 
 ### Linux - Debian based distributions
 
-```
-wget https://github.com/Cosium/vet/releases/download/3.19/vet-linux_x64.deb.zip -O vet.deb.zip \
+```bash
+$ wget https://github.com/Cosium/vet/releases/download/3.19/vet-linux_x64.deb.zip -O vet.deb.zip \
 && unzip vet.deb.zip \
 && sudo dpkg -i vet.deb \
 && source /etc/bash_completion.d/vet_completion.sh \
@@ -22,14 +22,14 @@ wget https://github.com/Cosium/vet/releases/download/3.19/vet-linux_x64.deb.zip 
 
 ### Mac OSX - [Homebrew](https://brew.sh/)
 
-```
-brew tap cosium/vet && brew install vet
+```bash
+$ brew tap cosium/vet && brew install vet
 ```
 
 ### Windows - [Chocolatey](https://chocolatey.org/)
 
-```
-choco install gerrit-vet
+```posh
+$ choco install gerrit-vet
 ```
 
 ### Manual
@@ -212,8 +212,8 @@ You will need to have Docker installed to build the project.
 
 Vet uses Java 9 Jlink to generate standalone binaries for Linux, MacOSX and Windows.
 
-```
-./gradlew binaries
+```bash
+$ ./gradlew binaries
 ```
 
 Generated binaries can be found in `build/binaries`
