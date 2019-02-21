@@ -59,8 +59,9 @@ public class DefaultChangeRepositoryFactory implements ChangeRepositoryFactory {
 
     PatchsetCommitMessageFactory commitMessageFactory =
         new DefaultPatchsetCommitMessageFactory(git);
+    TargetBranch.Factory targetBranchFactory = new TargetBranch.Factory(git);
     PatchsetRepository patchSetRepository =
-        new DefaultPatchsetRepository(git, pushUrl, commitMessageFactory);
+        new DefaultPatchsetRepository(git, pushUrl, commitMessageFactory, targetBranchFactory);
 
     ChangeFactory changeFactory = new DefaultChange.Factory(patchSetRepository, pushUrl);
     AlterableChangeFactory alterableChangeFactory =

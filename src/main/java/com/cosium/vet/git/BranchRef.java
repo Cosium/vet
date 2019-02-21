@@ -15,10 +15,8 @@ public class BranchRef {
   private final BranchRefName branchRefName;
 
   public BranchRef(RevisionId revisionId, BranchRefName branchRefName) {
-    requireNonNull(revisionId);
-    requireNonNull(branchRefName);
-    this.revisionId = revisionId;
-    this.branchRefName = branchRefName;
+    this.revisionId = requireNonNull(revisionId);
+    this.branchRefName = requireNonNull(branchRefName);
   }
 
   public RevisionId getRevisionId() {

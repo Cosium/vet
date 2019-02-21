@@ -7,6 +7,7 @@ import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -103,10 +104,28 @@ class BasicGitClient implements GitClient {
   }
 
   @Override
-  public RevisionId getParent(RevisionId revisionId) {
-    return RevisionId.of(
+  public RevisionId getHeadRevisionId() {
+    return RevisionId.of(commandRunner.run(repositoryDirectory, GIT, "rev-parse", "HEAD"));
+  }
+
+  @Override
+  public RevisionId getFirstParent(RevisionId revisionId) {
+    return getParents(revisionId).stream()
+        .findFirst()
+        .orElseThrow(() -> new RuntimeException("No parent found for revision " + revisionId));
+  }
+
+  @Override
+  public List<RevisionId> getParents(RevisionId revisionId) {
+    String spaceSeparatedParents =
         commandRunner.run(
-            repositoryDirectory, GIT, "log", "--pretty=%P", "-n", "1", revisionId.toString()));
+            repositoryDirectory, GIT, "log", "--pretty=%P", "-n", "1", revisionId.toString());
+    if (spaceSeparatedParents == null) {
+      return Collections.emptyList();
+    }
+    return Arrays.stream(spaceSeparatedParents.split("\\s"))
+        .map(RevisionId::of)
+        .collect(Collectors.toList());
   }
 
   @Override
@@ -164,5 +183,20 @@ class BasicGitClient implements GitClient {
   @Override
   public String resetKeep(RevisionId revisionId) {
     return commandRunner.run(repositoryDirectory, GIT, "reset", "--keep", revisionId.toString());
+  }
+
+  @Override
+  public List<BranchShortName> listBranchesContainingCommit(RevisionId revisionId) {
+    String oneBranchPerLineString =
+        commandRunner.run(
+            repositoryDirectory,
+            GIT,
+            "branch",
+            "--format=%(refname:short)",
+            "--contains",
+            revisionId.toString());
+    return Arrays.stream(oneBranchPerLineString.split("\n"))
+        .map(BranchShortName::of)
+        .collect(Collectors.toList());
   }
 }

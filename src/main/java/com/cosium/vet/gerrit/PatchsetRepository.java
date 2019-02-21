@@ -12,20 +12,21 @@ import java.util.Optional;
 public interface PatchsetRepository {
 
   /**
-   * @param targetBranch The target of the change
+   * @param targetBranchShortName The target of the change
    * @param options The options for the push.
    * @return The first patchset of a new change
    */
-  CreatedPatchset createChangeFirstPatchset(BranchShortName targetBranch, PatchsetOptions options);
+  CreatedPatchset createChangeFirstPatchset(
+      BranchShortName targetBranchShortName, PatchsetOptions options);
 
   /**
-   * @param targetBranch The target of the change
+   * @param targetBranchShortName The target of the change
    * @param numericId The numeric id of the change. Can be null.
    * @param options The options for the push.
    * @return The created patchset of an existing change
    */
   CreatedPatchset createPatchset(
-      BranchShortName targetBranch, ChangeNumericId numericId, PatchsetOptions options);
+      BranchShortName targetBranchShortName, ChangeNumericId numericId, PatchsetOptions options);
 
   /**
    * @param changeNumericId The change numeric id

@@ -4,6 +4,7 @@ import com.cosium.vet.runtime.CommandRunner;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -106,5 +107,27 @@ public class GitClientTest {
   @Test
   public void testGetCommitMessage() {
     assertThat(tested.getCommitMessage(RevisionId.of("HEAD"))).isNotNull();
+  }
+
+  @Test
+  public void testGetHeadRevisionId() {
+    assertThat(tested.getHeadRevisionId()).isNotNull();
+  }
+
+  @Test
+  public void testListBranchesContainingCommit() {
+    List<BranchShortName> branchShortNames =
+        tested.listBranchesContainingCommit(RevisionId.of("HEAD"));
+    assertThat(branchShortNames).hasSize(1).contains(BranchShortName.of("master"));
+  }
+
+  @Test
+  public void testGetFirstParent() throws IOException {
+    Path barPath = repo.resolve("bar.txt");
+    Files.createFile(barPath);
+    runner.run(repo, "git", "add", ".");
+    runner.run(repo, "git", "commit", "-am", "Add bar");
+
+    assertThat(tested.getFirstParent(RevisionId.of("HEAD"))).isNotNull();
   }
 }

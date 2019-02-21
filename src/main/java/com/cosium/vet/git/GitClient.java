@@ -51,11 +51,20 @@ public interface GitClient {
    */
   CommitMessage getCommitMessage(RevisionId revisionId);
 
+  /** @return The head revision id */
+  RevisionId getHeadRevisionId();
+
   /**
-   * @param revisionId The child revision id
-   * @return The parent of the provided revision id
+   * @param revisionId The revision id to look parent for
+   * @return The first parent of the provided revision id
    */
-  RevisionId getParent(RevisionId revisionId);
+  RevisionId getFirstParent(RevisionId revisionId);
+
+  /**
+   * @param revisionId The revision id to look parents for
+   * @return The parents of the provided revision id
+   */
+  List<RevisionId> getParents(RevisionId revisionId);
 
   /**
    * Push the refspec to remote
@@ -111,4 +120,10 @@ public interface GitClient {
    * @return The command output
    */
   String resetKeep(RevisionId revisionId);
+
+  /**
+   * @param revisionId The commit revision id
+   * @return The branches containing the commit having the provided revision id
+   */
+  List<BranchShortName> listBranchesContainingCommit(RevisionId revisionId);
 }

@@ -16,7 +16,7 @@ import static org.mockito.Mockito.when;
  *
  * @author Reda.Housni-Alaoui
  */
-public class DefaultGitClientTest {
+public class BasicGitClientTest {
 
   private static final RemoteUrl REMOTE_URL = RemoteUrl.of("https://foo.com/test-project");
   private static final RemoteUrl REMOTE_PUSH_URL =

@@ -1,29 +1,35 @@
 package com.cosium.vet.gerrit;
 
-import com.cosium.vet.git.*;
+import com.cosium.vet.git.BranchRef;
+import com.cosium.vet.git.BranchRefName;
+import com.cosium.vet.git.BranchShortName;
+import com.cosium.vet.git.CommitMessage;
+import com.cosium.vet.git.GitClient;
+import com.cosium.vet.git.RevisionId;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.startsWith;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created on 27/02/18.
  *
  * @author Reda.Housni-Alaoui
  */
-public class GerritPatchsetRepositoryUnitTest {
+public class DefaultPatchsetRepositoryUnitTest {
 
   private static final ChangeNumericId _1081 = ChangeNumericId.of(1081);
 
-  private static final BranchShortName BAR_BRANCH = BranchShortName.of("bar");
+  private static final BranchShortName TARGET_BRANCH = BranchShortName.of("bar");
 
   private static final BranchRef HEAD =
       new BranchRef(
@@ -55,22 +61,28 @@ public class GerritPatchsetRepositoryUnitTest {
   private static final PushUrl PUSH_URL = PushUrl.of("https://foo.bar/baz");
 
   private GitClient git;
-  private PatchsetCommitMessageFactory patchSetCommitMessageFactory;
   private DefaultPatchsetRepository tested;
 
   @Before
   public void before() {
     git = mock(GitClient.class);
-    when(git.getParent(any())).thenReturn(RevisionId.of("parent"));
-    when(git.getRemote(BAR_BRANCH)).thenReturn(Optional.of(RemoteName.ORIGIN));
+    when(git.getFirstParent(any())).thenReturn(RevisionId.of("parent"));
     when(git.commitTree(any(), any(), any())).thenReturn("commit");
-    when(git.getMostRecentCommonCommit(any())).thenReturn("most-recent-commit");
     when(git.push(any(), any())).thenReturn("Push log " + PUSH_URL + "/1234");
 
-    patchSetCommitMessageFactory = mock(PatchsetCommitMessageFactory.class);
+    PatchsetCommitMessageFactory patchSetCommitMessageFactory =
+        mock(PatchsetCommitMessageFactory.class);
     when(patchSetCommitMessageFactory.build(any())).thenReturn(CommitMessage.of("Hello world"));
     when(patchSetCommitMessageFactory.build()).thenReturn(CommitMessage.of("Hello world"));
-    tested = new DefaultPatchsetRepository(git, PUSH_URL, patchSetCommitMessageFactory);
+
+    TargetBranch.Factory branchFactory = mock(TargetBranch.Factory.class);
+    TargetBranch targetBranch = mock(TargetBranch.class);
+    when(branchFactory.build(TARGET_BRANCH)).thenReturn(targetBranch);
+    when(targetBranch.computeChangeStartRevision())
+        .thenReturn(RevisionId.of("most-recent-commit"));
+
+    tested =
+        new DefaultPatchsetRepository(git, PUSH_URL, patchSetCommitMessageFactory, branchFactory);
   }
 
   @Test
@@ -138,7 +150,7 @@ public class GerritPatchsetRepositoryUnitTest {
         .thenReturn(CommitMessage.of("Foo man Change-Id: I1111"));
 
     when(git.getTree()).thenReturn("end");
-    tested.createPatchset(BAR_BRANCH, _1081, PatchsetOptions.DEFAULT);
+    tested.createPatchset(TARGET_BRANCH, _1081, PatchsetOptions.DEFAULT);
     verify(git).commitTree(eq("end"), any(), any());
   }
 
@@ -150,8 +162,8 @@ public class GerritPatchsetRepositoryUnitTest {
         .thenReturn(CommitMessage.of("Foo man Change-Id: I1111"));
 
     when(git.commitTree(any(), any(), any())).thenReturn("foo");
-    tested.createPatchset(BAR_BRANCH, _1081, PatchsetOptions.DEFAULT);
-    verify(git).push(any(), startsWith("foo:refs/for/" + BAR_BRANCH));
+    tested.createPatchset(TARGET_BRANCH, _1081, PatchsetOptions.DEFAULT);
+    verify(git).push(any(), startsWith("foo:refs/for/" + TARGET_BRANCH));
   }
 
   @Test
@@ -160,14 +172,14 @@ public class GerritPatchsetRepositoryUnitTest {
     when(git.getCommitMessage(_1081_2.getRevisionId()))
         .thenReturn(CommitMessage.of("Foo man Change-Id: I1111"));
 
-    tested.createPatchset(BAR_BRANCH, _1081, PatchsetOptions.DEFAULT);
+    tested.createPatchset(TARGET_BRANCH, _1081, PatchsetOptions.DEFAULT);
     verify(git).push(eq(PUSH_URL.toString()), any());
   }
 
   @Test
   public void
       WHEN_createChangeFirstPatchset_THEN_it_push_a_diff_between_the_target_branch_and_the_tree() {
-    tested.createChangeFirstPatchset(BAR_BRANCH, PatchsetOptions.DEFAULT);
+    tested.createChangeFirstPatchset(TARGET_BRANCH, PatchsetOptions.DEFAULT);
 
     verify(git).push(eq(PUSH_URL.toString()), any());
   }

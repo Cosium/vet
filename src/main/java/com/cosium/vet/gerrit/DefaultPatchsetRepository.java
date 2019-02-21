@@ -1,6 +1,12 @@
 package com.cosium.vet.gerrit;
 
-import com.cosium.vet.git.*;
+import com.cosium.vet.git.BranchRef;
+import com.cosium.vet.git.BranchRefName;
+import com.cosium.vet.git.BranchShortName;
+import com.cosium.vet.git.CommitMessage;
+import com.cosium.vet.git.GitClient;
+import com.cosium.vet.git.RemoteName;
+import com.cosium.vet.git.RevisionId;
 import com.cosium.vet.log.Logger;
 import com.cosium.vet.log.LoggerFactory;
 
@@ -28,36 +34,42 @@ public class DefaultPatchsetRepository implements PatchsetRepository {
   private final GitClient git;
   private final PushUrl pushUrl;
   private final PatchsetCommitMessageFactory commitMessageFactory;
+  private final TargetBranch.Factory targetBranchFactory;
 
   DefaultPatchsetRepository(
-      GitClient gitClient, PushUrl pushUrl, PatchsetCommitMessageFactory commitMessageFactory) {
+      GitClient gitClient,
+      PushUrl pushUrl,
+      PatchsetCommitMessageFactory commitMessageFactory,
+      TargetBranch.Factory targetBranchFactory) {
     this.git = requireNonNull(gitClient);
     this.pushUrl = requireNonNull(pushUrl);
     this.commitMessageFactory = requireNonNull(commitMessageFactory);
+    this.targetBranchFactory = requireNonNull(targetBranchFactory);
   }
 
   @Override
   public CreatedPatchset createChangeFirstPatchset(
-      BranchShortName targetBranch, PatchsetOptions options) {
+      BranchShortName targetBranchShortName, PatchsetOptions options) {
+
+    CommitMessage commitMessage = commitMessageFactory.build();
 
     RevisionId startRevision =
-        getMostRecentCommonCommitBetweenCurrentBranchAndRemoteOf(targetBranch);
+        targetBranchFactory.build(targetBranchShortName).computeChangeStartRevision();
 
     String endRevision = git.getTree();
     LOG.debug(
         "Creating first patchset for new change between start revision '{}' and end revision '{}'",
         startRevision,
         endRevision);
-    CommitMessage commitMessage = commitMessageFactory.build();
 
     LOG.debug("Creating commit tree with message '{}'", commitMessage);
     String commitId = git.commitTree(endRevision, startRevision.toString(), commitMessage);
     LOG.debug("Commit tree id is '{}'", commitId);
 
-    LOG.debug("Pushing '{}' to '{}', with options '{}'", commitId, targetBranch, options);
+    LOG.debug("Pushing '{}' to '{}', with options '{}'", commitId, targetBranchShortName, options);
 
     String creationLog =
-        git.push(pushUrl.toString(), options.buildGitPushTarget(commitId, targetBranch));
+        git.push(pushUrl.toString(), options.buildGitPushTarget(commitId, targetBranchShortName));
 
     ChangeNumericId changeNumericId =
         ChangeNumericId.parseFromPushToRefForOutput(pushUrl, creationLog);
@@ -68,10 +80,16 @@ public class DefaultPatchsetRepository implements PatchsetRepository {
 
   @Override
   public CreatedPatchset createPatchset(
-      BranchShortName targetBranch, ChangeNumericId numericId, PatchsetOptions options) {
+      BranchShortName targetBranchShortName, ChangeNumericId numericId, PatchsetOptions options) {
+
+    Patchset latestPatchset =
+        findLatestPatchset(numericId)
+            .orElseThrow(
+                () -> new RuntimeException("No patchset found for change numeric id " + numericId));
+    CommitMessage commitMessage = commitMessageFactory.build(latestPatchset);
 
     RevisionId startRevision =
-        getMostRecentCommonCommitBetweenCurrentBranchAndRemoteOf(targetBranch);
+        targetBranchFactory.build(targetBranchShortName).computeChangeStartRevision();
 
     String endRevision = git.getTree();
     LOG.debug(
@@ -80,20 +98,14 @@ public class DefaultPatchsetRepository implements PatchsetRepository {
         startRevision,
         endRevision);
 
-    Patchset latestPatchset =
-        findLatestPatchset(numericId)
-            .orElseThrow(
-                () -> new RuntimeException("No patchset found for change numeric id " + numericId));
-    CommitMessage commitMessage = commitMessageFactory.build(latestPatchset);
-
     LOG.debug("Creating commit tree with message '{}'", commitMessage);
     String commitId = git.commitTree(endRevision, startRevision.toString(), commitMessage);
     LOG.debug("Commit tree id is '{}'", commitId);
 
-    LOG.debug("Pushing '{}' to '{}', with options '{}'", commitId, targetBranch, options);
+    LOG.debug("Pushing '{}' to '{}', with options '{}'", commitId, targetBranchShortName, options);
 
     String creationLog =
-        git.push(pushUrl.toString(), options.buildGitPushTarget(commitId, targetBranch));
+        git.push(pushUrl.toString(), options.buildGitPushTarget(commitId, targetBranchShortName));
     return new DefaultCreatedPatchset(
         latestPatchset.getNumber(),
         numericId,
@@ -101,16 +113,6 @@ public class DefaultPatchsetRepository implements PatchsetRepository {
         startRevision,
         commitMessage,
         creationLog);
-  }
-
-  private RevisionId getMostRecentCommonCommitBetweenCurrentBranchAndRemoteOf(
-      BranchShortName branch) {
-    RemoteName remote =
-        git.getRemote(branch)
-            .orElseThrow(
-                () ->
-                    new RuntimeException(String.format("No remote found for branch '%s'", branch)));
-    return RevisionId.of(git.getMostRecentCommonCommit(String.format("%s/%s", remote, branch)));
   }
 
   @Override
@@ -156,22 +158,19 @@ public class DefaultPatchsetRepository implements PatchsetRepository {
    * @return The latest revision for the provided change numeric id
    */
   private Optional<PatchsetRef> getLatestPatchsetRef(ChangeNumericId changeNumericId) {
-    return getPatchsetRefs(changeNumericId)
-        .stream()
+    return getPatchsetRefs(changeNumericId).stream()
         .max(Comparator.comparingInt(PatchsetRef::getNumber));
   }
 
   private Optional<PatchsetRef> getPatchsetRef(
       ChangeNumericId changeNumericId, int patchsetNumber) {
-    return getPatchsetRefs(changeNumericId)
-        .stream()
+    return getPatchsetRefs(changeNumericId).stream()
         .filter(patchsetRef -> patchsetRef.getNumber() == patchsetNumber)
         .findFirst();
   }
 
   private List<PatchsetRef> getPatchsetRefs(ChangeNumericId changeNumericId) {
-    return git.listRemoteRefs(RemoteName.of(pushUrl.toString()))
-        .stream()
+    return git.listRemoteRefs(RemoteName.of(pushUrl.toString())).stream()
         .map(PatchsetRefBuilder::new)
         .map(PatchsetRefBuilder::build)
         .filter(Optional::isPresent)
@@ -187,7 +186,7 @@ public class DefaultPatchsetRepository implements PatchsetRepository {
         patchsetRef.getNumber(),
         patchsetRef.getChangeNumericId(),
         revisionId,
-        git.getParent(revisionId),
+        git.getFirstParent(revisionId),
         git.getCommitMessage(revisionId));
   }
 

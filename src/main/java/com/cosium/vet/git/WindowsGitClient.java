@@ -59,8 +59,18 @@ class WindowsGitClient implements GitClient {
   }
 
   @Override
-  public RevisionId getParent(RevisionId revisionId) {
-    return delegate.getParent(revisionId);
+  public RevisionId getHeadRevisionId() {
+    return delegate.getHeadRevisionId();
+  }
+
+  @Override
+  public RevisionId getFirstParent(RevisionId revisionId) {
+    return delegate.getFirstParent(revisionId);
+  }
+
+  @Override
+  public List<RevisionId> getParents(RevisionId revisionId) {
+    return delegate.getParents(revisionId);
   }
 
   @Override
@@ -106,5 +116,10 @@ class WindowsGitClient implements GitClient {
   @Override
   public String resetKeep(RevisionId revisionId) {
     return delegate.resetKeep(revisionId);
+  }
+
+  @Override
+  public List<BranchShortName> listBranchesContainingCommit(RevisionId revisionId) {
+    return delegate.listBranchesContainingCommit(revisionId);
   }
 }
