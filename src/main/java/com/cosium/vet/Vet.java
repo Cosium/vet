@@ -39,7 +39,13 @@ import com.cosium.vet.gerrit.ChangeRepositoryFactory;
 import com.cosium.vet.gerrit.DefaultChangeRepositoryFactory;
 import com.cosium.vet.git.GitClient;
 import com.cosium.vet.git.GitProvider;
-import com.cosium.vet.runtime.*;
+import com.cosium.vet.runtime.BasicCommandRunner;
+import com.cosium.vet.runtime.CommandRunner;
+import com.cosium.vet.runtime.DefaultUserOutput;
+import com.cosium.vet.runtime.InteractiveUserInput;
+import com.cosium.vet.runtime.NonInteractiveUserInput;
+import com.cosium.vet.runtime.UserInput;
+import com.cosium.vet.runtime.UserOutput;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -112,7 +118,7 @@ public class Vet {
       userInput = new NonInteractiveUserInput();
     }
 
-    GitProvider gitProvider = new GitProvider(workingDir, commandRunner);
+    GitProvider gitProvider = new GitProvider(workingDir, commandRunner, interactive);
     git = gitProvider.build();
     changeRepositoryFactory = new DefaultChangeRepositoryFactory(gitProvider, git);
 

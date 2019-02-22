@@ -2,6 +2,7 @@ package com.cosium.vet.git;
 
 import com.cosium.vet.TestCommandRunner;
 import com.cosium.vet.runtime.CommandRunner;
+import com.cosium.vet.runtime.Environments;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -41,17 +42,18 @@ public class GitTestRepository {
 
       CommandRunner runner = new TestCommandRunner();
 
-      runner.run(remoteRepo, "git", "init");
-      runner.run(remoteRepo, "git", "config", "user.email", "you@example.com");
-      runner.run(remoteRepo, "git", "config", "user.name", "Your Name");
+      runner.run(remoteRepo, Environments.empty(), "git", "init");
+      runner.run(
+          remoteRepo, Environments.empty(), "git", "config", "user.email", "you@example.com");
+      runner.run(remoteRepo, Environments.empty(), "git", "config", "user.name", "Your Name");
       Files.createFile(remoteRepo.resolve("foo.txt"));
-      runner.run(remoteRepo, "git", "add", ".");
-      runner.run(remoteRepo, "git", "commit", "-am", "Initial commit");
+      runner.run(remoteRepo, Environments.empty(), "git", "add", ".");
+      runner.run(remoteRepo, Environments.empty(), "git", "commit", "-am", "Initial commit");
 
-      runner.run(workDir, "git", "clone", "./upstream", "downstream");
+      runner.run(workDir, Environments.empty(), "git", "clone", "./upstream", "downstream");
       Path repo = workDir.resolve("downstream");
-      runner.run(repo, "git", "config", "user.email", "you@example.com");
-      runner.run(repo, "git", "config", "user.name", "Your Name");
+      runner.run(repo, Environments.empty(), "git", "config", "user.email", "you@example.com");
+      runner.run(repo, Environments.empty(), "git", "config", "user.name", "Your Name");
 
       return new GitTestRepository(repo, runner);
     }

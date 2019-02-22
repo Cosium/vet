@@ -3,6 +3,8 @@ package com.cosium.vet.git;
 import com.cosium.vet.log.Logger;
 import com.cosium.vet.log.LoggerFactory;
 import com.cosium.vet.runtime.CommandRunner;
+import com.cosium.vet.runtime.Environment;
+import com.cosium.vet.thirdparty.apache_commons_lang3.ArrayUtils;
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 
 import java.nio.file.Path;
@@ -30,20 +32,22 @@ class BasicGitClient implements GitClient {
   private final Path repositoryDirectory;
   private final CommandRunner commandRunner;
   private final GitConfigRepository gitConfigRepository;
+  private final Environment gitEnvironment;
 
   BasicGitClient(
       Path repositoryDirectory,
       CommandRunner commandRunner,
-      GitConfigRepository gitConfigRepository) {
+      GitConfigRepository gitConfigRepository,
+      Environment gitEnvironment) {
     this.repositoryDirectory = requireNonNull(repositoryDirectory);
     this.commandRunner = requireNonNull(commandRunner);
     this.gitConfigRepository = requireNonNull(gitConfigRepository);
+    this.gitEnvironment = requireNonNull(gitEnvironment);
   }
 
   @Override
   public BranchShortName getBranch() {
-    return BranchShortName.of(
-        commandRunner.run(repositoryDirectory, GIT, "symbolic-ref", "--short", "HEAD"));
+    return BranchShortName.of(git("symbolic-ref", "--short", "HEAD"));
   }
 
   @Override
@@ -68,55 +72,42 @@ class BasicGitClient implements GitClient {
 
   @Override
   public String getMostRecentCommonCommit(String otherBranch) {
-    return commandRunner.run(repositoryDirectory, GIT, "merge-base", "HEAD", otherBranch);
+    return git("merge-base", "HEAD", otherBranch);
   }
 
   @Override
   public String getTree() {
-    return commandRunner.run(repositoryDirectory, GIT, "rev-parse", "HEAD:");
+    return git("rev-parse", "HEAD:");
   }
 
   @Override
   public String commitTree(String tree, String parent, CommitMessage commitMessage) {
-    return commandRunner.run(
-        repositoryDirectory,
-        GIT,
-        "commit-tree",
-        tree,
-        "-p",
-        parent,
-        "-m",
-        commitMessage.toString());
+    return git("commit-tree", tree, "-p", parent, "-m", commitMessage.toString());
   }
 
   @Override
   public CommitMessage getLastCommitMessage() {
-    return CommitMessage.of(
-        commandRunner.run(repositoryDirectory, GIT, "log", "-1", "--pretty=%B"));
+    return CommitMessage.of(git("log", "-1", "--pretty=%B"));
   }
 
   @Override
   public CommitMessage getCommitMessage(RevisionId revisionId) {
-    return CommitMessage.of(
-        commandRunner.run(
-            repositoryDirectory, GIT, "log", revisionId.toString(), "-1", "--pretty=%B"));
+    return CommitMessage.of(git("log", revisionId.toString(), "-1", "--pretty=%B"));
   }
 
   @Override
   public RevisionId getParent(RevisionId revisionId) {
-    return RevisionId.of(
-        commandRunner.run(
-            repositoryDirectory, GIT, "log", "--pretty=%P", "-n", "1", revisionId.toString()));
+    return RevisionId.of(git("log", "--pretty=%P", "-n", "1", revisionId.toString()));
   }
 
   @Override
   public String push(String remote, String refspec) {
-    return commandRunner.run(repositoryDirectory, GIT, "push", remote, refspec);
+    return git("push", remote, refspec);
   }
 
   @Override
   public List<BranchRef> listRemoteRefs(RemoteName remote) {
-    String output = commandRunner.run(repositoryDirectory, GIT, "ls-remote", remote.toString());
+    String output = git("ls-remote", remote.toString());
     Pattern refMatcher = Pattern.compile("(.*?)\\s+(.*?)$");
     return Arrays.stream(output.split("\n"))
         .map(refMatcher::matcher)
@@ -129,40 +120,40 @@ class BasicGitClient implements GitClient {
 
   @Override
   public void fetch(RemoteName remote, BranchRefName branchRefName) {
-    commandRunner.run(
-        repositoryDirectory, GIT, "fetch", remote.toString(), branchRefName.toString());
+    git("fetch", remote.toString(), branchRefName.toString());
   }
 
   @Override
   public void fetch(RemoteName remote, BranchShortName branchShortName) {
-    commandRunner.run(
-        repositoryDirectory, GIT, "fetch", remote.toString(), branchShortName.toString());
+    git("fetch", remote.toString(), branchShortName.toString());
   }
 
   @Override
   public String pull(RemoteName remote, BranchRefName branchRefName) {
-    return commandRunner.run(
-        repositoryDirectory, GIT, "pull", remote.toString(), branchRefName.toString());
+    return git("pull", remote.toString(), branchRefName.toString());
   }
 
   @Override
   public String status() {
-    return commandRunner.run(repositoryDirectory, GIT, "status");
+    return git("status");
   }
 
   @Override
   public String checkoutFetchHead() {
-    return commandRunner.run(repositoryDirectory, GIT, "checkout", "FETCH_HEAD");
+    return git("checkout", "FETCH_HEAD");
   }
 
   @Override
   public String checkoutNewBranch(BranchShortName branchShortName) {
-    return commandRunner.run(
-        repositoryDirectory, GIT, "checkout", "-b", branchShortName.toString());
+    return git("checkout", "-b", branchShortName.toString());
   }
 
   @Override
   public String resetKeep(RevisionId revisionId) {
-    return commandRunner.run(repositoryDirectory, GIT, "reset", "--keep", revisionId.toString());
+    return git("reset", "--keep", revisionId.toString());
+  }
+
+  private String git(String... args) {
+    return commandRunner.run(repositoryDirectory, gitEnvironment, ArrayUtils.insert(0, args, GIT));
   }
 }

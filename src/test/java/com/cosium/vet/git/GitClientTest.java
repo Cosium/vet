@@ -1,6 +1,7 @@
 package com.cosium.vet.git;
 
 import com.cosium.vet.runtime.CommandRunner;
+import com.cosium.vet.runtime.Environments;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,7 +29,7 @@ public class GitClientTest {
     runner = testRepository.runner;
     repo = testRepository.repo;
 
-    GitProvider gitProvider = new GitProvider(repo, runner);
+    GitProvider gitProvider = new GitProvider(repo, runner, false);
     tested = gitProvider.build();
   }
 
@@ -44,16 +45,16 @@ public class GitClientTest {
 
   @Test
   public void getMostRecentCommonCommit() throws Exception {
-    String expectedCommit = runner.run(repo, "git", "rev-parse", "HEAD");
-    runner.run(repo, "git", "checkout", "-b", "getMostRecentCommonCommit");
+    String expectedCommit = runner.run(repo, Environments.empty(), "git", "rev-parse", "HEAD");
+    runner.run(repo, Environments.empty(), "git", "checkout", "-b", "getMostRecentCommonCommit");
     Path barPath = repo.resolve("bar.txt");
     Files.createFile(barPath);
-    runner.run(repo, "git", "add", ".");
-    runner.run(repo, "git", "commit", "-am", "Add bar");
+    runner.run(repo, Environments.empty(), "git", "add", ".");
+    runner.run(repo, Environments.empty(), "git", "commit", "-am", "Add bar");
 
     assertThat(tested.getMostRecentCommonCommit("origin/master")).isEqualTo(expectedCommit);
 
-    runner.run(repo, "git", "checkout", expectedCommit);
+    runner.run(repo, Environments.empty(), "git", "checkout", expectedCommit);
     assertThat(Files.exists(barPath)).isFalse();
   }
 
@@ -61,13 +62,13 @@ public class GitClientTest {
   public void testCommitTree() throws Exception {
     Path barPath = repo.resolve("bar.txt");
     Files.createFile(barPath);
-    runner.run(repo, "git", "add", ".");
-    runner.run(repo, "git", "commit", "-am", "Add bar");
+    runner.run(repo, Environments.empty(), "git", "add", ".");
+    runner.run(repo, Environments.empty(), "git", "commit", "-am", "Add bar");
 
     Path bazPath = repo.resolve("baz.txt");
     Files.createFile(bazPath);
-    runner.run(repo, "git", "add", ".");
-    runner.run(repo, "git", "commit", "-am", "Add baz");
+    runner.run(repo, Environments.empty(), "git", "add", ".");
+    runner.run(repo, Environments.empty(), "git", "commit", "-am", "Add baz");
 
     String commit =
         tested.commitTree(
@@ -77,7 +78,7 @@ public class GitClientTest {
 
     assertThat(commit).isNotBlank();
 
-    runner.run(repo, "git", "checkout", commit);
+    runner.run(repo, Environments.empty(), "git", "checkout", commit);
     assertThat(Files.exists(barPath)).isTrue();
     assertThat(Files.exists(bazPath)).isTrue();
   }
@@ -86,8 +87,8 @@ public class GitClientTest {
   public void testGetLastCommitMessage() throws Exception {
     Path barPath = repo.resolve("bar.txt");
     Files.createFile(barPath);
-    runner.run(repo, "git", "add", ".");
-    runner.run(repo, "git", "commit", "-am", "Add bar");
+    runner.run(repo, Environments.empty(), "git", "add", ".");
+    runner.run(repo, Environments.empty(), "git", "commit", "-am", "Add bar");
 
     assertThat(tested.getLastCommitMessage()).isEqualTo(CommitMessage.of("Add bar"));
   }

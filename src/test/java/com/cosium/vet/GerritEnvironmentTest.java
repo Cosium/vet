@@ -3,6 +3,7 @@ package com.cosium.vet;
 import com.cosium.vet.log.Logger;
 import com.cosium.vet.log.LoggerFactory;
 import com.cosium.vet.runtime.CommandRunner;
+import com.cosium.vet.runtime.Environments;
 import com.cosium.vet.thirdparty.apache_commons_io.FileUtils;
 import com.cosium.vet.thirdparty.apache_commons_io.IOUtils;
 import com.cosium.vet.thirdparty.apache_commons_io.input.Tailer;
@@ -97,6 +98,7 @@ public abstract class GerritEnvironmentTest {
     long initStart = System.currentTimeMillis();
     runner.run(
         gerritDir,
+        Environments.empty(),
         "docker-compose",
         "-f",
         RUN_YML,
@@ -109,12 +111,19 @@ public abstract class GerritEnvironmentTest {
     Path gerritProjectGitDir = gerritDir.resolve("git").resolve(PROJECT);
     Files.createDirectories(gerritProjectGitDir);
 
-    runner.run(gerritProjectGitDir, "git", "init");
-    runner.run(gerritProjectGitDir, "git", "config", "user.email", "you@example.com");
-    runner.run(gerritProjectGitDir, "git", "config", "user.name", "Your Name");
+    runner.run(gerritProjectGitDir, Environments.empty(), "git", "init");
+    runner.run(
+        gerritProjectGitDir,
+        Environments.empty(),
+        "git",
+        "config",
+        "user.email",
+        "you@example.com");
+    runner.run(
+        gerritProjectGitDir, Environments.empty(), "git", "config", "user.name", "Your Name");
     Files.createFile(gerritProjectGitDir.resolve("foo.txt"));
-    runner.run(gerritProjectGitDir, "git", "add", ".");
-    runner.run(gerritProjectGitDir, "git", "commit", "-am", "Initial commit");
+    runner.run(gerritProjectGitDir, Environments.empty(), "git", "add", ".");
+    runner.run(gerritProjectGitDir, Environments.empty(), "git", "commit", "-am", "Initial commit");
 
     LOG.info("Starting Gerrit");
     ProcessUtils.create(gerritDir, "docker-compose", "-f", RUN_YML, "up", "-d");

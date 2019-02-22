@@ -2,6 +2,7 @@ package com.cosium.vet.git;
 
 import com.cosium.vet.runtime.CommandRunException;
 import com.cosium.vet.runtime.CommandRunner;
+import com.cosium.vet.runtime.Environments;
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 
 import java.nio.file.Path;
@@ -37,7 +38,8 @@ class DefaultGitConfigRepository implements GitConfigRepository {
     if (StringUtils.isBlank(value)) {
       runIgnoringExitCode(5, GIT, "config", "--unset", computeBranchKey(key));
     } else {
-      commandRunner.run(repositoryDirectory, GIT, "config", computeBranchKey(key), value);
+      commandRunner.run(
+          repositoryDirectory, Environments.empty(), GIT, "config", computeBranchKey(key), value);
     }
   }
 
@@ -48,7 +50,7 @@ class DefaultGitConfigRepository implements GitConfigRepository {
 
   private String runIgnoringExitCode(int exitCodeToIgnore, String... command) {
     try {
-      return commandRunner.run(repositoryDirectory, command);
+      return commandRunner.run(repositoryDirectory, Environments.empty(), command);
     } catch (CommandRunException e) {
       if (exitCodeToIgnore != e.getExitCode()) {
         throw e;
@@ -63,6 +65,7 @@ class DefaultGitConfigRepository implements GitConfigRepository {
   }
 
   private String getBranchShortName() {
-    return commandRunner.run(repositoryDirectory, GIT, "rev-parse", "--abbrev-ref", "HEAD");
+    return commandRunner.run(
+        repositoryDirectory, Environments.empty(), GIT, "rev-parse", "--abbrev-ref", "HEAD");
   }
 }

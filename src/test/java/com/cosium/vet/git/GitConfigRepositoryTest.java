@@ -17,7 +17,8 @@ public class GitConfigRepositoryTest {
   @Before
   public void before() throws Exception {
     GitTestRepository gitTestRepository = GitTestRepository.builder().build();
-    GitProvider gitProvider = new GitProvider(gitTestRepository.repo, gitTestRepository.runner);
+    GitProvider gitProvider =
+        new GitProvider(gitTestRepository.repo, gitTestRepository.runner, false);
     tested = gitProvider.buildRepository();
   }
 

@@ -18,12 +18,11 @@ public class BasicCommandRunner implements CommandRunner {
   private static final Logger LOG = LoggerFactory.getLogger(BasicCommandRunner.class);
 
   @Override
-  public String run(Path workingDir, String... command) {
+  public String run(Path workingDir, Environment environment, String... command) {
     try {
-      ProcessBuilder processBuilder =
-          new ProcessBuilder(command)
-              .directory(workingDir.toFile())
-              .redirectInput(ProcessBuilder.Redirect.INHERIT);
+      ProcessBuilder processBuilder = new ProcessBuilder(command);
+      processBuilder.environment().putAll(environment.asMap());
+      processBuilder.directory(workingDir.toFile()).redirectInput(ProcessBuilder.Redirect.INHERIT);
 
       LOG.debug("Executing '{}'", StringUtils.join(command, StringUtils.SPACE));
       Process process = processBuilder.start();

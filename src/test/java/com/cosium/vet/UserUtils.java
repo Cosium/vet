@@ -1,6 +1,7 @@
 package com.cosium.vet;
 
 import com.cosium.vet.runtime.CommandRunner;
+import com.cosium.vet.runtime.Environments;
 
 import java.nio.file.Paths;
 
@@ -30,6 +31,7 @@ class UserUtils {
       uid =
           runner.run(
               Paths.get(System.getProperty("user.dir")),
+              Environments.empty(),
               "id",
               "-u",
               System.getProperty("user.name"));

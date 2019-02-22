@@ -4,6 +4,7 @@ import com.cosium.vet.log.Logger;
 import com.cosium.vet.log.LoggerFactory;
 import com.cosium.vet.runtime.BasicCommandRunner;
 import com.cosium.vet.runtime.CommandRunner;
+import com.cosium.vet.runtime.Environment;
 import com.cosium.vet.thirdparty.apache_commons_lang3.ArrayUtils;
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 
@@ -32,11 +33,11 @@ public class TestCommandRunner implements CommandRunner {
   }
 
   @Override
-  public String run(Path workingDir, String... command) {
+  public String run(Path workingDir, Environment environment, String... command) {
     if ("git".equalsIgnoreCase(command[0])) {
       if (gitAvailable == null) {
         try {
-          delegate.run(workingDir, "git", "--version");
+          delegate.run(workingDir, environment, "git", "--version");
           LOG.info("git is available");
           gitAvailable = true;
         } catch (Throwable t) {
@@ -59,6 +60,6 @@ public class TestCommandRunner implements CommandRunner {
         command = ArrayUtils.addAll(gitBaseCommand, ArrayUtils.remove(command, 0));
       }
     }
-    return delegate.run(workingDir, command);
+    return delegate.run(workingDir, environment, command);
   }
 }

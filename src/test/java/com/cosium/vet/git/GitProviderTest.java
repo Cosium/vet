@@ -28,7 +28,7 @@ public class GitProviderTest {
     repositoryDirectory = mock(Path.class);
     commandRunner = mock(CommandRunner.class);
     operatingSystem = mock(OperatingSystem.class);
-    tested = new GitProvider(operatingSystem, repositoryDirectory, commandRunner);
+    tested = new GitProvider(operatingSystem, repositoryDirectory, commandRunner, false);
   }
 
   @Test

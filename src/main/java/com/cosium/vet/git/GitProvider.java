@@ -17,22 +17,28 @@ public class GitProvider implements GitClientFactory, GitConfigRepositoryFactory
   private final OperatingSystem operatingSystem;
   private final Path repositoryDirectory;
   private final CommandRunner commandRunner;
+  private final boolean interactive;
 
-  public GitProvider(Path repositoryDirectory, CommandRunner commandRunner) {
-    this(new OperatingSystem(), repositoryDirectory, commandRunner);
+  public GitProvider(Path repositoryDirectory, CommandRunner commandRunner, boolean interactive) {
+    this(new OperatingSystem(), repositoryDirectory, commandRunner, interactive);
   }
 
   public GitProvider(
-      OperatingSystem operatingSystem, Path repositoryDirectory, CommandRunner commandRunner) {
+      OperatingSystem operatingSystem,
+      Path repositoryDirectory,
+      CommandRunner commandRunner,
+      boolean interactive) {
     this.operatingSystem = requireNonNull(operatingSystem);
     this.repositoryDirectory = requireNonNull(repositoryDirectory);
     this.commandRunner = requireNonNull(commandRunner);
+    this.interactive = interactive;
   }
 
   @Override
   public GitClient build() {
     GitClient basicGitClient =
-        new BasicGitClient(repositoryDirectory, commandRunner, buildRepository());
+        new BasicGitClient(
+            repositoryDirectory, commandRunner, buildRepository(), new GitEnvironment(interactive));
     if (!operatingSystem.isWindows()) {
       return basicGitClient;
     }

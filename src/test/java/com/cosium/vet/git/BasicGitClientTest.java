@@ -1,6 +1,7 @@
 package com.cosium.vet.git;
 
 import com.cosium.vet.runtime.CommandRunner;
+import com.cosium.vet.runtime.Environment;
 import com.cosium.vet.thirdparty.apache_commons_lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +17,7 @@ import static org.mockito.Mockito.when;
  *
  * @author Reda.Housni-Alaoui
  */
-public class DefaultGitClientTest {
+public class BasicGitClientTest {
 
   private static final RemoteUrl REMOTE_URL = RemoteUrl.of("https://foo.com/test-project");
   private static final RemoteUrl REMOTE_PUSH_URL =
@@ -25,6 +26,7 @@ public class DefaultGitClientTest {
   private Path repositoryDirectory;
   private CommandRunner commandRunner;
   private GitConfigRepository gitConfigRepository;
+  private Environment gitEnvironment;
 
   private BasicGitClient tested;
 
@@ -33,8 +35,10 @@ public class DefaultGitClientTest {
     repositoryDirectory = mock(Path.class);
     commandRunner = mock(CommandRunner.class);
     gitConfigRepository = mock(GitConfigRepository.class);
+    gitEnvironment = mock(Environment.class);
 
-    tested = new BasicGitClient(repositoryDirectory, commandRunner, gitConfigRepository);
+    tested =
+        new BasicGitClient(repositoryDirectory, commandRunner, gitConfigRepository, gitEnvironment);
   }
 
   @Test
