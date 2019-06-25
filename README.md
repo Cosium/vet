@@ -13,7 +13,7 @@ There is no need to deploy a separate java runtime to make it work.
 ### Linux - Debian based distributions
 
 ```bash
-$ wget https://github.com/Cosium/vet/releases/download/3.19/vet-linux_x64.deb.zip -O vet.deb.zip \
+$ wget https://github.com/Cosium/vet/releases/download/3.22/vet-linux_x64.deb.zip -O vet.deb.zip \
 && unzip vet.deb.zip \
 && sudo dpkg -i vet.deb \
 && source /etc/bash_completion.d/vet_completion.sh \
